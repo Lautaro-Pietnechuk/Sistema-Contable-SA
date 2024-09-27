@@ -4,16 +4,16 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-public class Permisos {
+public class Permiso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    private String nombre;
 
-    @ManyToMany(mappedBy = "permissions")
-    private Set<Roles> roles;
+    @ManyToMany(mappedBy = "permisos")
+    private Set<Rol> roles;
 
     // Getters y Setters
 }
