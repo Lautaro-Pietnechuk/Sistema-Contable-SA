@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.sa.contable.ContableApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.281 s -- in com.sa.contable.ContableApplicationTests

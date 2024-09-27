@@ -1,0 +1,7 @@
+com\sa\contable\Permisos.class
+com\sa\contable\Roles.class
+com\sa\contable\Usuario.class
+com\sa\contable\UserController.class
+com\sa\contable\ContableApplication.class
+com\sa\contable\UserService.class
+com\sa\contable\UserRepository.class
