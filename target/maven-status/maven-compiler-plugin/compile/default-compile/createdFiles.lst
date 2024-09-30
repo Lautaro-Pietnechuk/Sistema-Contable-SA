@@ -1,2 +1,10 @@
+com\sa\contable\RolRepositorio.class
+com\sa\contable\Rol.class
+com\sa\contable\UsuarioControlador.class
 com\sa\contable\Usuario.class
+com\sa\contable\RolControlador.class
+com\sa\contable\RolServicio.class
 com\sa\contable\ContableApplication.class
+com\sa\contable\UsuarioRepositorio.class
+com\sa\contable\UsuarioServicio.class
+com\sa\contable\Permiso.class

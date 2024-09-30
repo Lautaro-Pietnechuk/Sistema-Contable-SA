@@ -16,27 +16,39 @@ public class UsuarioControlador {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario) {
-        Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
-        if (loggedInUser.isPresent()) {
-            return ResponseEntity.ok("Login exitoso");
-        } else {
-            return ResponseEntity.status(401).body("Usuario o contraseña incorrectos");
+        try {
+            Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
+            if (loggedInUser.isPresent()) {
+                return ResponseEntity.ok("Login exitoso");
+            } else {
+                return ResponseEntity.status(401).body("Usuario o contraseña incorrectos");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());
         }
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Usuario usuario) {
-        if (usuarioServicio.esNombreUsuarioTomado(usuario.getNombreUsuario())) {
-            return ResponseEntity.status(400).body("El usuario ya existe");
-        }
+        try {
+            if (usuarioServicio.esNombreUsuarioTomado(usuario.getNombreUsuario())) {
+                return ResponseEntity.status(400).body("El usuario ya existe");
+            }
 
-        usuarioServicio.registrar(usuario);
-        return ResponseEntity.ok("Usuario registrado exitosamente");
+            usuarioServicio.registrar(usuario);
+            return ResponseEntity.ok("Usuario registrado exitosamente");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());
+        }
     }
 
     @PostMapping("/usuarios/{usuarioId}/roles/{rolId}")
     public ResponseEntity<?> agregarRol(@PathVariable Long usuarioId, @PathVariable Long rolId) {
-        usuarioServicio.agregarRolAUsuario(usuarioId, rolId);
-        return ResponseEntity.ok("Rol asignado exitosamente");
+        try {
+            usuarioServicio.agregarRolAUsuario(usuarioId, rolId);
+            return ResponseEntity.ok("Rol agregado exitosamente");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());
+        }
     }
 }

@@ -15,6 +15,14 @@ public class Rol {
     @ManyToMany(mappedBy = "roles")
     private Set<Usuario> usuarios;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "rol_permiso",
+        joinColumns = @JoinColumn(name = "rol_id"),
+        inverseJoinColumns = @JoinColumn(name = "permiso_id")
+    )
+    private Set<Permiso> permisos;
+
     // Getters y Setters
     public Long getId() {
         return id;
@@ -38,5 +46,13 @@ public class Rol {
 
     public void setUsuarios(Set<Usuario> usuarios) {
         this.usuarios = usuarios;
+    }
+
+    public Set<Permiso> getPermisos() {
+        return permisos;
+    }
+
+    public void setPermisos(Set<Permiso> permisos) {
+        this.permisos = permisos;
     }
 }

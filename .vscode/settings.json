@@ -1,4 +1,43 @@
 {
+    // Configuración de actualización de la configuración de compilación de Java
     "java.configuration.updateBuildConfiguration": "interactive",
-    "java.compile.nullAnalysis.mode": "automatic"
+    
+    // Configuración del modo de análisis de null en Java
+    "java.compile.nullAnalysis.mode": "automatic",
+    
+    // Ruta de Java Home
+    "java.home": "c:\\Users\\cuent\\.vscode\\extensions\\redhat.java-1.35.0-win32-x64\\jre\\17.0.12-win32-x86_64",
+    
+    // Configuración de runtimes de Java
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-17",
+            "path": "c:\\Users\\cuent\\.vscode\\extensions\\redhat.java-1.35.0-win32-x64\\jre\\17.0.12-win32-x86_64"
+        }
+    ],
+    
+    // Aumentar la memoria asignada para la importación de proyectos Gradle y Maven
+    "java.import.gradle.jvmArguments": "-Xmx2G",
+    "java.import.maven.jvmArguments": "-Xmx2G",
+    
+    // Configuración del modo de lanzamiento del servidor de lenguaje de Java
+    "java.server.launchMode": "Hybrid",
+    
+    // Configuración del nivel de registro del servidor de lenguaje de Java
+    "java.trace.server": "verbose",
+    
+    // Configuración para ignorar la severidad de errores de classpath incompleto
+    "java.errors.incompleteClasspath.severity": "ignore",
+    
+    // Configuración para verificar exclusiones de configuración del proyecto
+    "java.configuration.checkProjectSettingsExclusions": false,
+    
+    // Configuración de Maven
+    "java.configuration.maven.userSettings": "c:\\Users\\cuent\\.m2\\settings.xml",
+    "java.configuration.maven.globalSettings": "c:\\Users\\cuent\\.m2\\settings.xml",
+    "java.configuration.maven.settings": "c:\\Users\\cuent\\.m2\\settings.xml",
+    "java.configuration.maven.updateSnapshots": true,
+    
+    // Configuración para reiniciar automáticamente el servidor de lenguaje si se detectan cambios en pom.xml o build.gradle
+    "java.configuration.updateBuildConfiguration": "automatic"
 }
