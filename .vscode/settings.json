@@ -1,18 +1,18 @@
 {
     // Configuración de actualización de la configuración de compilación de Java
-    "java.configuration.updateBuildConfiguration": "interactive",
+    // "java.configuration.updateBuildConfiguration": "interactive",
     
     // Configuración del modo de análisis de null en Java
     "java.compile.nullAnalysis.mode": "automatic",
     
     // Ruta de Java Home
-    "java.home": "c:\\Users\\cuent\\.vscode\\extensions\\redhat.java-1.35.0-win32-x64\\jre\\17.0.12-win32-x86_64",
+    "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-21",
     
     // Configuración de runtimes de Java
     "java.configuration.runtimes": [
         {
             "name": "JavaSE-17",
-            "path": "c:\\Users\\cuent\\.vscode\\extensions\\redhat.java-1.35.0-win32-x64\\jre\\17.0.12-win32-x86_64"
+            "path": "C:\\Program Files\\Java\\jdk-21"
         }
     ],
     
@@ -27,10 +27,15 @@
     "java.trace.server": "verbose",
     
     // Configuración para ignorar la severidad de errores de classpath incompleto
-    "java.errors.incompleteClasspath.severity": "ignore",
+    //"java.errors.incompleteClasspath.severity": "ignore",
     
     // Configuración para verificar exclusiones de configuración del proyecto
-    "java.configuration.checkProjectSettingsExclusions": false,
+    "java.import.generatesMetadataFilesAtProjectRoot": false,
+    "files.exclude": {
+        "**/.project": true,
+        "**/.classpath": true,
+        "**/.settings": true
+    },
     
     // Configuración de Maven
     "java.configuration.maven.userSettings": "c:\\Users\\cuent\\.m2\\settings.xml",

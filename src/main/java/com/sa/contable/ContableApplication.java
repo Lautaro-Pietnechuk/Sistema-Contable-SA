@@ -2,12 +2,14 @@ package com.sa.contable;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.lang.NonNull;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.sa.contable")
+@EntityScan(basePackages = "com.sa.contable")
 public class ContableApplication {
 
     public static void main(String[] args) {

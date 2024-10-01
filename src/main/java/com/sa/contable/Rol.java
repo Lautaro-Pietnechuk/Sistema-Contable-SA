@@ -1,27 +1,37 @@
 package com.sa.contable;
 
-import jakarta.persistence.*;
 import java.util.Set;
 
-@Entity
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+
+import com.sa.contable.usuario.Usuario;
+
+@Entity(name = "rol")
 public class Rol {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String nombre;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<Usuario> usuarios;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "rol_permiso",
-        joinColumns = @JoinColumn(name = "rol_id"),
-        inverseJoinColumns = @JoinColumn(name = "permiso_id")
-    )
-    private Set<Permiso> permisos;
+    @ManyToMany(mappedBy = "roles")
+    private Set<Usuario> usuarios; // Asumiendo que tienes una relación con Usuario
+
+    // Constructor vacío
+    public Rol() {}
+
+    // Constructor con parámetros
+    public Rol(String nombre) {
+        this.nombre = nombre;
+    }
 
     // Getters y Setters
     public Long getId() {
@@ -48,11 +58,5 @@ public class Rol {
         this.usuarios = usuarios;
     }
 
-    public Set<Permiso> getPermisos() {
-        return permisos;
-    }
 
-    public void setPermisos(Set<Permiso> permisos) {
-        this.permisos = permisos;
-    }
 }

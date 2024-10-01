@@ -1,9 +1,9 @@
 package com.sa.contable;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class RolServicio {
@@ -11,11 +11,19 @@ public class RolServicio {
     @Autowired
     private RolRepositorio rolRepositorio;
 
-    public Rol crearRol(Rol rol) {
+    public List<Rol> listarRoles() {
+        return rolRepositorio.findAll();
+    }
+
+    public Rol obtenerRolPorId(Long id) {
+        return rolRepositorio.findById(id).orElse(null);
+    }
+
+    public Rol guardarRol(Rol rol) {
         return rolRepositorio.save(rol);
     }
 
-    public List<Rol> obtenerTodosLosRoles() {
-        return rolRepositorio.findAll();
+    public void eliminarRol(Long id) {
+        rolRepositorio.deleteById(id);
     }
 }
