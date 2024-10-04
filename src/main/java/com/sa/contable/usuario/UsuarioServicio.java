@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sa.contable.Rol;
-import com.sa.contable.RolRepositorio;
+import com.sa.contable.rol.Rol;
+import com.sa.contable.rol.RolRepositorio;
 
 @Service
 public class UsuarioServicio {

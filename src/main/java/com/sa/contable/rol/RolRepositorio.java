@@ -1,4 +1,4 @@
-package com.sa.contable;
+package com.sa.contable.rol;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

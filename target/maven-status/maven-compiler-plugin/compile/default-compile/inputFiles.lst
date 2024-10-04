@@ -3,10 +3,10 @@ C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\permiso\PermisoControlador.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\permiso\PermisoRepositorio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\permiso\PermisoServicio.java
-C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\Rol.java
-C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\RolControlador.java
-C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\RolRepositorio.java
-C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\RolServicio.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\rol\Rol.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\rol\RolControlador.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\rol\RolRepositorio.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\rol\RolServicio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\usuario\Usuario.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\usuario\UsuarioControlador.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\usuario\UsuarioRepositorio.java
