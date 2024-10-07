@@ -1,4 +1,4 @@
-package com.sa.contable.permiso;
+package com.sa.contable.Permiso;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -1,12 +1,12 @@
-package com.sa.contable.usuario;
+package com.sa.contable.Usuario;
 
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sa.contable.rol.Rol;
-import com.sa.contable.rol.RolRepositorio;
+import com.sa.contable.Rol.Rol;
+import com.sa.contable.Rol.RolRepositorio;
 
 @Service
 public class UsuarioServicio {
@@ -19,14 +19,21 @@ public class UsuarioServicio {
     private RolRepositorio rolRepositorio;
     
 
+    /* public Usuario registrar(Usuario usuario) {
+        return usuarioRepositorio.save(usuario);
+    } */
+
     public Usuario registrar(Usuario usuario) {
+        Rol UsuarioRol = rolRepositorio.findByName("Usuario")
+            .orElseThrow(() -> new RuntimeException("Error: El rol 'Usuario' no se encuentra."));
+        usuario.setRol(UsuarioRol);
         return usuarioRepositorio.save(usuario);
     }
 
     public void agregarRolAUsuario(Long usuarioId, Long rolId) {
         Usuario usuario = usuarioRepositorio.findById(usuarioId).orElseThrow();
         Rol rol = rolRepositorio.findById(rolId).orElseThrow();
-        usuario.getRoles().add(rol);
+        usuario.setRol(rol);
         usuarioRepositorio.save(usuario);
     }
     
@@ -37,5 +44,9 @@ public class UsuarioServicio {
 
     public boolean esNombreUsuarioTomado(String nombreUsuario) {
         return usuarioRepositorio.findByNombreUsuario(nombreUsuario).isPresent();
+    }
+
+    public void eliminarUsuario(Long id) {
+        usuarioRepositorio.deleteById(id);
     }
 }

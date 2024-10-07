@@ -1,10 +1,17 @@
-package com.sa.contable.usuario;
+package com.sa.contable.Usuario;
+
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
@@ -42,6 +49,7 @@ public class UsuarioControlador {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/usuarios/{usuarioId}/roles/{rolId}")
     public ResponseEntity<?> agregarRol(@PathVariable Long usuarioId, @PathVariable Long rolId) {
         try {
@@ -51,5 +59,11 @@ public class UsuarioControlador {
             return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());
         }
     }
-    
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
+        usuarioServicio.eliminarUsuario(id);
+        return ResponseEntity.noContent().build();
+    }
 }

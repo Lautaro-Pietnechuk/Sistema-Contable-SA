@@ -1,4 +1,4 @@
-package com.sa.contable.permiso;
+package com.sa.contable.Permiso;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

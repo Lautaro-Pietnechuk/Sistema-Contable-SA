@@ -1,4 +1,5 @@
-package com.sa.contable.Modelo_Asientos;
+package com.sa.contable.Relaciones;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,11 +18,11 @@ public class CuentaAsiento {
 
     @ManyToOne
     @JoinColumn(name = "cuenta_id", nullable = false)
-    private Cuenta idCuenta;
+    private Long idCuenta;
 
     @ManyToOne
     @JoinColumn(name = "asiento_id", nullable = false)
-    private Asiento idAsiento;
+    private Long idAsiento;
 
     @Column(nullable = false)
     private Double debe;
@@ -41,19 +42,19 @@ public class CuentaAsiento {
         this.id = id;
     }
 
-    public Cuenta getIdCuenta() {
+    public Long getidCuenta() {
         return idCuenta;
     }
 
-    public void setCuenta(Cuenta idCuenta) {
+    public void setidCuenta(Long idCuenta) {
         this.idCuenta = idCuenta;
     }
 
-    public Asiento getidAsiento() {
+    public Long getidAsiento() {
         return idAsiento;
     }
 
-    public void setidAsiento(Asiento idAsiento) {
+    public void setidAsiento(Long idAsiento) {
         this.idAsiento = idAsiento;
     }
 

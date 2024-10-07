@@ -1,6 +1,8 @@
-package com.sa.contable.rol;
+package com.sa.contable.Rol;
 
 import java.util.Set;
+
+import com.sa.contable.Usuario.Usuario;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,8 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-
-import com.sa.contable.usuario.Usuario;
 
 @Entity(name = "rol")
 public class Rol {

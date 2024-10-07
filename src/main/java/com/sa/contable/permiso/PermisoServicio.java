@@ -1,4 +1,4 @@
-package com.sa.contable.permiso;
+package com.sa.contable.Permiso;
 
 import java.util.List;
 import java.util.Optional;

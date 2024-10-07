@@ -1,7 +1,9 @@
-package com.sa.contable.Modelo_Asientos;
+package com.sa.contable.Asiento;
 
 import java.util.Date;
 import java.util.Set;
+
+import com.sa.contable.Relaciones.CuentaAsiento;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

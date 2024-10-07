@@ -1,8 +1,6 @@
-package com.sa.contable.usuario;
+package com.sa.contable.Usuario;
 
-import java.util.Set;
-
-import com.sa.contable.rol.Rol;
+import com.sa.contable.Rol.Rol;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,13 +24,14 @@ public class Usuario {
     @Column(nullable = false)
     private String contraseña;
 
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "usuario_rol",
         joinColumns = @JoinColumn(name = "usuario_id"),
         inverseJoinColumns = @JoinColumn(name = "rol_id")
     )
-    private Set<Rol> roles;
+    private Rol rol;
     
 
     // Getters y Setters
@@ -60,12 +59,12 @@ public class Usuario {
         this.contraseña = contraseña;
     }
 
-    public Set<Rol> getRoles() {
-        return roles;
+    public Rol getRol() {
+        return rol;
     }
 
-    public void setRoles(Set<Rol> roles) {
-        this.roles = roles;
+    public void setRol(Rol rol) {
+        this.rol = rol;
     }
     
 }
