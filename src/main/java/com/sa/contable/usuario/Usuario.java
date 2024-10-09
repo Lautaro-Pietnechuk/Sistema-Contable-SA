@@ -9,8 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Usuario {
@@ -24,15 +23,9 @@ public class Usuario {
     @Column(nullable = false)
     private String contraseña;
 
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "usuario_rol",
-        joinColumns = @JoinColumn(name = "usuario_id"),
-        inverseJoinColumns = @JoinColumn(name = "rol_id")
-    )
-    private Rol rol;
-    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "rol_id")
+    private Rol rol;  // Ya no es una colección, sino una referencia única
 
     // Getters y Setters
     public Long getId() {
@@ -66,5 +59,4 @@ public class Usuario {
     public void setRol(Rol rol) {
         this.rol = rol;
     }
-    
 }

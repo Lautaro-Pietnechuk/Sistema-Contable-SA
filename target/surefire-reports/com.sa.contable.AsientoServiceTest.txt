@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.sa.contable.AsientoServiceTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.369 s -- in com.sa.contable.AsientoServiceTest

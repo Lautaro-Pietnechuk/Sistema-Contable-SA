@@ -22,7 +22,7 @@ public class Rol {
     private String nombre;
 
 
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "rol")
     private Set<Usuario> usuarios; // Asumiendo que tienes una relación con Usuario
 
     // Constructor vacío

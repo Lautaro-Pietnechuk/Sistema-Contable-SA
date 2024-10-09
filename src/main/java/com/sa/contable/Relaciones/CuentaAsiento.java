@@ -1,5 +1,7 @@
 package com.sa.contable.Relaciones;
 
+import com.sa.contable.Asiento.Asiento;
+import com.sa.contable.Cuenta.Cuenta;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,11 +20,11 @@ public class CuentaAsiento {
 
     @ManyToOne
     @JoinColumn(name = "cuenta_id", nullable = false)
-    private Long idCuenta;
+    private Cuenta cuenta; // Relación con la entidad Cuenta
 
     @ManyToOne
     @JoinColumn(name = "asiento_id", nullable = false)
-    private Long idAsiento;
+    private Asiento asiento; // Relación con la entidad Asiento
 
     @Column(nullable = false)
     private Double debe;
@@ -31,7 +33,7 @@ public class CuentaAsiento {
     private Double haber;
 
     @Column(nullable = false)
-    private Double saldo;
+    private Double saldo; //saldo parcial con el que queda la cuenta
 
     // Getters y Setters
     public Long getId() {
@@ -42,20 +44,24 @@ public class CuentaAsiento {
         this.id = id;
     }
 
-    public Long getidCuenta() {
-        return idCuenta;
+    public Long getIdCuenta() {
+        return cuenta.getId(); // Devuelve el id de la entidad Cuenta
     }
 
-    public void setidCuenta(Long idCuenta) {
-        this.idCuenta = idCuenta;
+    public void setIdCuenta(Long idCuenta) {
+        // Aquí podrías buscar la cuenta por su id o recibir un objeto Cuenta directamente
+        this.cuenta = new Cuenta(); // Esto es solo un ejemplo, normalmente tendrías que recuperar la cuenta de la base de datos.
+        this.cuenta.setId(idCuenta); // Asignas el id a la entidad
     }
 
-    public Long getidAsiento() {
-        return idAsiento;
+    public Long getIdAsiento() {
+        return asiento.getId(); // Devuelve el id de la entidad Asiento
     }
 
-    public void setidAsiento(Long idAsiento) {
-        this.idAsiento = idAsiento;
+    public void setIdAsiento(Long idAsiento) {
+        // Aquí podrías buscar el asiento por su id o recibir un objeto Asiento directamente
+        this.asiento = new Asiento(); // Esto es solo un ejemplo, normalmente tendrías que recuperar el asiento de la base de datos.
+        this.asiento.setId(idAsiento); // Asignas el id a la entidad
     }
 
     public Double getDebe() {

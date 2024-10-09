@@ -24,7 +24,7 @@ public class UsuarioServicio {
     } */
 
     public Usuario registrar(Usuario usuario) {
-        Rol UsuarioRol = rolRepositorio.findByName("Usuario")
+        Rol UsuarioRol = rolRepositorio.findByNombre("Usuario")
             .orElseThrow(() -> new RuntimeException("Error: El rol 'Usuario' no se encuentra."));
         usuario.setRol(UsuarioRol);
         return usuarioRepositorio.save(usuario);

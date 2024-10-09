@@ -1,5 +1,6 @@
 package com.sa.contable.Cuenta;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import com.sa.contable.Relaciones.CuentaAsiento;
@@ -10,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 @Entity
@@ -22,17 +25,21 @@ public class Cuenta {
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false, unique = true)
-    private String codigo;
+    @ManyToOne // Relación con la cuenta padre
+    @JoinColumn(name = "cuenta_padre_id") // Columna que referencia la cuenta padre
+    private Cuenta cuentaPadre;
+
+    @OneToMany(mappedBy = "cuentaPadre", cascade = CascadeType.ALL)
+    private Set<Cuenta> subCuentas = new HashSet<>();
 
     @Column(nullable = false)
     private String tipo;
 
     @Column(nullable = false)
-    private Boolean recibeSaldo;
+    private Boolean recibeSaldo; //solo las hojas reciben saldo
 
     @Column(nullable = false)
-    private Long saldoActual;
+    private Long saldoActual  = 0L;
 
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL)
     private Set<CuentaAsiento> cuentasAsientos;
@@ -52,14 +59,6 @@ public class Cuenta {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
     }
 
     public String getTipo() {
@@ -92,5 +91,21 @@ public class Cuenta {
 
     public void setCuentasAsientos(Set<CuentaAsiento> cuentasAsientos) {
         this.cuentasAsientos = cuentasAsientos;
+    }
+
+    public Cuenta getCuentaPadre() {
+        return cuentaPadre;
+    }
+
+    public void setCuentaPadre(Cuenta cuentaPadre) {
+        this.cuentaPadre = cuentaPadre;
+    }
+
+    public Set<Cuenta> getSubCuentas() {
+        return subCuentas;
+    }
+
+    public void setSubCuentas(Set<Cuenta> subCuentas) {
+        this.subCuentas = subCuentas;
     }
 }

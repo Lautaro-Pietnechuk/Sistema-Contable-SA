@@ -1,9 +1,7 @@
-package com.sa.contable.Asiento;
+package com.sa.contable.DTO;
 
 import java.util.Date;
 import java.util.List;
-
-import com.sa.contable.Cuenta.CuentaMovimientoDTO;
 
 public class AsientoDTO {
     private Date fecha;

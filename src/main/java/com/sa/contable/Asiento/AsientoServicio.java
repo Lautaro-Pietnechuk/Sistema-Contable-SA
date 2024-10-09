@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sa.contable.Cuenta.CuentaMovimientoDTO;
+import com.sa.contable.DTO.AsientoDTO;
+import com.sa.contable.DTO.CuentaMovimientoDTO;
 import com.sa.contable.Relaciones.CuentaAsiento;
 import com.sa.contable.Relaciones.CuentaAsientoRepositorio;
 
@@ -37,8 +38,8 @@ public class AsientoServicio {
         // Guardar las cuentas asociadas al asiento
         for (CuentaMovimientoDTO cuentaMovimiento : asientoDTO.getMovimientos()) {
             CuentaAsiento cuentaAsiento = new CuentaAsiento();
-            cuentaAsiento.setidAsiento(asiento.getId());
-            cuentaAsiento.setidCuenta(cuentaMovimiento.getCuenta().getId());
+            cuentaAsiento.setIdAsiento(asiento.getId());
+            cuentaAsiento.setIdCuenta(cuentaMovimiento.getCuenta().getId());
             
             // Manejo de debe y haber en lugar de monto
             if (cuentaMovimiento.getTipo().equalsIgnoreCase("DEBE")) {

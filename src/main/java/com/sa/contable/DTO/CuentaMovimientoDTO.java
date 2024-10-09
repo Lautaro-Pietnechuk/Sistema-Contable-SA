@@ -1,9 +1,21 @@
-package com.sa.contable.Cuenta;
+package com.sa.contable.DTO;
+
+import com.sa.contable.Cuenta.Cuenta;
 
 public class CuentaMovimientoDTO {
     private Cuenta cuenta;
     private Double monto;
     private String tipo; // "DEBE" o "HABER"
+
+    public CuentaMovimientoDTO(Cuenta cuenta, double monto, String tipo) {
+
+        this.cuenta = cuenta;
+
+        this.monto = monto;
+
+        this.tipo = tipo;
+
+    }
 
     // Getters y Setters
     public Cuenta getCuenta() {

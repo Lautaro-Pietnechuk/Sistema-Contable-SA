@@ -2,15 +2,21 @@ package com.sa.contable.Asiento;
 
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.sa.contable.DTO.AsientoDTO;
 
 @RestController
 @RequestMapping("/api/asientos")
-public class AsientoController {
+public class AsientoControlador {
 
     @Autowired
     private AsientoServicio asientoServicio;
@@ -29,3 +35,5 @@ public class AsientoController {
         return ResponseEntity.ok(asientos);
     }
 }
+
+
