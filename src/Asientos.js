@@ -1,65 +1,53 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const Asiento = () => {
-  const [descripcion, setDescripcion] = useState('');
-  const [monto, setMonto] = useState(0);
-  const [fecha, setFecha] = useState('');
+const Asientos = () => {
+    const [asientos, setAsientos] = useState([]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    useEffect(() => {
+        const fetchAsientos = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/asientos');
+                setAsientos(response.data);
+            } catch (error) {
+                console.error('Error fetching asientos:', error);
+            }
+        };
 
-    const nuevoAsiento = {
-      descripcion,
-      monto,
-      fecha,
-    };
+        fetchAsientos();
+    }, []);
 
-    try {
-      const response = await axios.post('http://localhost:8080/api/asientos', nuevoAsiento);
-      console.log('Asiento creado:', response.data);
-      // Aquí podrías actualizar el estado o mostrar un mensaje de éxito
-    } catch (error) {
-      console.error('Error al crear el asiento:', error);
-      // Aquí podrías manejar el error (mostrar un mensaje al usuario, etc.)
-    }
-  };
-
-  return (
-    <div>
-      <h2>Crear Asiento Contable</h2>
-      <form onSubmit={handleSubmit}>
+    return (
         <div>
-          <label>Descripción:</label>
-          <input 
-            type="text" 
-            value={descripcion} 
-            onChange={(e) => setDescripcion(e.target.value)} 
-            required 
-          />
+            <h2>Libro de Asientos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Descripción</th>
+                        <th>Movimientos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {asientos.map(asiento => (
+                        <tr key={asiento.id}>
+                            <td>{asiento.id}</td>
+                            <td>{new Date(asiento.fecha).toLocaleDateString()}</td>
+                            <td>{asiento.descripcion}</td>
+                            <td>
+                                {asiento.movimientos.map((movimiento, index) => (
+                                    <div key={index}>
+                                        {movimiento.cuenta.nombre}: {movimiento.monto} {movimiento.tipo}
+                                    </div>
+                                ))}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
-        <div>
-          <label>Monto:</label>
-          <input 
-            type="number" 
-            value={monto} 
-            onChange={(e) => setMonto(e.target.value)} 
-            required 
-          />
-        </div>
-        <div>
-          <label>Fecha:</label>
-          <input 
-            type="date" 
-            value={fecha} 
-            onChange={(e) => setFecha(e.target.value)} 
-            required 
-          />
-        </div>
-        <button type="submit">Crear Asiento</button>
-      </form>
-    </div>
-  );
+    );
 };
 
-export default Asiento;
+export default Asientos;
