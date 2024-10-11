@@ -25,6 +25,9 @@ public class Cuenta {
     @Column(nullable = false)
     private String nombre;
 
+    @Column(nullable = false, unique = true)
+    private int codigo;
+
     @ManyToOne // Relación con la cuenta padre
     @JoinColumn(name = "cuenta_padre_id") // Columna que referencia la cuenta padre
     private Cuenta cuentaPadre;
@@ -67,6 +70,14 @@ public class Cuenta {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public int getCodigo() {
+        return codigo;
+    }
+    
+    public void setCodigo(int codigo) {
+        this.codigo = codigo;
     }
 
     public Boolean getRecibeSaldo() {

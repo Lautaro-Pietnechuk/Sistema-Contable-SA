@@ -26,8 +26,8 @@ const Login = () => {
                 return;
             }
 
-            const data = await response.text(); 
-            setMessage(data);
+            const data = await response.json(); 
+            setMessage(data.message); // Muestra el mensaje de éxito
         } catch (error) {
             setMessage(`Error de red: ${error.message}`);
         }

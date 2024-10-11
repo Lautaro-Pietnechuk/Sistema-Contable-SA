@@ -8,7 +8,13 @@ const Cuentas = () => {
         const fetchCuentas = async () => {
             try {
                 const response = await axios.get('http://localhost:8080/api/cuentas');
-                setCuentas(response.data);
+                console.log('Respuesta de la API:', response.data); // Verifica aquí
+                if (Array.isArray(response.data)) {
+                    setCuentas(response.data);
+                } else {
+                    console.error('La respuesta no es un array:', response.data);
+                    setCuentas([]); // Establecer un array vacío si no es un array
+                }
             } catch (error) {
                 console.error('Error fetching cuentas:', error);
             }

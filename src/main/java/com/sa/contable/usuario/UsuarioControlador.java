@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sa.contable.rol.RolServicio;
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -21,6 +23,9 @@ public class UsuarioControlador {
 
     @Autowired
     private UsuarioServicio usuarioServicio;
+
+    @Autowired
+    private RolServicio rolServicio;
 
     @RequestMapping(value = "/register", method = RequestMethod.OPTIONS)
     public ResponseEntity<?> handleOptions() {
@@ -60,14 +65,27 @@ public class UsuarioControlador {
 
 /*     @PreAuthorize("hasRole('Administrador')") */
     @PostMapping("/usuarios/{usuarioId}/roles/{rolId}")
-    public ResponseEntity<?> agregarRol(@PathVariable Long usuarioId, @PathVariable Long rolId) {
-        try {
-            usuarioServicio.agregarRolAUsuario(usuarioId, rolId);
-            return ResponseEntity.ok("Rol agregado exitosamente");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());
+public ResponseEntity<?> agregarRol(@PathVariable Long usuarioId, @PathVariable Long rolId) {
+    try {
+        // Verificar si el usuario existe
+        if (!usuarioServicio.existeUsuario(usuarioId)) {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
         }
+
+        // Verificar si el rol existe
+        if (!rolServicio.existeRol(rolId)) {
+            return ResponseEntity.status(404).body("Rol no encontrado");
+        }
+
+        // Asignar el rol al usuario
+        usuarioServicio.agregarRolAUsuario(usuarioId, rolId);
+        return ResponseEntity.ok("Rol agregado exitosamente");
+
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());
     }
+}
+
 
     @PreAuthorize("hasRole('Administrador')")
     @DeleteMapping("/usuarios/{id}")

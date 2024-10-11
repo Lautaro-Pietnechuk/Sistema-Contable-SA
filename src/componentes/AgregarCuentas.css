@@ -1,0 +1,15 @@
+/* src/componentes/AgregarCuentas.css */
+
+.blocked-checkbox {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.codigo-recibe-saldo {
+    display: flex;
+    align-items: center;
+}
+
+.codigo-recibe-saldo > div {
+    margin-right: 10px;
+}

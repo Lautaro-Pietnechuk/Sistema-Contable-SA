@@ -6,6 +6,7 @@ const AsignarRol = () => {
     const [message, setMessage] = useState('');
 
     const handleAsignarRol = async () => {
+        // Validar campos
         if (!usuarioId || !rolId) {
             setMessage('Por favor, complete todos los campos.');
             return;
@@ -19,6 +20,7 @@ const AsignarRol = () => {
                 },
             });
 
+            // Manejar la respuesta del servidor
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Error:', response.status, errorText);
@@ -26,17 +28,28 @@ const AsignarRol = () => {
             }
 
             const data = await response.text();
-            setMessage(data);
+            setMessage(data); // Mostrar mensaje de éxito
         } catch (error) {
-            setMessage(error.message);
+            console.error('Error:', error);
+            setMessage(`Error: ${error.message}`); // Mostrar mensaje de error
         }
     };
 
     return (
         <div>
             <h2>Asignar Rol</h2>
-            <input type="text" placeholder="ID del Usuario" value={usuarioId} onChange={(e) => setUsuarioId(e.target.value)} />
-            <input type="text" placeholder="ID del Rol" value={rolId} onChange={(e) => setRolId(e.target.value)} />
+            <input
+                type="text"
+                placeholder="ID del Usuario"
+                value={usuarioId}
+                onChange={(e) => setUsuarioId(e.target.value)}
+            />
+            <input
+                type="text"
+                placeholder="ID del Rol"
+                value={rolId}
+                onChange={(e) => setRolId(e.target.value)}
+            />
             <button onClick={handleAsignarRol}>Asignar Rol</button>
             <p>{message}</p>
         </div>

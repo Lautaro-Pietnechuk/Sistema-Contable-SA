@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -23,11 +25,14 @@ public class ConfiguracionSeguridad {
                 .requestMatchers("/api/register").permitAll()
                 .requestMatchers("/api/login").permitAll() // Permitir acceso sin autenticación a /api/login
                 .requestMatchers("/api/administrador/**").hasRole("Administrador")
+                .requestMatchers("/api/usuarios/**").hasAnyRole("Usuario", "Administrador")
                 .requestMatchers("/api/usuario/**").hasAnyRole("Usuario", "Administrador")
+                .requestMatchers("/api/cuentas/**").hasAnyRole("Usuario", "Administrador") // Permitir acceso a /api/cuentas/** a Usuarios y Administradores
+                .requestMatchers("/api/asientos/**").hasAnyRole("Usuario", "Administrador") // Permitir acceso a /api/asientos/** a Usuarios y Administradores
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginProcessingUrl("/api/") // Cambia la URL de procesamiento del formulario de inicio de sesión
+                .loginProcessingUrl("/api/login") // Cambia la URL de procesamiento del formulario de inicio de sesión
                 .successHandler((request, response, authentication) -> {
                     response.setStatus(200); // Cambia el código de estado a 200 si el inicio de sesión es exitoso
                     response.getWriter().write("{\"message\":\"Login exitoso\"}");
@@ -40,7 +45,8 @@ public class ConfiguracionSeguridad {
             )
             .logout(logout -> logout
                 .permitAll()
-            );
+            )
+            .cors(); // Habilitar CORS
 
         return http.build();
     }
@@ -48,5 +54,19 @@ public class ConfiguracionSeguridad {
     @Bean
     public AuthenticationManager ManagerAutentificacion(AuthenticationConfiguration ConfiguracionAutentificacion) throws Exception {
         return ConfiguracionAutentificacion.getAuthenticationManager();
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:3000") // Permitir solicitudes desde el frontend
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+            }
+        };
     }
 }

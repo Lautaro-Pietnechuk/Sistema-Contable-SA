@@ -26,4 +26,8 @@ public class RolServicio {
     public void eliminarRol(Long id) {
         rolRepositorio.deleteById(id);
     }
+
+    public boolean existeRol(Long rolId) {
+        return rolRepositorio.existsById(rolId);
+    }
 }

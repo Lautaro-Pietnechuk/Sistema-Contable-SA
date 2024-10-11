@@ -8,7 +8,13 @@ const Asientos = () => {
         const fetchAsientos = async () => {
             try {
                 const response = await axios.get('http://localhost:8080/api/asientos');
-                setAsientos(response.data);
+                // Asegúrate de que la respuesta sea un array
+                if (Array.isArray(response.data)) {
+                    setAsientos(response.data);
+                } else {
+                    console.error('La respuesta no es un array:', response.data);
+                    setAsientos([]); // Establece un array vacío si no es un array
+                }
             } catch (error) {
                 console.error('Error fetching asientos:', error);
             }
@@ -36,11 +42,15 @@ const Asientos = () => {
                             <td>{new Date(asiento.fecha).toLocaleDateString()}</td>
                             <td>{asiento.descripcion}</td>
                             <td>
-                                {asiento.movimientos.map((movimiento, index) => (
-                                    <div key={index}>
-                                        {movimiento.cuenta.nombre}: {movimiento.monto} {movimiento.tipo}
-                                    </div>
-                                ))}
+                                {Array.isArray(asiento.movimientos) && asiento.movimientos.length > 0 ? (
+                                    asiento.movimientos.map((movimiento, index) => (
+                                        <div key={index}>
+                                            {movimiento.cuenta.nombre}: {movimiento.monto} {movimiento.tipo}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div>No hay movimientos disponibles.</div>
+                                )}
                             </td>
                         </tr>
                     ))}

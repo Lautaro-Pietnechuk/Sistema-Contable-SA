@@ -49,4 +49,8 @@ public class UsuarioServicio {
     public void eliminarUsuario(Long id) {
         usuarioRepositorio.deleteById(id);
     }
+
+    public boolean existeUsuario(Long usuarioId) {
+        return usuarioRepositorio.existsById(usuarioId);
+    }
 }
