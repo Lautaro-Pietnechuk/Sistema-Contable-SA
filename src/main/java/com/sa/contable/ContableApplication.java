@@ -1,13 +1,10 @@
 package com.sa.contable;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
-import com.sa.contable.Rol.Rol;
-import com.sa.contable.Rol.RolControlador;
+import com.sa.contable.rol.RolControlador;
 
 @SpringBootApplication
 public class ContableApplication {
@@ -19,13 +16,4 @@ public class ContableApplication {
         SpringApplication.run(ContableApplication.class, args);
     }
 
-    @Bean
-    public CommandLineRunner demo() {
-        return (args) -> {
-            Rol usuario = new Rol("Usuario");
-            Rol administrador = new Rol("Administrador");
-            rolControlador.crearRol(usuario);
-            rolControlador.crearRol(administrador);
-        };
-    }
 }

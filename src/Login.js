@@ -22,23 +22,34 @@ const Login = () => {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`Error en el login: ${response.status} ${errorText}`);
+                setMessage(`Error en el login: ${response.status} ${errorText}`);
+                return;
             }
 
             const data = await response.text(); 
             setMessage(data);
         } catch (error) {
-            setMessage(error.message);
+            setMessage(`Error de red: ${error.message}`);
         }
     };
 
     return (
         <div>
             <h2>Login</h2>
-            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input
+                type="text"
+                placeholder="Nombre de usuario"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+            />
             <button onClick={handleLogin}>Login</button>
-            <p>{message}</p>
+            {message && <p>{message}</p>}
         </div>
     );
 };

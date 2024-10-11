@@ -1,4 +1,4 @@
-package com.sa.contable.Usuario;
+package com.sa.contable.usuario;
 
 import java.util.Optional;
 
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,16 +22,24 @@ public class UsuarioControlador {
     @Autowired
     private UsuarioServicio usuarioServicio;
 
+    @RequestMapping(value = "/register", method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> handleOptions() {
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario) {
         try {
             Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
             if (loggedInUser.isPresent()) {
-                return ResponseEntity.ok("Login exitoso");
+                // Respuesta JSON en caso de éxito
+                return ResponseEntity.ok().body("Login exitoso");
             } else {
+                // Respuesta JSON en caso de usuario o contraseña incorrectos
                 return ResponseEntity.status(401).body("Usuario o contraseña incorrectos");
             }
         } catch (Exception e) {
+            // Manejo de errores del servidor
             return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());
         }
     }
@@ -49,7 +58,7 @@ public class UsuarioControlador {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+/*     @PreAuthorize("hasRole('Administrador')") */
     @PostMapping("/usuarios/{usuarioId}/roles/{rolId}")
     public ResponseEntity<?> agregarRol(@PathVariable Long usuarioId, @PathVariable Long rolId) {
         try {
@@ -60,7 +69,7 @@ public class UsuarioControlador {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Administrador')")
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
         usuarioServicio.eliminarUsuario(id);

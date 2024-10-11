@@ -1,12 +1,12 @@
-package com.sa.contable.Usuario;
+package com.sa.contable.usuario;
 
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sa.contable.Rol.Rol;
-import com.sa.contable.Rol.RolRepositorio;
+import com.sa.contable.rol.Rol;
+import com.sa.contable.rol.RolRepositorio;
 
 @Service
 public class UsuarioServicio {

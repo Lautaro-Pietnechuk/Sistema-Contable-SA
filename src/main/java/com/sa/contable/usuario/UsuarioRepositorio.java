@@ -1,4 +1,4 @@
-package com.sa.contable.Usuario;
+package com.sa.contable.usuario;
 
 import java.util.Optional;
 

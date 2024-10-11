@@ -1,4 +1,4 @@
-package com.sa.contable.Rol;
+package com.sa.contable.rol;
 
 import java.util.List;
 

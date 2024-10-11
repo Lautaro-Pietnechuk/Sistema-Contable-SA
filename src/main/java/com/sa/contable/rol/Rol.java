@@ -1,8 +1,8 @@
-package com.sa.contable.Rol;
+package com.sa.contable.rol;
 
 import java.util.Set;
 
-import com.sa.contable.Usuario.Usuario;
+import com.sa.contable.usuario.Usuario;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

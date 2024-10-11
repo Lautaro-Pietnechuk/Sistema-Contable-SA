@@ -1,6 +1,6 @@
-package com.sa.contable.Usuario;
+package com.sa.contable.usuario;
 
-import com.sa.contable.Rol.Rol;
+import com.sa.contable.rol.Rol;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

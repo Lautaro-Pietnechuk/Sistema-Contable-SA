@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity; // Importar para habilitar las expresiones de autorización
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,13 +19,23 @@ public class ConfiguracionSeguridad {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/public/**").permitAll() // Acceso público
-                .requestMatchers("/api/administrador/**").hasRole("Administrador") // Solo ADMIN
-                .requestMatchers("/api/usuario/**").hasAnyRole("Usuario", "Administrador") // USER o ADMIN
-                .anyRequest().authenticated() // Autenticación para todas las demás rutas
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/register").permitAll()
+                .requestMatchers("/api/login").permitAll() // Permitir acceso sin autenticación a /api/login
+                .requestMatchers("/api/administrador/**").hasRole("Administrador")
+                .requestMatchers("/api/usuario/**").hasAnyRole("Usuario", "Administrador")
+                .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/login") // Página de inicio de sesión personalizada
+                .loginProcessingUrl("/api/") // Cambia la URL de procesamiento del formulario de inicio de sesión
+                .successHandler((request, response, authentication) -> {
+                    response.setStatus(200); // Cambia el código de estado a 200 si el inicio de sesión es exitoso
+                    response.getWriter().write("{\"message\":\"Login exitoso\"}");
+                })
+                .failureHandler((request, response, exception) -> {
+                    response.setStatus(401); // Cambia el código de estado a 401 si el inicio de sesión falla
+                    response.getWriter().write("{\"error\":\"Usuario o contraseña incorrectos\"}");
+                })
                 .permitAll()
             )
             .logout(logout -> logout
@@ -35,15 +45,8 @@ public class ConfiguracionSeguridad {
         return http.build();
     }
 
-    // Definir el AuthenticationManager como un Bean
     @Bean
     public AuthenticationManager ManagerAutentificacion(AuthenticationConfiguration ConfiguracionAutentificacion) throws Exception {
         return ConfiguracionAutentificacion.getAuthenticationManager();
     }
-
-    // Codificador de contraseñas para almacenar las contraseñas de manera segura
-    /* @Bean
-    public PasswordEncoder CodificadoContraseñas() {
-        return new BCryptPasswordEncoder();
-    } */ // No obligatorio
 }
