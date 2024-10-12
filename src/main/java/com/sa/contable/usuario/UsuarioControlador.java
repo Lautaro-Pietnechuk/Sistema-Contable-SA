@@ -3,6 +3,9 @@ package com.sa.contable.usuario;
 import java.util.Map;
 import java.util.Optional;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sa.contable.Configuracion.JwtUtil;
 import com.sa.contable.rol.RolServicio;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true") // Permitir cookies
 public class UsuarioControlador {
 
-    // Creación del logger para registrar eventos y errores
     private static final Logger logger = LoggerFactory.getLogger(UsuarioControlador.class);
 
     @Autowired
@@ -32,14 +35,28 @@ public class UsuarioControlador {
     @Autowired
     private RolServicio rolServicio;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/login")
-public ResponseEntity<?> login(@RequestBody Usuario usuario) {
+public ResponseEntity<?> login(@RequestBody Usuario usuario, HttpServletResponse response) {
     logger.info("Intento de inicio de sesión para el usuario: {}", usuario.getNombreUsuario());
     try {
         Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
         if (loggedInUser.isPresent()) {
+            
+            String token = jwtUtil.generarToken(loggedInUser.get().getNombreUsuario(), loggedInUser.get().getRol().getNombre());
+
+            // Crear la cookie con el token
+            Cookie cookie = new Cookie("token", token);
+            cookie.setHttpOnly(true); // No accesible desde JavaScript
+            cookie.setSecure(true); // Requiere HTTPS en producción
+            cookie.setPath("/"); // Disponible para todas las rutas del backend
+            cookie.setMaxAge(24 * 60 * 60); // 1 día de duración
+            response.addCookie(cookie); // Agregar la cookie a la respuesta
+
             logger.info("Login exitoso para el usuario: {}", usuario.getNombreUsuario());
-            return ResponseEntity.ok(Map.of("message", "Login exitoso"));
+            return ResponseEntity.ok(Map.of("message", "Login exitoso", "token", token)); // Devolver el token en la respuesta si es necesario
         } else {
             logger.warn("Usuario o contraseña incorrectos para: {}", usuario.getNombreUsuario());
             return ResponseEntity.status(401).body(Map.of("error", "Usuario o contraseña incorrectos"));
@@ -69,8 +86,8 @@ public ResponseEntity<?> login(@RequestBody Usuario usuario) {
         }
     }
 
-    @PreAuthorize("hasRole('Usuario')")
-    @PostMapping("/usuarios/{usuarioId}/roles/{rolId}")
+    @PreAuthorize("hasRole('Administrador')") 
+    @PostMapping("/{usuarioId}/roles/{rolId}")
     public ResponseEntity<?> agregarRol(@PathVariable Long usuarioId, @PathVariable Long rolId) {
         logger.info("Intento de agregar rol con ID {} al usuario con ID {}", rolId, usuarioId);
         try {
@@ -106,5 +123,18 @@ public ResponseEntity<?> login(@RequestBody Usuario usuario) {
             logger.error("Error al eliminar el usuario con ID: {}", id, e);
             return ResponseEntity.status(500).build();
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // Eliminar la cookie
+        response.addCookie(cookie);
+
+        logger.info("Logout exitoso");
+        return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
     }
 }

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sa.contable.Configuracion.JwtUtil;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/cuentas")
@@ -24,8 +26,11 @@ public class CuentaControlador {
     @Autowired
     private CuentaServicio cuentaServicio;
 
+    @Autowired
+    private JwtUtil jwtUtil; // Inyecta JWTUtil
+
     // Solo los administradores pueden crear cuentas
-    @PreAuthorize("hasRole('Administrador')")
+    @PreAuthorize("hasRole('ROLE_Administrador')")
     @PostMapping
     public ResponseEntity<Cuenta> crearCuenta(@RequestBody Cuenta cuenta) {
         Cuenta nuevaCuenta = cuentaServicio.crearCuenta(cuenta);
@@ -41,12 +46,12 @@ public class CuentaControlador {
     @GetMapping("/{id}")
     public ResponseEntity<Cuenta> obtenerCuenta(@PathVariable Long id) {
         return cuentaServicio.obtenerCuentaPorId(id)
-            .map(cuenta -> ResponseEntity.ok(cuenta))
+            .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
     // Solo los administradores pueden actualizar cuentas
-    @PreAuthorize("hasRole('Administrador')")
+    @PreAuthorize("hasRole('ROLE_Administrador')")
     @PutMapping("/{id}")
     public ResponseEntity<Cuenta> actualizarCuenta(@PathVariable Long id, @RequestBody Cuenta cuenta) {
         cuenta.setId(id);
@@ -55,7 +60,7 @@ public class CuentaControlador {
     }
 
     // Solo los administradores pueden eliminar cuentas
-    @PreAuthorize("hasRole('Administrador')")
+    @PreAuthorize("hasRole('ROLE_Administrador')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarCuenta(@PathVariable Long id) {
         cuentaServicio.eliminarCuenta(id);
@@ -64,11 +69,17 @@ public class CuentaControlador {
 
     @GetMapping("/padre/{id}")
     public ResponseEntity<List<Cuenta>> obtenerSubCuentas(@PathVariable Long id) {
-        Cuenta cuentaPadre = cuentaServicio.obtenerCuentaPorId(id).orElse(null);
-        if (cuentaPadre == null) {
-            return ResponseEntity.notFound().build();
-        }
-        List<Cuenta> subCuentas = cuentaServicio.obtenerCuentasPorPadre(cuentaPadre);
-        return ResponseEntity.ok(subCuentas);
+        return cuentaServicio.obtenerCuentaPorId(id)
+            .map(cuentaPadre -> {
+                List<Cuenta> subCuentas = cuentaServicio.obtenerCuentasPorPadre(cuentaPadre);
+                return ResponseEntity.ok(subCuentas);
+            })
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Método para validar el token antes de permitir el acceso a ciertos recursos
+    @SuppressWarnings("unused")
+    private boolean validarToken(String token) {
+        return jwtUtil.esTokenValido(token);
     }
 }

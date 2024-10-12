@@ -5,6 +5,7 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false); // Estado para manejar la carga
     const navigate = useNavigate(); // Crear instancia de useNavigate
 
     const handleLogin = async () => {
@@ -12,6 +13,8 @@ const Login = () => {
             setMessage('Por favor, complete todos los campos.');
             return;
         }
+
+        setLoading(true); // Indicar que la solicitud está en curso
 
         try {
             const response = await fetch('http://localhost:8080/api/login', {
@@ -21,6 +24,8 @@ const Login = () => {
                 },
                 body: JSON.stringify({ nombreUsuario: username, contraseña: password }),
             });
+
+            setLoading(false); // Terminar la carga
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -32,9 +37,14 @@ const Login = () => {
             localStorage.setItem('token', data.token); // Almacenar el token en localStorage
             setMessage('Inicio de sesión exitoso.');
 
+            // Limpiar los campos
+            setUsername('');
+            setPassword('');
+
             // Redirigir al usuario a la página de cuentas o a donde desees
             navigate('/cuentas');
         } catch (error) {
+            setLoading(false); // Terminar la carga
             setMessage(`Error de red: ${error.message}`);
         }
     };
@@ -54,7 +64,8 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={handleLogin}>Login</button>
+            <button onClick={handleLogin} disabled={loading}>Login</button>
+            {loading && <p>Cargando...</p>} {/* Indicador de carga */}
             {message && <p>{message}</p>}
         </div>
     );

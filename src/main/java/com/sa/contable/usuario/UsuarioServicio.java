@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 import com.sa.contable.rol.Rol;
 import com.sa.contable.rol.RolRepositorio;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
 @Service
 public class UsuarioServicio {
 
@@ -17,10 +21,14 @@ public class UsuarioServicio {
     @Autowired
     private RolRepositorio rolRepositorio;
 
+    private final String SECRET_KEY = "mi_clave_secreta"; // Cambia esto por una clave más segura
+
     public Usuario registrar(Usuario usuario) {
-        Rol UsuarioRol = rolRepositorio.findByNombre("Usuario")
+        // Aquí no se encripta la contraseña
+        // Se puede guardar directamente la contraseña proporcionada
+        Rol usuarioRol = rolRepositorio.findByNombre("Usuario")
             .orElseThrow(() -> new RuntimeException("Error: El rol 'Usuario' no se encuentra."));
-        usuario.setRol(UsuarioRol);
+        usuario.setRol(usuarioRol);
         return usuarioRepositorio.save(usuario);
     }
 
@@ -40,6 +48,14 @@ public class UsuarioServicio {
             return usuarioOpt; // Retorna el usuario si el inicio de sesión es exitoso
         }
         return Optional.empty(); // Retorna vacío si no coincide
+    }
+
+    @SuppressWarnings("deprecation")
+    public String generarToken(Usuario usuario) {
+        return Jwts.builder()
+                .setSubject(usuario.getNombreUsuario())
+                .signWith(SignatureAlgorithm.HS512, Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .compact();
     }
 
     public boolean esNombreUsuarioTomado(String nombreUsuario) {

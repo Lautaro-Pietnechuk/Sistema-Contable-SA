@@ -16,14 +16,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableMethodSecurity(prePostEnabled = true)
 public class ConfiguracionSeguridad {
 
+    @SuppressWarnings("removal")
     @Bean
     public SecurityFilterChain cadenaDeFiltrosDeSeguridad(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/register").permitAll() // Permitir acceso sin autenticación a /api/register
-                .requestMatchers("/api/login").permitAll() // Permitir acceso sin autenticación a /api/login
+                .requestMatchers("/api/register").permitAll()
+                .requestMatchers("/api/login").permitAll()
                 .requestMatchers("/api/administrador/**").hasRole("Administrador")
                 .requestMatchers("/api/usuarios/**").hasAnyRole("Usuario", "Administrador")
                 .requestMatchers("/api/usuario/**").hasAnyRole("Usuario", "Administrador")
@@ -34,8 +35,7 @@ public class ConfiguracionSeguridad {
             .logout(logout -> logout.permitAll())
             .cors();
 
-        // Deshabilitar el formulario de inicio de sesión
-        http.formLogin().disable(); // Esto deshabilita el formulario de inicio de sesión
+        http.formLogin().disable();
 
         return http.build();
     }
@@ -49,9 +49,9 @@ public class ConfiguracionSeguridad {
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
+            public void addCorsMappings(@SuppressWarnings("null") CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000") // Permitir solicitudes desde el frontend
+                        .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);

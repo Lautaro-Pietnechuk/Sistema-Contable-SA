@@ -1,6 +1,4 @@
-// src/componentes/AgregarCuentas.js
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AgregarCuentas.css'; // Importa el archivo CSS
 
@@ -9,6 +7,15 @@ const AgregarCuentas = () => {
     const [tipo, setTipo] = useState('');
     const [recibeSaldo, setRecibeSaldo] = useState(false);
     const [codigo, setCodigo] = useState('');
+    const [token, setToken] = useState(''); // Token del usuario
+
+    // Usar useEffect para obtener el token del localStorage al cargar el componente
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+            setToken(storedToken);
+        }
+    }, []);
 
     const manejarEnvio = async (e) => {
         e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
@@ -23,9 +30,10 @@ const AgregarCuentas = () => {
         try {
             await axios.post('/api/cuentas', nuevaCuenta, {
                 headers: {
-                    'x-rol': 'administrador' // Suponiendo que el usuario tiene el rol de administrador
+                    'Authorization': `Bearer ${token}` // Enviar el token de autenticación
                 }
-            }); // Usa la ruta relativa
+            });
+
             // Limpiar los campos después de agregar la cuenta
             setNombre('');
             setTipo('');
@@ -33,8 +41,8 @@ const AgregarCuentas = () => {
             setRecibeSaldo(false);
             alert('Cuenta agregada exitosamente!');
         } catch (error) {
-            console.error('Error agregando la cuenta:', error);
-            alert('Error al agregar la cuenta. Intenta nuevamente.');
+            console.error('Error agregando la cuenta:', error.response ? error.response.data : error.message);
+            alert(`Error al agregar la cuenta: ${error.response ? error.response.data.error : error.message}`);
         }
     };
 
