@@ -14,14 +14,8 @@ public class UsuarioServicio {
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
 
-    
     @Autowired
     private RolRepositorio rolRepositorio;
-    
-
-    /* public Usuario registrar(Usuario usuario) {
-        return usuarioRepositorio.save(usuario);
-    } */
 
     public Usuario registrar(Usuario usuario) {
         Rol UsuarioRol = rolRepositorio.findByNombre("Usuario")
@@ -36,10 +30,16 @@ public class UsuarioServicio {
         usuario.setRol(rol);
         usuarioRepositorio.save(usuario);
     }
-    
 
     public Optional<Usuario> iniciarSesion(String nombreUsuario, String contraseña) {
-        return usuarioRepositorio.findByNombreUsuarioAndContraseña(nombreUsuario, contraseña);
+        // Busca el usuario por nombre de usuario
+        Optional<Usuario> usuarioOpt = usuarioRepositorio.findByNombreUsuario(nombreUsuario);
+        
+        // Verifica si el usuario existe y si la contraseña coincide
+        if (usuarioOpt.isPresent() && usuarioOpt.get().getContraseña().equals(contraseña)) {
+            return usuarioOpt; // Retorna el usuario si el inicio de sesión es exitoso
+        }
+        return Optional.empty(); // Retorna vacío si no coincide
     }
 
     public boolean esNombreUsuarioTomado(String nombreUsuario) {

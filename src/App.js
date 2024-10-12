@@ -8,12 +8,13 @@ import AgregarCuentas from './componentes/AgregarCuentas'; // Importa el compone
 import ListaCuentas from './componentes/ListaCuentas'; // Importa el componente para listar cuentas
 import Asientos from './componentes/Asientos'; // Importa el componente de Asientos
 import AsignarRol from './componentes/AsignarRol'; // Importa el componente AsignarRol
+import PrivateRoute from './componentes/PrivateRoute'; // Importa el componente PrivateRoute
 
 const App = () => {
     return (
         <Router>
             <nav>
-                <Link to="/">Login</Link> &nbsp;
+                <Link to="/login">Login</Link> &nbsp;
                 <Link to="/register">Registro</Link> &nbsp;
                 <Link to="/cuentas">Cuentas</Link> &nbsp;
                 <Link to="/asientos">Asientos</Link> &nbsp;
@@ -23,13 +24,33 @@ const App = () => {
             </nav>
 
             <Routes>
-                <Route path="/" element={<Login />} /> {/* Página de Login */}
+                <Route path="/login" element={<Login />} /> {/* Página de Login */}
                 <Route path="/register" element={<Register />} /> {/* Página de Registro */}
-                <Route path="/cuentas" element={<Cuentas />} /> {/* Página de Cuentas */}
-                <Route path="/cuentas/agregar" element={<AgregarCuentas />} /> {/* Página para agregar cuentas */}
-                <Route path="/cuentas/lista" element={<ListaCuentas />} /> {/* Página para listar cuentas */}
-                <Route path="/asientos" element={<Asientos />} /> {/* Página de Asientos */}
-                <Route path="/asignar-rol" element={<AsignarRol />} /> {/* Página de Asignar Rol */}
+                <Route path="/cuentas" element={
+                    <PrivateRoute>
+                        <Cuentas />
+                    </PrivateRoute>
+                } /> {/* Página de Cuentas */}
+                <Route path="/cuentas/agregar" element={
+                    <PrivateRoute>
+                        <AgregarCuentas />
+                    </PrivateRoute>
+                } /> {/* Página para agregar cuentas */}
+                <Route path="/cuentas/lista" element={
+                    <PrivateRoute>
+                        <ListaCuentas />
+                    </PrivateRoute>
+                } /> {/* Página para listar cuentas */}
+                <Route path="/asientos" element={
+                    <PrivateRoute>
+                        <Asientos />
+                    </PrivateRoute>
+                } /> {/* Página de Asientos */}
+                <Route path="/asignar-rol" element={
+                    <PrivateRoute>
+                        <AsignarRol />
+                    </PrivateRoute>
+                } /> {/* Página de Asignar Rol */}
             </Routes>
         </Router>
     );

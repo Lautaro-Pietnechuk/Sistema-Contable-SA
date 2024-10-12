@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importar useNavigate para redirigir
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate(); // Crear instancia de useNavigate
 
     const handleLogin = async () => {
         if (!username || !password) {
@@ -21,13 +23,17 @@ const Login = () => {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                setMessage(`Error en el login: ${response.status} ${errorText}`);
+                const errorData = await response.json();
+                setMessage(`Error en el login: ${response.status} ${errorData.error}`);
                 return;
             }
 
-            const data = await response.json(); 
-            setMessage(data.message); // Muestra el mensaje de éxito
+            const data = await response.json();
+            localStorage.setItem('token', data.token); // Almacenar el token en localStorage
+            setMessage('Inicio de sesión exitoso.');
+
+            // Redirigir al usuario a la página de cuentas o a donde desees
+            navigate('/cuentas');
         } catch (error) {
             setMessage(`Error de red: ${error.message}`);
         }
