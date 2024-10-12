@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity; // Importar para las anotaciones de autorización
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,7 +50,7 @@ public class CuentaControlador {
     @PutMapping("/{id}")
     public ResponseEntity<Cuenta> actualizarCuenta(@PathVariable Long id, @RequestBody Cuenta cuenta) {
         cuenta.setId(id);
-        Cuenta cuentaActualizada = cuentaServicio.actualizarCuenta(cuenta);
+        Cuenta cuentaActualizada = cuentaServicio.actualizarCuenta(id, cuenta);
         return ResponseEntity.ok(cuentaActualizada);
     }
 

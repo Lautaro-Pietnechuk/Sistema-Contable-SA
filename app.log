@@ -1,0 +1,62 @@
+2024-10-12T03:28:41.430-03:00  INFO 22864 --- [contable] [main] com.sa.contable.ContableApplication      : Starting ContableApplication using Java 21.0.4 with PID 22864 (C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\target\classes started by Rama in C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA)
+2024-10-12T03:28:41.433-03:00 DEBUG 22864 --- [contable] [main] com.sa.contable.ContableApplication      : Running with Spring Boot v3.3.4, Spring v6.1.13
+2024-10-12T03:28:41.434-03:00  INFO 22864 --- [contable] [main] com.sa.contable.ContableApplication      : No active profile set, falling back to 1 default profile: "default"
+2024-10-12T03:28:42.145-03:00  INFO 22864 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-12T03:28:42.221-03:00  INFO 22864 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 68 ms. Found 6 JPA repository interfaces.
+2024-10-12T03:28:42.801-03:00  INFO 22864 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-12T03:28:42.820-03:00  INFO 22864 --- [contable] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-12T03:28:42.820-03:00  INFO 22864 --- [contable] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-12T03:28:42.885-03:00  INFO 22864 --- [contable] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-12T03:28:42.886-03:00  INFO 22864 --- [contable] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1398 ms
+2024-10-12T03:28:43.063-03:00  INFO 22864 --- [contable] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-12T03:28:43.123-03:00  INFO 22864 --- [contable] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-12T03:28:43.166-03:00  INFO 22864 --- [contable] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-12T03:28:43.482-03:00  INFO 22864 --- [contable] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-12T03:28:43.513-03:00  INFO 22864 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-12T03:28:43.800-03:00  INFO 22864 --- [contable] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3611153f
+2024-10-12T03:28:43.802-03:00  INFO 22864 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-12T03:28:44.865-03:00  INFO 22864 --- [contable] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-12T03:28:44.990-03:00  INFO 22864 --- [contable] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-12T03:28:45.497-03:00  WARN 22864 --- [contable] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-10-12T03:28:45.608-03:00  INFO 22864 --- [contable] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: ServletContext resource [/index.html]
+2024-10-12T03:28:46.143-03:00  INFO 22864 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2024-10-12T03:28:46.151-03:00  INFO 22864 --- [contable] [main] com.sa.contable.ContableApplication      : Started ContableApplication in 5.133 seconds (process running for 5.499)
+2024-10-12T03:28:53.109-03:00  INFO 22864 --- [contable] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-12T03:28:53.110-03:00  INFO 22864 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-10-12T03:28:53.111-03:00  INFO 22864 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-10-12T03:32:37.541-03:00  INFO 22864 --- [contable] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-12T03:32:37.541-03:00  INFO 22864 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-12T03:32:37.541-03:00  INFO 22864 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-10-12T03:32:44.524-03:00  INFO 28472 --- [contable] [main] com.sa.contable.ContableApplication      : Starting ContableApplication using Java 21.0.4 with PID 28472 (C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\target\classes started by Rama in C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA)
+2024-10-12T03:32:44.524-03:00 DEBUG 28472 --- [contable] [main] com.sa.contable.ContableApplication      : Running with Spring Boot v3.3.4, Spring v6.1.13
+2024-10-12T03:32:44.530-03:00  INFO 28472 --- [contable] [main] com.sa.contable.ContableApplication      : No active profile set, falling back to 1 default profile: "default"
+2024-10-12T03:32:45.249-03:00  INFO 28472 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-12T03:32:45.335-03:00  INFO 28472 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 67 ms. Found 6 JPA repository interfaces.
+2024-10-12T03:32:45.971-03:00  INFO 28472 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-12T03:32:45.990-03:00  INFO 28472 --- [contable] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-12T03:32:45.991-03:00  INFO 28472 --- [contable] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-12T03:32:46.054-03:00  INFO 28472 --- [contable] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-12T03:32:46.054-03:00  INFO 28472 --- [contable] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1451 ms
+2024-10-12T03:32:46.241-03:00  INFO 28472 --- [contable] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-12T03:32:46.304-03:00  INFO 28472 --- [contable] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-12T03:32:46.341-03:00  INFO 28472 --- [contable] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-12T03:32:46.683-03:00  INFO 28472 --- [contable] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-12T03:32:46.714-03:00  INFO 28472 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-12T03:32:46.897-03:00  INFO 28472 --- [contable] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5e3d2765
+2024-10-12T03:32:46.897-03:00  INFO 28472 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-12T03:32:48.209-03:00  INFO 28472 --- [contable] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-12T03:32:48.352-03:00  INFO 28472 --- [contable] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-12T03:32:49.092-03:00  INFO 28472 --- [contable] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: ServletContext resource [/index.html]
+2024-10-12T03:32:49.660-03:00  INFO 28472 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2024-10-12T03:32:49.660-03:00  INFO 28472 --- [contable] [main] com.sa.contable.ContableApplication      : Started ContableApplication in 5.622 seconds (process running for 6.121)
+2024-10-12T03:32:56.247-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-12T03:32:56.247-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-10-12T03:32:56.247-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2024-10-12T03:32:56.368-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-2] c.s.contable.usuario.UsuarioControlador  : Intento de inicio de sesión para el usuario: Rama
+2024-10-12T03:32:56.532-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-2] c.s.contable.usuario.UsuarioControlador  : Login exitoso para el usuario: Rama
+2024-10-12T03:33:09.714-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-5] c.s.contable.usuario.UsuarioControlador  : Intento de inicio de sesión para el usuario: Rama
+2024-10-12T03:33:09.719-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-5] c.s.contable.usuario.UsuarioControlador  : Login exitoso para el usuario: Rama
+2024-10-12T03:33:13.445-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-6] c.s.contable.usuario.UsuarioControlador  : Intento de inicio de sesión para el usuario: Rama
+2024-10-12T03:33:13.454-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-6] c.s.contable.usuario.UsuarioControlador  : Login exitoso para el usuario: Rama
+2024-10-12T03:33:15.215-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-7] c.s.contable.usuario.UsuarioControlador  : Intento de inicio de sesión para el usuario: Rama
+2024-10-12T03:33:15.218-03:00  INFO 28472 --- [contable] [http-nio-8080-exec-7] c.s.contable.usuario.UsuarioControlador  : Login exitoso para el usuario: Rama

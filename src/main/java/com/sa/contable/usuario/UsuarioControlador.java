@@ -33,22 +33,23 @@ public class UsuarioControlador {
     private RolServicio rolServicio;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Usuario usuario) {
-        logger.info("Intento de inicio de sesión para el usuario: {}", usuario.getNombreUsuario());
-        try {
-            Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
-            if (loggedInUser.isPresent()) {
-                logger.info("Login exitoso para el usuario: {}", usuario.getNombreUsuario());
-                return ResponseEntity.ok().body(Map.of("message", "Login exitoso"));
-            } else {
-                logger.warn("Usuario o contraseña incorrectos para: {}", usuario.getNombreUsuario());
-                return ResponseEntity.status(401).body(Map.of("error", "Usuario o contraseña incorrectos"));
-            }
-        } catch (Exception e) {
-            logger.error("Error en el inicio de sesión para el usuario: {}", usuario.getNombreUsuario(), e);
-            return ResponseEntity.status(500).body(Map.of("error", "Error en el servidor: " + e.getMessage()));
+public ResponseEntity<?> login(@RequestBody Usuario usuario) {
+    logger.info("Intento de inicio de sesión para el usuario: {}", usuario.getNombreUsuario());
+    try {
+        Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
+        if (loggedInUser.isPresent()) {
+            logger.info("Login exitoso para el usuario: {}", usuario.getNombreUsuario());
+            return ResponseEntity.ok(Map.of("message", "Login exitoso"));
+        } else {
+            logger.warn("Usuario o contraseña incorrectos para: {}", usuario.getNombreUsuario());
+            return ResponseEntity.status(401).body(Map.of("error", "Usuario o contraseña incorrectos"));
         }
+    } catch (Exception e) {
+        logger.error("Error en el inicio de sesión para el usuario: {}", usuario.getNombreUsuario(), e);
+        return ResponseEntity.status(500).body(Map.of("error", "Error en el servidor: " + e.getMessage()));
     }
+}
+
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Usuario usuario) {
@@ -68,7 +69,7 @@ public class UsuarioControlador {
         }
     }
 
-    @PreAuthorize("hasRole('Administrador')")
+    @PreAuthorize("hasRole('Usuario')")
     @PostMapping("/usuarios/{usuarioId}/roles/{rolId}")
     public ResponseEntity<?> agregarRol(@PathVariable Long usuarioId, @PathVariable Long rolId) {
         logger.info("Intento de agregar rol con ID {} al usuario con ID {}", rolId, usuarioId);

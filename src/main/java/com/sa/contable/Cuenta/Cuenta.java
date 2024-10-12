@@ -26,7 +26,7 @@ public class Cuenta {
     private String nombre;
 
     @Column(nullable = false, unique = true)
-    private int codigo;
+    private Integer codigo; // Cambiado a Integer
 
     @ManyToOne // Relación con la cuenta padre
     @JoinColumn(name = "cuenta_padre_id") // Columna que referencia la cuenta padre
@@ -39,13 +39,13 @@ public class Cuenta {
     private String tipo;
 
     @Column(nullable = false)
-    private Boolean recibeSaldo; //solo las hojas reciben saldo
+    private Boolean recibeSaldo; // Solo las hojas reciben saldo
 
     @Column(nullable = false)
-    private Long saldoActual  = 0L;
+    private Long saldoActual = 0L;
 
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL)
-    private Set<CuentaAsiento> cuentasAsientos;
+    private Set<CuentaAsiento> cuentasAsientos = new HashSet<>(); // Inicialización
 
     // Getters y Setters
     public Long getId() {
@@ -64,20 +64,20 @@ public class Cuenta {
         this.nombre = nombre;
     }
 
+    public Integer getCodigo() { // Cambiado a Integer
+        return codigo;
+    }
+
+    public void setCodigo(Integer codigo) { // Cambiado a Integer
+        this.codigo = codigo;
+    }
+
     public String getTipo() {
         return tipo;
     }
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
-    }
-
-    public int getCodigo() {
-        return codigo;
-    }
-    
-    public void setCodigo(int codigo) {
-        this.codigo = codigo;
     }
 
     public Boolean getRecibeSaldo() {
@@ -118,5 +118,16 @@ public class Cuenta {
 
     public void setSubCuentas(Set<Cuenta> subCuentas) {
         this.subCuentas = subCuentas;
+    }
+
+    // Métodos para agregar y eliminar subcuentas
+    public void agregarSubCuenta(Cuenta subCuenta) {
+        subCuentas.add(subCuenta);
+        subCuenta.setCuentaPadre(this);
+    }
+
+    public void eliminarSubCuenta(Cuenta subCuenta) {
+        subCuentas.remove(subCuenta);
+        subCuenta.setCuentaPadre(null);
     }
 }
