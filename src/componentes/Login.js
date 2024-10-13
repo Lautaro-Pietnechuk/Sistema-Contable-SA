@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importar useNavigate para redirigir
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(false); // Estado para manejar la carga
-    const navigate = useNavigate(); // Crear instancia de useNavigate
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
         if (!username || !password) {
@@ -29,7 +29,7 @@ const Login = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                setMessage(`Error en el login: ${response.status} ${errorData.error}`);
+                setMessage(`Error en el login: ${response.status} ${errorData.error || 'Error desconocido'}`);
                 return;
             }
 
@@ -50,23 +50,26 @@ const Login = () => {
     };
 
     return (
-        <div>
-            <h2>Login</h2>
+        <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto' }}>
+            <h2>Iniciar Sesión</h2>
             <input
                 type="text"
                 placeholder="Nombre de usuario"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                style={{ width: '100%', padding: '10px', margin: '5px 0' }}
             />
             <input
                 type="password"
                 placeholder="Contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                style={{ width: '100%', padding: '10px', margin: '5px 0' }}
             />
-            <button onClick={handleLogin} disabled={loading}>Login</button>
-            {loading && <p>Cargando...</p>} {/* Indicador de carga */}
-            {message && <p>{message}</p>}
+            <button onClick={handleLogin} disabled={loading} style={{ width: '100%', padding: '10px', margin: '5px 0' }}>
+                {loading ? 'Cargando...' : 'Iniciar Sesión'}
+            </button>
+            {message && <p style={{ color: 'red' }}>{message}</p>}
         </div>
     );
 };

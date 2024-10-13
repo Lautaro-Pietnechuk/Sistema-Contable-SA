@@ -4,6 +4,7 @@ C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\Asiento\AsientoServicio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\Configuracion\ConfiguracionSeguridad.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\Configuracion\CookieAuthenticationFilter.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\Configuracion\GlobalExceptionHandler.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\Configuracion\JWTInterceptor.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\Configuracion\JwtUtil.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\Configuracion\WebConfig.java

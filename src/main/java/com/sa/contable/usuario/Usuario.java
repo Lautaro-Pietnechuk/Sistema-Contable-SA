@@ -24,7 +24,7 @@ public class Usuario {
     private String contraseña;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "rol_id")
+    @JoinColumn(name = "rol_id", nullable = false)
     private Rol rol;  // Ya no es una colección, sino una referencia única
 
     // Getters y Setters

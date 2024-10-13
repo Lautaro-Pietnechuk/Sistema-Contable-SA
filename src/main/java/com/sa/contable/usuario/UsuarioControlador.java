@@ -3,12 +3,10 @@ package com.sa.contable.usuario;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sa.contable.Configuracion.JwtUtil;
 import com.sa.contable.rol.RolServicio;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api")
@@ -39,33 +40,40 @@ public class UsuarioControlador {
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-public ResponseEntity<?> login(@RequestBody Usuario usuario, HttpServletResponse response) {
-    logger.info("Intento de inicio de sesión para el usuario: {}", usuario.getNombreUsuario());
-    try {
-        Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
-        if (loggedInUser.isPresent()) {
-            
-            String token = jwtUtil.generarToken(loggedInUser.get().getNombreUsuario(), loggedInUser.get().getRol().getNombre());
-
-            // Crear la cookie con el token
-            Cookie cookie = new Cookie("token", token);
-            cookie.setHttpOnly(true); // No accesible desde JavaScript
-            cookie.setSecure(true); // Requiere HTTPS en producción
-            cookie.setPath("/"); // Disponible para todas las rutas del backend
-            cookie.setMaxAge(24 * 60 * 60); // 1 día de duración
-            response.addCookie(cookie); // Agregar la cookie a la respuesta
-
-            logger.info("Login exitoso para el usuario: {}", usuario.getNombreUsuario());
-            return ResponseEntity.ok(Map.of("message", "Login exitoso", "token", token)); // Devolver el token en la respuesta si es necesario
-        } else {
-            logger.warn("Usuario o contraseña incorrectos para: {}", usuario.getNombreUsuario());
-            return ResponseEntity.status(401).body(Map.of("error", "Usuario o contraseña incorrectos"));
+    public ResponseEntity<?> login(@RequestBody Usuario usuario, HttpServletResponse response) {
+        logger.info("Intento de inicio de sesión para el usuario: {}", usuario.getNombreUsuario());
+        try {
+            Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
+            if (loggedInUser.isPresent()) {
+                String token = jwtUtil.generarToken(loggedInUser.get().getNombreUsuario(), loggedInUser.get().getRol().getNombre());
+    
+                // Crear la cookie con el token
+                Cookie cookie = new Cookie("token", token);
+                cookie.setHttpOnly(true); // No accesible desde JavaScript
+                cookie.setSecure(true); // Requiere HTTPS en producción
+                cookie.setPath("/"); // Disponible para todas las rutas del backend
+                cookie.setMaxAge(24 * 60 * 60); // 1 día de duración
+                response.addCookie(cookie); // Agregar la cookie a la respuesta
+    
+                logger.info("Login exitoso para el usuario: {}", usuario.getNombreUsuario());
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON) // Establecer el tipo de contenido
+                        .body(Map.of("message", "Login exitoso", "token", token)); // Devolver el mensaje y el token
+            } else {
+                logger.warn("Usuario o contraseña incorrectos para: {}", usuario.getNombreUsuario());
+                return ResponseEntity.status(401)
+                        .contentType(MediaType.APPLICATION_JSON) // Establecer el tipo de contenido
+                        .body(Map.of("error", "Usuario o contraseña incorrectos"));
+            }
+        } catch (Exception e) {
+            logger.error("Error en el inicio de sesión para el usuario: {}", usuario.getNombreUsuario(), e);
+            return ResponseEntity.status(500)
+                    .contentType(MediaType.APPLICATION_JSON) // Establecer el tipo de contenido
+                    .body(Map.of("error", "Error en el servidor"));
         }
-    } catch (Exception e) {
-        logger.error("Error en el inicio de sesión para el usuario: {}", usuario.getNombreUsuario(), e);
-        return ResponseEntity.status(500).body(Map.of("error", "Error en el servidor: " + e.getMessage()));
     }
-}
+    
+
 
 
     @PostMapping("/register")

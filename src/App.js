@@ -19,7 +19,6 @@ const App = () => {
                 <Link to="/cuentas">Cuentas</Link> &nbsp;
                 <Link to="/asientos">Asientos</Link> &nbsp;
                 <Link to="/cuentas/agregar">Agregar Cuentas</Link> &nbsp; {/* Enlace a Agregar Cuentas */}
-                <Link to="/cuentas/lista">Lista de Cuentas</Link> &nbsp; {/* Enlace a Lista de Cuentas */}
                 <Link to="/asignar-rol">Asignar Rol</Link> {/* Enlace a Asignar Rol */}
             </nav>
 
@@ -35,12 +34,7 @@ const App = () => {
                     <PrivateRoute>
                         <AgregarCuentas />
                     </PrivateRoute>
-                } /> {/* Página para agregar cuentas */}
-                <Route path="/cuentas/lista" element={
-                    <PrivateRoute>
-                        <ListaCuentas />
-                    </PrivateRoute>
-                } /> {/* Página para listar cuentas */}
+                } />  {/* Página para listar cuentas */}
                 <Route path="/asientos" element={
                     <PrivateRoute>
                         <Asientos />

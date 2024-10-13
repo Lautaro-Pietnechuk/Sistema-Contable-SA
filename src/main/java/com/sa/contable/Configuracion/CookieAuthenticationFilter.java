@@ -1,4 +1,4 @@
-package com.sa.contable.Configuracion;
+/* package com.sa.contable.Configuracion;
 
 import java.io.IOException;
 
@@ -49,3 +49,4 @@ public class CookieAuthenticationFilter extends AbstractPreAuthenticatedProcessi
         chain.doFilter(request, response); // Asegúrate de que este método esté correctamente invocado
     }
 }
+ */

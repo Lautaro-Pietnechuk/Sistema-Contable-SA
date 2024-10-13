@@ -1,0 +1,182 @@
+2024-10-13T01:49:33.168-03:00  INFO 25092 --- [contable] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-13T01:49:33.190-03:00  INFO 25092 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-13T01:49:33.203-03:00  INFO 25092 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-10-13T01:49:46.071-03:00  INFO 30172 --- [contable] [main] com.sa.contable.ContableApplication      : Starting ContableApplication using Java 21.0.4 with PID 30172 (C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\target\classes started by Rama in C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA)
+2024-10-13T01:49:46.074-03:00 DEBUG 30172 --- [contable] [main] com.sa.contable.ContableApplication      : Running with Spring Boot v3.3.4, Spring v6.1.13
+2024-10-13T01:49:46.075-03:00  INFO 30172 --- [contable] [main] com.sa.contable.ContableApplication      : No active profile set, falling back to 1 default profile: "default"
+2024-10-13T01:49:47.352-03:00  INFO 30172 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-13T01:49:47.444-03:00  INFO 30172 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 80 ms. Found 6 JPA repository interfaces.
+2024-10-13T01:49:48.589-03:00  INFO 30172 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-13T01:49:48.617-03:00  INFO 30172 --- [contable] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-13T01:49:48.617-03:00  INFO 30172 --- [contable] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-13T01:49:48.717-03:00  INFO 30172 --- [contable] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-13T01:49:48.717-03:00  INFO 30172 --- [contable] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2547 ms
+2024-10-13T01:49:49.207-03:00  INFO 30172 --- [contable] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-13T01:49:49.337-03:00  INFO 30172 --- [contable] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-13T01:49:49.407-03:00  INFO 30172 --- [contable] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-13T01:49:49.904-03:00  INFO 30172 --- [contable] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-13T01:49:49.951-03:00  INFO 30172 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-13T01:49:50.217-03:00  INFO 30172 --- [contable] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@6ab50d1c
+2024-10-13T01:49:50.217-03:00  INFO 30172 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-13T01:49:51.738-03:00  INFO 30172 --- [contable] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-13T01:49:51.903-03:00  INFO 30172 --- [contable] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-13T01:49:52.838-03:00  INFO 30172 --- [contable] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: ServletContext resource [/index.html]
+2024-10-13T01:49:53.418-03:00  INFO 30172 --- [contable] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2024-10-13T01:49:54.213-03:00  INFO 30172 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2024-10-13T01:49:54.231-03:00  INFO 30172 --- [contable] [main] com.sa.contable.ContableApplication      : Started ContableApplication in 8.715 seconds (process running for 9.306)
+2024-10-13T01:50:31.151-03:00  INFO 30172 --- [contable] [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-13T01:50:31.152-03:00  INFO 30172 --- [contable] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-10-13T01:50:31.154-03:00  INFO 30172 --- [contable] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-10-13T01:50:31.303-03:00  INFO 30172 --- [contable] [http-nio-8080-exec-1] c.s.contable.usuario.UsuarioControlador  : Intento de inicio de sesión para el usuario: admin
+2024-10-13T01:50:31.537-03:00  INFO 30172 --- [contable] [http-nio-8080-exec-1] c.s.contable.usuario.UsuarioControlador  : Login exitoso para el usuario: admin
+2024-10-13T02:02:38.852-03:00  INFO 30172 --- [contable] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-13T02:02:38.852-03:00  INFO 30172 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-13T02:02:38.852-03:00  INFO 30172 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-10-13T02:02:48.448-03:00  INFO 27952 --- [contable] [main] com.sa.contable.ContableApplication      : Starting ContableApplication using Java 21.0.4 with PID 27952 (C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\target\classes started by Rama in C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA)
+2024-10-13T02:02:48.448-03:00 DEBUG 27952 --- [contable] [main] com.sa.contable.ContableApplication      : Running with Spring Boot v3.3.4, Spring v6.1.13
+2024-10-13T02:02:48.448-03:00  INFO 27952 --- [contable] [main] com.sa.contable.ContableApplication      : No active profile set, falling back to 1 default profile: "default"
+2024-10-13T02:02:49.399-03:00  INFO 27952 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-13T02:02:49.472-03:00  INFO 27952 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 69 ms. Found 6 JPA repository interfaces.
+2024-10-13T02:02:50.299-03:00  INFO 27952 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-13T02:02:50.319-03:00  INFO 27952 --- [contable] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-13T02:02:50.319-03:00  INFO 27952 --- [contable] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-13T02:02:50.429-03:00  INFO 27952 --- [contable] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-13T02:02:50.429-03:00  INFO 27952 --- [contable] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1936 ms
+2024-10-13T02:02:50.829-03:00  INFO 27952 --- [contable] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-13T02:02:50.895-03:00  INFO 27952 --- [contable] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-13T02:02:50.929-03:00  INFO 27952 --- [contable] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-13T02:02:51.264-03:00  INFO 27952 --- [contable] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-13T02:02:51.299-03:00  INFO 27952 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-13T02:02:51.519-03:00  INFO 27952 --- [contable] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7538cfe6
+2024-10-13T02:02:51.519-03:00  INFO 27952 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-13T02:02:52.619-03:00  INFO 27952 --- [contable] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-13T02:02:52.739-03:00  INFO 27952 --- [contable] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-13T02:02:53.524-03:00  INFO 27952 --- [contable] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: ServletContext resource [/index.html]
+2024-10-13T02:02:53.916-03:00  INFO 27952 --- [contable] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2024-10-13T02:02:54.550-03:00  INFO 27952 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2024-10-13T02:02:54.560-03:00  INFO 27952 --- [contable] [main] com.sa.contable.ContableApplication      : Started ContableApplication in 6.549 seconds (process running for 6.931)
+2024-10-13T02:03:07.587-03:00  INFO 27952 --- [contable] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-13T02:03:07.588-03:00  INFO 27952 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-10-13T02:03:07.589-03:00  INFO 27952 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-10-13T02:03:38.900-03:00  INFO 27952 --- [contable] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-13T02:03:38.900-03:00  INFO 27952 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-13T02:03:38.918-03:00  INFO 27952 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-10-13T02:03:47.879-03:00  INFO 25380 --- [contable] [main] com.sa.contable.ContableApplication      : Starting ContableApplication using Java 21.0.4 with PID 25380 (C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\target\classes started by Rama in C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA)
+2024-10-13T02:03:47.882-03:00 DEBUG 25380 --- [contable] [main] com.sa.contable.ContableApplication      : Running with Spring Boot v3.3.4, Spring v6.1.13
+2024-10-13T02:03:47.884-03:00  INFO 25380 --- [contable] [main] com.sa.contable.ContableApplication      : No active profile set, falling back to 1 default profile: "default"
+2024-10-13T02:03:48.849-03:00  INFO 25380 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-13T02:03:48.921-03:00  INFO 25380 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 65 ms. Found 6 JPA repository interfaces.
+2024-10-13T02:03:49.760-03:00  INFO 25380 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-13T02:03:49.776-03:00  INFO 25380 --- [contable] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-13T02:03:49.777-03:00  INFO 25380 --- [contable] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-13T02:03:49.848-03:00  INFO 25380 --- [contable] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-13T02:03:49.849-03:00  INFO 25380 --- [contable] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1890 ms
+2024-10-13T02:03:50.186-03:00  INFO 25380 --- [contable] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-13T02:03:50.246-03:00  INFO 25380 --- [contable] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-13T02:03:50.281-03:00  INFO 25380 --- [contable] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-13T02:03:50.589-03:00  INFO 25380 --- [contable] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-13T02:03:50.620-03:00  INFO 25380 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-13T02:03:50.785-03:00  INFO 25380 --- [contable] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@63d0e8d
+2024-10-13T02:03:50.787-03:00  INFO 25380 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-13T02:03:51.824-03:00  INFO 25380 --- [contable] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-13T02:03:51.939-03:00  INFO 25380 --- [contable] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-13T02:03:52.696-03:00  INFO 25380 --- [contable] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: ServletContext resource [/index.html]
+2024-10-13T02:03:53.060-03:00  INFO 25380 --- [contable] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2024-10-13T02:03:53.629-03:00  INFO 25380 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2024-10-13T02:03:53.645-03:00  INFO 25380 --- [contable] [main] com.sa.contable.ContableApplication      : Started ContableApplication in 6.189 seconds (process running for 6.642)
+2024-10-13T02:03:56.659-03:00  INFO 25380 --- [contable] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-13T02:03:56.660-03:00  INFO 25380 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-10-13T02:03:56.661-03:00  INFO 25380 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-10-13T02:06:15.312-03:00  INFO 25380 --- [contable] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-13T02:06:15.315-03:00  INFO 25380 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-13T02:06:15.323-03:00  INFO 25380 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-10-13T02:06:26.062-03:00  INFO 27736 --- [contable] [main] com.sa.contable.ContableApplication      : Starting ContableApplication using Java 21.0.4 with PID 27736 (C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\target\classes started by Rama in C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA)
+2024-10-13T02:06:26.065-03:00 DEBUG 27736 --- [contable] [main] com.sa.contable.ContableApplication      : Running with Spring Boot v3.3.4, Spring v6.1.13
+2024-10-13T02:06:26.066-03:00  INFO 27736 --- [contable] [main] com.sa.contable.ContableApplication      : No active profile set, falling back to 1 default profile: "default"
+2024-10-13T02:06:26.260-03:00  WARN 27736 --- [contable] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.sa.contable.ContableApplication]
+2024-10-13T02:06:26.359-03:00 ERROR 27736 --- [contable] [main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.sa.contable.ContableApplication]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:179) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:417) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:290) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:349) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:118) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:789) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:607) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.4.jar:3.3.4]
+	at com.sa.contable.ContableApplication.main(ContableApplication.java:13) ~[classes/:na]
+Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionException: Annotation-specified bean name 'globalExceptionHandler' for bean class [com.sa.contable.GlobalExceptionHandler] conflicts with existing, non-compatible bean definition of same name and class [com.sa.contable.Configuracion.GlobalExceptionHandler]
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.checkCandidate(ClassPathBeanDefinitionScanner.java:361) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.doScan(ClassPathBeanDefinitionScanner.java:288) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ComponentScanAnnotationParser.parse(ComponentScanAnnotationParser.java:128) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:306) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:246) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:197) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:165) ~[spring-context-6.1.13.jar:6.1.13]
+	... 13 common frames omitted
+
+2024-10-13T02:07:54.541-03:00  INFO 17352 --- [contable] [main] com.sa.contable.ContableApplication      : Starting ContableApplication using Java 21.0.4 with PID 17352 (C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\target\classes started by Rama in C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA)
+2024-10-13T02:07:54.544-03:00 DEBUG 17352 --- [contable] [main] com.sa.contable.ContableApplication      : Running with Spring Boot v3.3.4, Spring v6.1.13
+2024-10-13T02:07:54.545-03:00  INFO 17352 --- [contable] [main] com.sa.contable.ContableApplication      : No active profile set, falling back to 1 default profile: "default"
+2024-10-13T02:07:54.735-03:00  WARN 17352 --- [contable] [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.sa.contable.ContableApplication]
+2024-10-13T02:07:54.810-03:00 ERROR 17352 --- [contable] [main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.sa.contable.ContableApplication]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:179) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:417) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:290) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:349) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:118) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:789) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:607) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.4.jar:3.3.4]
+	at com.sa.contable.ContableApplication.main(ContableApplication.java:13) ~[classes/:na]
+Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionException: Annotation-specified bean name 'globalExceptionHandler' for bean class [com.sa.contable.GlobalExceptionHandler] conflicts with existing, non-compatible bean definition of same name and class [com.sa.contable.Configuracion.GlobalExceptionHandler]
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.checkCandidate(ClassPathBeanDefinitionScanner.java:361) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.doScan(ClassPathBeanDefinitionScanner.java:288) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ComponentScanAnnotationParser.parse(ComponentScanAnnotationParser.java:128) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:306) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:246) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:197) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:165) ~[spring-context-6.1.13.jar:6.1.13]
+	... 13 common frames omitted
+
+2024-10-13T02:09:23.275-03:00  INFO 31432 --- [contable] [main] com.sa.contable.ContableApplication      : Starting ContableApplication using Java 21.0.4 with PID 31432 (C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\target\classes started by Rama in C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA)
+2024-10-13T02:09:23.277-03:00 DEBUG 31432 --- [contable] [main] com.sa.contable.ContableApplication      : Running with Spring Boot v3.3.4, Spring v6.1.13
+2024-10-13T02:09:23.278-03:00  INFO 31432 --- [contable] [main] com.sa.contable.ContableApplication      : No active profile set, falling back to 1 default profile: "default"
+2024-10-13T02:09:24.101-03:00  INFO 31432 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-13T02:09:24.178-03:00  INFO 31432 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 69 ms. Found 6 JPA repository interfaces.
+2024-10-13T02:09:24.983-03:00  INFO 31432 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-13T02:09:24.997-03:00  INFO 31432 --- [contable] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-13T02:09:24.998-03:00  INFO 31432 --- [contable] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-13T02:09:25.073-03:00  INFO 31432 --- [contable] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-13T02:09:25.074-03:00  INFO 31432 --- [contable] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1751 ms
+2024-10-13T02:09:25.409-03:00  INFO 31432 --- [contable] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-13T02:09:25.468-03:00  INFO 31432 --- [contable] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-13T02:09:25.502-03:00  INFO 31432 --- [contable] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-13T02:09:25.851-03:00  INFO 31432 --- [contable] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-13T02:09:25.884-03:00  INFO 31432 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-13T02:09:26.066-03:00  INFO 31432 --- [contable] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1626bddf
+2024-10-13T02:09:26.069-03:00  INFO 31432 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-13T02:09:27.110-03:00  INFO 31432 --- [contable] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-13T02:09:27.235-03:00  INFO 31432 --- [contable] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-13T02:09:28.021-03:00  INFO 31432 --- [contable] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: ServletContext resource [/index.html]
+2024-10-13T02:09:28.404-03:00  INFO 31432 --- [contable] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2024-10-13T02:09:28.989-03:00  INFO 31432 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2024-10-13T02:09:29.012-03:00  INFO 31432 --- [contable] [main] com.sa.contable.ContableApplication      : Started ContableApplication in 6.143 seconds (process running for 6.52)
+2024-10-13T02:09:32.450-03:00  INFO 31432 --- [contable] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-13T02:09:32.451-03:00  INFO 31432 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-10-13T02:09:32.452-03:00  INFO 31432 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-10-13T02:09:32.582-03:00  INFO 31432 --- [contable] [http-nio-8080-exec-1] c.s.contable.usuario.UsuarioControlador  : Intento de inicio de sesión para el usuario: admin
+2024-10-13T02:09:32.786-03:00  INFO 31432 --- [contable] [http-nio-8080-exec-1] c.s.contable.usuario.UsuarioControlador  : Login exitoso para el usuario: admin

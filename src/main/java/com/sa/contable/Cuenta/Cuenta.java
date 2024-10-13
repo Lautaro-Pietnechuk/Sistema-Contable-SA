@@ -47,6 +47,11 @@ public class Cuenta {
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL)
     private Set<CuentaAsiento> cuentasAsientos = new HashSet<>(); // Inicialización
 
+    // Constructores
+    public Cuenta() {
+        
+    }
+
     // Getters y Setters
     public Long getId() {
         return id;

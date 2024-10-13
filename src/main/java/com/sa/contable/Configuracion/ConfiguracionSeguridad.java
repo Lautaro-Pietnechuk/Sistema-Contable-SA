@@ -2,6 +2,7 @@ package com.sa.contable.Configuracion;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -19,8 +20,7 @@ public class ConfiguracionSeguridad {
     @SuppressWarnings("removal")
     @Bean
     public SecurityFilterChain cadenaDeFiltrosDeSeguridad(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
+        http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/api/register").permitAll()
@@ -28,14 +28,14 @@ public class ConfiguracionSeguridad {
                 .requestMatchers("/api/administrador/**").hasRole("Administrador")
                 .requestMatchers("/api/usuarios/**").hasAnyRole("Usuario", "Administrador")
                 .requestMatchers("/api/usuario/**").hasAnyRole("Usuario", "Administrador")
-                .requestMatchers("/api/cuentas/**").hasAnyRole("Usuario", "Administrador")
+                .requestMatchers("/api/cuentas/**").hasRole("Administrador")
                 .requestMatchers("/api/asientos/**").hasAnyRole("Usuario", "Administrador")
                 .anyRequest().authenticated()
             )
-            .logout(logout -> logout.permitAll())
-            .cors();
+            .logout(logout -> logout.permitAll());
 
-        http.formLogin().disable();
+        // Habilitar CORS
+        http.cors(); 
 
         return http.build();
     }
@@ -49,12 +49,12 @@ public class ConfiguracionSeguridad {
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(@SuppressWarnings("null") CorsRegistry registry) {
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
+                    .allowedOrigins("http://localhost:3000") // Origen permitido
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos permitidos
+                    .allowedHeaders("*") // Cabeceras permitidas
+                    .allowCredentials(true); // Permitir credenciales (cookies, autorización)
             }
         };
     }
