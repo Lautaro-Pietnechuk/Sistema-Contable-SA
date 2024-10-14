@@ -1,4 +1,4 @@
-package com.sa.contable.Cuenta;
+package com.sa.contable.cuenta;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,15 +25,15 @@ public class CuentaServicio {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Cuenta> obtenerCuentaPorId(Long id) {
-        return cuentaRepositorio.findById(id);
+    public Optional<Cuenta> obtenerCuentaPorCodigo(Long codigo) {
+        return cuentaRepositorio.findById(codigo);
     }
 
     @Transactional
-    public Cuenta actualizarCuenta(Long id, Cuenta cuentaActualizada) {
+    public Cuenta actualizarCuenta(Long codigo, Cuenta cuentaActualizada) {
         // Buscamos la cuenta existente
-        Cuenta cuentaExistente = cuentaRepositorio.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con ID: " + id));
+        Cuenta cuentaExistente = cuentaRepositorio.findById(codigo)
+                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con ID: " + codigo));
         
         // Actualizamos los campos necesarios
         cuentaExistente.setNombre(cuentaActualizada.getNombre());
@@ -46,12 +46,12 @@ public class CuentaServicio {
     }
 
     @Transactional
-    public void eliminarCuenta(Long id) {
+    public void eliminarCuenta(Long codigo) {
         // Verificamos si la cuenta existe antes de eliminar
-        if (!cuentaRepositorio.existsById(id)) {
-            throw new RuntimeException("Cuenta no encontrada con ID: " + id);
+        if (!cuentaRepositorio.existsById(codigo)) {
+            throw new RuntimeException("Cuenta no encontrada con ID: " + codigo);
         }
-        cuentaRepositorio.deleteById(id);
+        cuentaRepositorio.deleteById(codigo);
     }
 
     @Transactional(readOnly = true)

@@ -1,4 +1,4 @@
-package com.sa.contable.Cuenta;
+package com.sa.contable.cuenta;
 
 import java.util.HashSet;
 import java.util.Set;

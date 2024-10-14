@@ -17,11 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.sa.contable.Asiento.Asiento;
 import com.sa.contable.Asiento.AsientoRepositorio;
 import com.sa.contable.Asiento.AsientoServicio;
-import com.sa.contable.Cuenta.Cuenta;
 import com.sa.contable.DTO.AsientoDTO;
 import com.sa.contable.DTO.CuentaMovimientoDTO;
 import com.sa.contable.Relaciones.CuentaAsiento;
 import com.sa.contable.Relaciones.CuentaAsientoRepositorio;
+import com.sa.contable.cuenta.Cuenta;
 
 @ExtendWith(MockitoExtension.class)
 public class AsientoServiceTest {

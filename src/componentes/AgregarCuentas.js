@@ -10,6 +10,7 @@ const AgregarCuentas = () => {
     const [codigo, setCodigo] = useState('');
     const [token, setToken] = useState('');
     const [mensajeExito, setMensajeExito] = useState(''); // Estado para el mensaje de éxito
+    const [mensajeError, setMensajeError] = useState(''); // Estado para el mensaje de error
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,6 +25,17 @@ const AgregarCuentas = () => {
 
     const manejarEnvio = async (e) => {
         e.preventDefault();
+
+        // Validar el código según el tipo de cuenta
+        if (tipo === 'Activo' && !codigo.startsWith('1')) {
+            setMensajeError('El código para una cuenta de tipo Activo debe comenzar con 1.');
+            return;
+        }
+        if (tipo === 'Pasivo' && !codigo.startsWith('2')) {
+            setMensajeError('El código para una cuenta de tipo Pasivo debe comenzar con 2.');
+            return;
+        }
+
         const nuevaCuenta = { nombre, tipo, codigo, recibeSaldo };
         
         try {
@@ -31,6 +43,7 @@ const AgregarCuentas = () => {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setMensajeExito('Cuenta creada con éxito.');
+            setMensajeError(''); // Limpiar mensaje de error
             setTimeout(() => setMensajeExito(''), 3000); // Mensaje desaparecerá después de 3 segundos
             setNombre('');
             setTipo('');
@@ -55,10 +68,24 @@ const AgregarCuentas = () => {
         }
     };
 
+    const modificarCodigo = (tipoSeleccionado) => {
+        if (codigo === '') {
+            return tipoSeleccionado === 'Activo' ? '100' : '200'; // Establecer a 100 o 200 si el código está vacío
+        } else {
+            if (tipoSeleccionado === 'Activo') {
+                return '1' + codigo.slice(1); // Cambiar solo el primer dígito a '1'
+            } else if (tipoSeleccionado === 'Pasivo') {
+                return '2' + codigo.slice(1); // Cambiar solo el primer dígito a '2'
+            }
+        }
+        return codigo; // Retorna el código sin cambios si no es tipo "Activo" o "Pasivo"
+    };
+
     const handleTipoChange = (e) => {
         const selectedTipo = e.target.value;
         setTipo(selectedTipo);
-        setCodigo(selectedTipo === 'Activo' ? 100 : 200);
+        const nuevoCodigo = modificarCodigo(selectedTipo);
+        setCodigo(nuevoCodigo); // Cambia el código al nuevo código basado en el tipo seleccionado
     };
 
     const handleCodigoChange = (e) => {
@@ -71,6 +98,7 @@ const AgregarCuentas = () => {
         <div>
             <h2>Agregar Nueva Cuenta</h2>
             {mensajeExito && <p className="mensaje-exito">{mensajeExito}</p>} {/* Mostrar mensaje de éxito */}
+            {mensajeError && <p className="mensaje-error">{mensajeError}</p>} {/* Mostrar mensaje de error */}
             <form onSubmit={manejarEnvio}>
                 <div>
                     <label htmlFor="nombre">Nombre:</label>

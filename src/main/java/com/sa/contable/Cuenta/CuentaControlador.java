@@ -1,6 +1,7 @@
-package com.sa.contable.Cuenta;
+package com.sa.contable.cuenta;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,19 @@ public class CuentaControlador {
     @PostMapping("/crear")
     public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
         try {
+            // Verificar que la cuenta padre exista
+            if (cuenta.getCuentaPadre() != null) {
+                Optional<Cuenta> cuentaPadreOpt = cuentaServicio.obtenerCuentaPorCodigo(cuenta.getCuentaPadre().getCodigo());
+                if (!cuentaPadreOpt.isPresent()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Error: La cuenta padre no existe.");
+                }
+
+                // Si existe, se asigna a la cuenta
+                cuenta.setCuentaPadre(cuentaPadreOpt.get());
+            }
+
+            // Crear la cuenta
             cuentaServicio.crearCuenta(cuenta);
             return ResponseEntity.ok("Cuenta creada con éxito");
         } catch (Exception e) {
@@ -44,6 +58,7 @@ public class CuentaControlador {
                 .body("Error al crear la cuenta: " + e.getMessage());
         }
     }
+
 
 
     @PreAuthorize("hasRole('ADMINISTRADOR)")

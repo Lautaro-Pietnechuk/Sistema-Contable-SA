@@ -1,7 +1,7 @@
 package com.sa.contable.Relaciones;
 
 import com.sa.contable.Asiento.Asiento;
-import com.sa.contable.Cuenta.Cuenta;
+import com.sa.contable.cuenta.Cuenta;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

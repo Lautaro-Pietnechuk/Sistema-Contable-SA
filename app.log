@@ -9545,3 +9545,299 @@ This generated password is for development use only. Your security configuration
 2024-10-13T21:42:57.879-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
 2024-10-13T21:42:57.880-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
 2024-10-13T21:42:57.891-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T21:44:34.861-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T21:44:34.864-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T21:44:34.866-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T21:44:34.871-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T21:44:34.875-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T21:44:34.878-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T21:44:34.879-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T21:44:34.887-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T21:49:00.865-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T21:49:00.869-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T21:49:00.870-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T21:49:00.874-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T21:49:00.881-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T21:49:00.881-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T21:49:00.882-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T21:49:00.889-03:00 DEBUG 22720 --- [contable] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:15:12.437-03:00  INFO 14440 --- [contable] [main] com.sa.contable.ContableApplication      : Starting ContableApplication using Java 21.0.4 with PID 14440 (C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\target\classes started by Rama in C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA)
+2024-10-13T22:15:12.440-03:00 DEBUG 14440 --- [contable] [main] com.sa.contable.ContableApplication      : Running with Spring Boot v3.3.4, Spring v6.1.13
+2024-10-13T22:15:12.441-03:00  INFO 14440 --- [contable] [main] com.sa.contable.ContableApplication      : No active profile set, falling back to 1 default profile: "default"
+2024-10-13T22:15:13.421-03:00  INFO 14440 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-13T22:15:13.509-03:00  INFO 14440 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 78 ms. Found 6 JPA repository interfaces.
+2024-10-13T22:15:14.354-03:00  INFO 14440 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-13T22:15:14.375-03:00  INFO 14440 --- [contable] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-13T22:15:14.376-03:00  INFO 14440 --- [contable] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-13T22:15:14.464-03:00  INFO 14440 --- [contable] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-13T22:15:14.465-03:00  INFO 14440 --- [contable] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1969 ms
+2024-10-13T22:15:14.875-03:00  INFO 14440 --- [contable] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-13T22:15:14.976-03:00  INFO 14440 --- [contable] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-13T22:15:15.018-03:00  INFO 14440 --- [contable] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-13T22:15:15.430-03:00  INFO 14440 --- [contable] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-13T22:15:15.473-03:00  INFO 14440 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-13T22:15:15.715-03:00  INFO 14440 --- [contable] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@24068086
+2024-10-13T22:15:15.717-03:00  INFO 14440 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-13T22:15:17.068-03:00  INFO 14440 --- [contable] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-13T22:15:17.196-03:00  INFO 14440 --- [contable] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-13T22:15:17.740-03:00  WARN 14440 --- [contable] [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 77c23473-159b-43c2-95e8-a7a7937875f3
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2024-10-13T22:15:17.756-03:00  INFO 14440 --- [contable] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2024-10-13T22:15:17.849-03:00  INFO 14440 --- [contable] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: ServletContext resource [/index.html]
+2024-10-13T22:15:18.152-03:00  INFO 14440 --- [contable] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2024-10-13T22:15:18.220-03:00 DEBUG 14440 --- [contable] [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2024-10-13T22:15:18.601-03:00  INFO 14440 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2024-10-13T22:15:18.614-03:00  INFO 14440 --- [contable] [main] com.sa.contable.ContableApplication      : Started ContableApplication in 6.64 seconds (process running for 7.065)
+2024-10-13T22:15:27.837-03:00  INFO 14440 --- [contable] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-13T22:15:27.838-03:00  INFO 14440 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-10-13T22:15:27.840-03:00  INFO 14440 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-10-13T22:15:27.869-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/login
+2024-10-13T22:15:27.899-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /api/login
+2024-10-13T22:15:27.905-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured POST /api/login
+2024-10-13T22:15:27.991-03:00  INFO 14440 --- [contable] [http-nio-8080-exec-2] c.s.contable.usuario.UsuarioControlador  : Intento de inicio de sesión para el usuario: admin
+2024-10-13T22:15:28.198-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:15:28.199-03:00  INFO 14440 --- [contable] [http-nio-8080-exec-2] c.s.contable.usuario.UsuarioControlador  : Authorities: [ROLE_ANONYMOUS]
+2024-10-13T22:15:28.199-03:00  INFO 14440 --- [contable] [http-nio-8080-exec-2] c.s.contable.usuario.UsuarioControlador  : Login exitoso para el usuario: admin
+2024-10-13T22:15:28.251-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:15:28.254-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:15:28.263-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:15:28.265-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:15:28.295-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:15:28.298-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:15:28.300-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:15:28.305-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:16:30.534-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas/crear
+2024-10-13T22:16:30.540-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing POST /api/cuentas/crear
+2024-10-13T22:16:30.542-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured POST /api/cuentas/crear
+2024-10-13T22:16:30.590-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:16:38.564-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas/crear
+2024-10-13T22:16:38.571-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /api/cuentas/crear
+2024-10-13T22:16:38.572-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured POST /api/cuentas/crear
+2024-10-13T22:16:38.581-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:20:06.669-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas/crear
+2024-10-13T22:20:06.675-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing POST /api/cuentas/crear
+2024-10-13T22:20:06.677-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured POST /api/cuentas/crear
+2024-10-13T22:20:06.687-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:20:09.049-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:20:09.049-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:20:09.058-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:20:09.060-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:20:09.076-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:20:09.078-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:20:09.079-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:20:09.089-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:32:52.137-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/login
+2024-10-13T22:32:52.140-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing POST /api/login
+2024-10-13T22:32:52.141-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured POST /api/login
+2024-10-13T22:32:52.142-03:00  INFO 14440 --- [contable] [http-nio-8080-exec-3] c.s.contable.usuario.UsuarioControlador  : Intento de inicio de sesión para el usuario: admin
+2024-10-13T22:32:52.148-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:32:52.149-03:00  INFO 14440 --- [contable] [http-nio-8080-exec-3] c.s.contable.usuario.UsuarioControlador  : Authorities: [ROLE_ANONYMOUS]
+2024-10-13T22:32:52.149-03:00  INFO 14440 --- [contable] [http-nio-8080-exec-3] c.s.contable.usuario.UsuarioControlador  : Login exitoso para el usuario: admin
+2024-10-13T22:32:52.155-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:32:52.156-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:32:52.158-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:32:52.160-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:32:52.169-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:32:52.172-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:32:52.173-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:32:52.182-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:32:54.465-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:32:54.466-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:32:54.472-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:32:54.474-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:32:54.476-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:32:54.481-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:32:56.268-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/roles/listar
+2024-10-13T22:32:56.270-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/roles/listar
+2024-10-13T22:32:56.281-03:00  WARN 14440 --- [contable] [http-nio-8080-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: failed to lazily initialize a collection of role: com.sa.contable.rol.Rol.usuarios: could not initialize proxy - no Session]
+2024-10-13T22:32:56.281-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:32:56.287-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /error
+2024-10-13T22:32:56.288-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /error
+2024-10-13T22:32:56.293-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:32:56.520-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/roles/listar
+2024-10-13T22:32:56.521-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/roles/listar
+2024-10-13T22:32:56.524-03:00  WARN 14440 --- [contable] [http-nio-8080-exec-10] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: failed to lazily initialize a collection of role: com.sa.contable.rol.Rol.usuarios: could not initialize proxy - no Session]
+2024-10-13T22:32:56.524-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:32:56.526-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /error
+2024-10-13T22:32:56.527-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /error
+2024-10-13T22:32:56.528-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:34:14.986-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/roles/listar
+2024-10-13T22:34:14.987-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/roles/listar
+2024-10-13T22:34:14.992-03:00  WARN 14440 --- [contable] [http-nio-8080-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: failed to lazily initialize a collection of role: com.sa.contable.rol.Rol.usuarios: could not initialize proxy - no Session]
+2024-10-13T22:34:14.992-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:34:14.994-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error
+2024-10-13T22:34:14.995-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /error
+2024-10-13T22:34:14.996-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:34:15.237-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/roles/listar
+2024-10-13T22:34:15.239-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/roles/listar
+2024-10-13T22:34:15.243-03:00  WARN 14440 --- [contable] [http-nio-8080-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: failed to lazily initialize a collection of role: com.sa.contable.rol.Rol.usuarios: could not initialize proxy - no Session]
+2024-10-13T22:34:15.243-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:34:15.245-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /error
+2024-10-13T22:34:15.245-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /error
+2024-10-13T22:34:15.247-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:34:16.565-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:34:16.567-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:34:16.572-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:34:16.574-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:34:16.576-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:34:16.580-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:36:02.894-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/roles/listar
+2024-10-13T22:36:02.895-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/roles/listar
+2024-10-13T22:36:02.899-03:00  WARN 14440 --- [contable] [http-nio-8080-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: failed to lazily initialize a collection of role: com.sa.contable.rol.Rol.usuarios: could not initialize proxy - no Session]
+2024-10-13T22:36:02.899-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:36:02.901-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /error
+2024-10-13T22:36:02.901-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /error
+2024-10-13T22:36:02.903-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:36:03.136-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/roles/listar
+2024-10-13T22:36:03.138-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/roles/listar
+2024-10-13T22:36:03.142-03:00  WARN 14440 --- [contable] [http-nio-8080-exec-10] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: failed to lazily initialize a collection of role: com.sa.contable.rol.Rol.usuarios: could not initialize proxy - no Session]
+2024-10-13T22:36:03.142-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:36:03.145-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /error
+2024-10-13T22:36:03.145-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /error
+2024-10-13T22:36:03.147-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:36:04.653-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:36:04.654-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:36:04.659-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:36:04.661-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:36:04.662-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:36:04.666-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:36:05.053-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:36:05.053-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:36:05.056-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:36:05.057-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:36:05.065-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:36:05.067-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:36:05.069-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:36:05.077-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:37:10.061-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:37:10.061-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:37:10.068-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:37:10.069-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:37:10.076-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:37:10.078-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:37:10.079-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:37:10.087-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:37:11.816-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:37:11.818-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:37:11.826-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:37:11.827-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:37:11.828-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:37:11.836-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:37:15.654-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas/111
+2024-10-13T22:37:15.661-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing DELETE /api/cuentas/111
+2024-10-13T22:37:15.661-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured DELETE /api/cuentas/111
+2024-10-13T22:37:15.970-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:37:15.981-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:37:15.986-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:37:15.987-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:37:15.993-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:37:17.983-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:37:17.984-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:37:17.990-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:37:17.991-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:37:17.992-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:37:17.998-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:39:12.434-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:39:12.434-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:39:12.443-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:39:12.445-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:39:12.451-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:39:12.453-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:39:12.454-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:39:12.461-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:39:21.670-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas/crear
+2024-10-13T22:39:21.676-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing POST /api/cuentas/crear
+2024-10-13T22:39:21.677-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured POST /api/cuentas/crear
+2024-10-13T22:39:21.684-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:39:29.897-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:39:29.897-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:39:29.905-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:39:29.906-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:39:29.913-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:39:29.914-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:39:29.916-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:39:29.923-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:39:52.893-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas/crear
+2024-10-13T22:39:52.899-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing POST /api/cuentas/crear
+2024-10-13T22:39:52.900-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured POST /api/cuentas/crear
+2024-10-13T22:39:52.906-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:39:54.534-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:39:54.535-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:39:54.539-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:39:54.540-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:39:54.542-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:39:54.545-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:39:55.001-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:39:55.001-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:39:55.008-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:39:55.009-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:39:55.016-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:39:55.018-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:39:55.018-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:39:55.025-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:21.673-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:41:21.673-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:41:21.679-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:41:21.680-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:41:21.687-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:21.689-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:41:21.690-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:41:21.697-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:22.538-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:41:22.539-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:41:22.544-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:22.545-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:41:22.546-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:41:22.550-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:24.584-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:41:24.585-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:41:24.594-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:24.596-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:41:24.597-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:41:24.603-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:25.700-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:41:25.701-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:41:25.709-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:25.711-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:41:25.712-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:41:25.721-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:27.459-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/roles/listar
+2024-10-13T22:41:27.460-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/roles/listar
+2024-10-13T22:41:27.463-03:00  WARN 14440 --- [contable] [http-nio-8080-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: failed to lazily initialize a collection of role: com.sa.contable.rol.Rol.usuarios: could not initialize proxy - no Session]
+2024-10-13T22:41:27.464-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:27.465-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error
+2024-10-13T22:41:27.465-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /error
+2024-10-13T22:41:27.467-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:27.787-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/roles/listar
+2024-10-13T22:41:27.788-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/roles/listar
+2024-10-13T22:41:27.791-03:00  WARN 14440 --- [contable] [http-nio-8080-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: failed to lazily initialize a collection of role: com.sa.contable.rol.Rol.usuarios: could not initialize proxy - no Session]
+2024-10-13T22:41:27.791-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:27.792-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /error
+2024-10-13T22:41:27.793-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /error
+2024-10-13T22:41:27.794-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:29.175-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:41:29.175-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:41:29.185-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:41:29.186-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:41:29.193-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:29.194-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:41:29.195-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:41:29.202-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:39.519-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:41:39.520-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:41:39.524-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:39.525-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/asientos/listar
+2024-10-13T22:41:39.526-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/asientos/listar
+2024-10-13T22:41:39.530-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:40.454-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:41:40.454-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-13T22:41:40.461-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:41:40.462-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:41:40.471-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-13T22:41:40.472-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-13T22:41:40.472-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-13T22:41:40.480-03:00 DEBUG 14440 --- [contable] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext

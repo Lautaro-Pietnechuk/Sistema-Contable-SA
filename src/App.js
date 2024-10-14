@@ -5,6 +5,7 @@ import Login from './componentes/Login';
 import Register from './componentes/Register';
 import Cuentas from './componentes/Cuentas';
 import AgregarCuentas from './componentes/AgregarCuentas';
+import EliminarCuenta from './componentes/EliminarCuenta'; // Importar el componente EliminarCuenta
 import Asientos from './componentes/Asientos';
 import AsignarRol from './componentes/AsignarRol';
 import Roles from './componentes/Roles';
@@ -27,6 +28,11 @@ const App = () => {
                     <Route path="/cuentas/agregar" element={
                         <PrivateRoute>
                             <AgregarCuentas />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/cuentas/eliminar" element={ // Ruta para Eliminar Cuenta
+                        <PrivateRoute>
+                            <EliminarCuenta />
                         </PrivateRoute>
                     } />
                     <Route path="/asientos" element={
@@ -68,6 +74,7 @@ const Navigation = () => {
                         <NavLink to="/cuentas">Cuentas</NavLink> &nbsp;
                         <NavLink to="/asientos">Asientos</NavLink> &nbsp;
                         <NavLink to="/cuentas/agregar">Agregar Cuentas</NavLink> &nbsp;
+                        <NavLink to="/cuentas/eliminar">Eliminar Cuentas</NavLink> &nbsp; {/* Enlace para Eliminar Cuenta */}
                         <NavLink to="/asignar-rol">Asignar Rol</NavLink> &nbsp;
                         <NavLink to="/roles">Roles</NavLink> &nbsp;
                     </>
@@ -82,6 +89,5 @@ const Navigation = () => {
         </nav>
     );
 };
-
 
 export default App;

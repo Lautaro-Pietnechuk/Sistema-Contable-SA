@@ -1,6 +1,6 @@
 package com.sa.contable.DTO;
 
-import com.sa.contable.Cuenta.Cuenta;
+import com.sa.contable.cuenta.Cuenta;
 
 public class CuentaMovimientoDTO {
     private Cuenta cuenta;
