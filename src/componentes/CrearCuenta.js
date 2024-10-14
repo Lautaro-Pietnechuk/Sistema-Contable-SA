@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './AgregarCuentas.css';
+import './CrearCuenta.css';
 import { useNavigate } from 'react-router-dom';
 
-const AgregarCuentas = () => {
+const CrearCuenta = () => {
     const [nombre, setNombre] = useState('');
     const [tipo, setTipo] = useState('');
     const [recibeSaldo, setRecibeSaldo] = useState(false);
@@ -147,4 +147,4 @@ const AgregarCuentas = () => {
     );
 };
 
-export default AgregarCuentas;
+export default CrearCuenta;

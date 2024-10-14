@@ -4,11 +4,11 @@ import { AuthContext, AuthProvider } from './AuthContext'; // Importar el contex
 import Login from './componentes/Login';
 import Register from './componentes/Register';
 import Cuentas from './componentes/Cuentas';
-import AgregarCuentas from './componentes/AgregarCuentas';
+import CrearCuenta from './componentes/CrearCuenta';
 import EliminarCuenta from './componentes/EliminarCuenta'; // Importar el componente EliminarCuenta
 import Asientos from './componentes/Asientos';
+import CrearAsiento from './componentes/CrearAsiento'; // Importar el componente AgregarAsiento
 import AsignarRol from './componentes/AsignarRol';
-import Roles from './componentes/Roles';
 import PrivateRoute from './componentes/PrivateRoute';
 import NotFound from './componentes/NotFound';
 
@@ -27,7 +27,7 @@ const App = () => {
                     } />
                     <Route path="/cuentas/agregar" element={
                         <PrivateRoute>
-                            <AgregarCuentas />
+                            <CrearCuenta />
                         </PrivateRoute>
                     } />
                     <Route path="/cuentas/eliminar" element={ // Ruta para Eliminar Cuenta
@@ -40,14 +40,14 @@ const App = () => {
                             <Asientos />
                         </PrivateRoute>
                     } />
+                    <Route path="/asientos/agregar" element={ // Ruta para Agregar Asiento
+                        <PrivateRoute>
+                            <CrearAsiento />
+                        </PrivateRoute>
+                    } />
                     <Route path="/asignar-rol" element={
                         <PrivateRoute>
                             <AsignarRol />
-                        </PrivateRoute>
-                    } />
-                    <Route path="/roles" element={
-                        <PrivateRoute>
-                            <Roles />
                         </PrivateRoute>
                     } />
                     <Route path="*" element={<NotFound />} />
@@ -73,10 +73,10 @@ const Navigation = () => {
                     <>
                         <NavLink to="/cuentas">Cuentas</NavLink> &nbsp;
                         <NavLink to="/asientos">Asientos</NavLink> &nbsp;
+                        <NavLink to="/asientos/agregar">Agregar Asiento</NavLink> &nbsp; {/* Enlace para Agregar Asiento */}
                         <NavLink to="/cuentas/agregar">Agregar Cuentas</NavLink> &nbsp;
                         <NavLink to="/cuentas/eliminar">Eliminar Cuentas</NavLink> &nbsp; {/* Enlace para Eliminar Cuenta */}
                         <NavLink to="/asignar-rol">Asignar Rol</NavLink> &nbsp;
-                        <NavLink to="/roles">Roles</NavLink> &nbsp;
                     </>
                 )}
             </div>
