@@ -8,8 +8,7 @@ import com.sa.contable.Relaciones.CuentaAsiento;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,20 +18,17 @@ import jakarta.persistence.OneToMany;
 public class Cuenta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(nullable = false, unique = true)
+    private Long codigo; // Usar codigo como ID
 
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false, unique = true)
-    private Integer codigo; // Cambiado a Integer
-
     @ManyToOne // Relación con la cuenta padre
-    @JoinColumn(name = "cuenta_padre_id") // Columna que referencia la cuenta padre
+    @JoinColumn(name = "cuenta_padre_codigo") // Columna que referencia la cuenta padre por código
     private Cuenta cuentaPadre;
 
-    @OneToMany(mappedBy = "cuentaPadre", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "cuentaPadre")
     private Set<Cuenta> subCuentas = new HashSet<>();
 
     @Column(nullable = false)
@@ -48,17 +44,15 @@ public class Cuenta {
     private Set<CuentaAsiento> cuentasAsientos = new HashSet<>(); // Inicialización
 
     // Constructores
-    public Cuenta() {
-        
-    }
+    public Cuenta() {}
 
     // Getters y Setters
-    public Long getId() {
-        return id;
+    public Long getCodigo() {
+        return codigo; // Ahora este es el ID
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCodigo(Long codigo) {
+        this.codigo = codigo;
     }
 
     public String getNombre() {
@@ -67,14 +61,6 @@ public class Cuenta {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public Integer getCodigo() { // Cambiado a Integer
-        return codigo;
-    }
-
-    public void setCodigo(Integer codigo) { // Cambiado a Integer
-        this.codigo = codigo;
     }
 
     public String getTipo() {

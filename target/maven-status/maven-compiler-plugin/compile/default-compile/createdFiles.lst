@@ -1,11 +1,12 @@
-com\sa\contable\Configuracion\ConfiguracionSeguridad.class
 com\sa\contable\rol\RolControlador.class
 com\sa\contable\Asiento\AsientoServicio.class
+com\sa\contable\Configuracion\GlobalExceptionHandler.class
 com\sa\contable\rol\RolServicio.class
 com\sa\contable\permiso\Permiso.class
 com\sa\contable\usuario\UsuarioServicio.class
 com\sa\contable\Cuenta\CuentaControlador.class
 com\sa\contable\Cuenta\Cuenta.class
+com\sa\contable\DTO\CuentaDTO.class
 com\sa\contable\usuario\UsuarioControlador.class
 com\sa\contable\Asiento\Asiento.class
 com\sa\contable\Relaciones\CuentaAsiento.class
@@ -16,10 +17,12 @@ com\sa\contable\DTO\CuentaMovimientoDTO.class
 com\sa\contable\Relaciones\CuentaAsientoRepositorio.class
 com\sa\contable\Cuenta\CuentaServicio.class
 com\sa\contable\rol\RolRepositorio.class
+com\sa\contable\Configuracion\JwtUtil.class
 com\sa\contable\rol\Rol.class
 com\sa\contable\permiso\PermisoServicio.class
 com\sa\contable\usuario\Usuario.class
 com\sa\contable\Asiento\AsientoRepositorio.class
 com\sa\contable\ContableApplication.class
+com\sa\contable\Asiento\AsientoControlador.class
 com\sa\contable\DTO\AsientoDTO.class
 com\sa\contable\permiso\PermisoControlador.class

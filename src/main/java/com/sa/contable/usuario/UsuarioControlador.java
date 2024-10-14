@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,24 +47,26 @@ public class UsuarioControlador {
             Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
             if (loggedInUser.isPresent()) {
                 String token = jwtUtil.generarToken(loggedInUser.get().getNombreUsuario(), loggedInUser.get().getRol().getNombre());
-    
-                // Crear la cookie con el token
+
+            // Crear la cookie con el token
                 Cookie cookie = new Cookie("token", token);
                 cookie.setHttpOnly(true); // No accesible desde JavaScript
                 cookie.setSecure(true); // Requiere HTTPS en producción
                 cookie.setPath("/"); // Disponible para todas las rutas del backend
                 cookie.setMaxAge(24 * 60 * 60); // 1 día de duración
                 response.addCookie(cookie); // Agregar la cookie a la respuesta
-    
+
+            // Verificar el contexto de seguridad
+                logger.info("Authorities: {}", SecurityContextHolder.getContext().getAuthentication().getAuthorities());
                 logger.info("Login exitoso para el usuario: {}", usuario.getNombreUsuario());
                 return ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_JSON) // Establecer el tipo de contenido
-                        .body(Map.of("message", "Login exitoso", "token", token)); // Devolver el mensaje y el token
+                    .contentType(MediaType.APPLICATION_JSON) // Establecer el tipo de contenido
+                    .body(Map.of("message", "Login exitoso", "token", token)); // Devolver el mensaje y el token
             } else {
                 logger.warn("Usuario o contraseña incorrectos para: {}", usuario.getNombreUsuario());
                 return ResponseEntity.status(401)
-                        .contentType(MediaType.APPLICATION_JSON) // Establecer el tipo de contenido
-                        .body(Map.of("error", "Usuario o contraseña incorrectos"));
+                    .contentType(MediaType.APPLICATION_JSON) // Establecer el tipo de contenido
+                    .body(Map.of("error", "Usuario o contraseña incorrectos"));
             }
         } catch (Exception e) {
             logger.error("Error en el inicio de sesión para el usuario: {}", usuario.getNombreUsuario(), e);
@@ -94,7 +97,7 @@ public class UsuarioControlador {
         }
     }
 
-    @PreAuthorize("hasRole('Administrador')") 
+    @PreAuthorize("hasRole('ADMINISTRADOR')") 
     @PostMapping("/{usuarioId}/roles/{rolId}")
     public ResponseEntity<?> agregarRol(@PathVariable Long usuarioId, @PathVariable Long rolId) {
         logger.info("Intento de agregar rol con ID {} al usuario con ID {}", rolId, usuarioId);
@@ -119,7 +122,7 @@ public class UsuarioControlador {
         }
     }
 
-    @PreAuthorize("hasRole('Administrador')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
         logger.info("Intento de eliminar usuario con ID: {}", id);

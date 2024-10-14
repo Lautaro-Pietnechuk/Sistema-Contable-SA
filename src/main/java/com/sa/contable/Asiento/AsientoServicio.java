@@ -39,7 +39,7 @@ public class AsientoServicio {
         for (CuentaMovimientoDTO cuentaMovimiento : asientoDTO.getMovimientos()) {
             CuentaAsiento cuentaAsiento = new CuentaAsiento();
             cuentaAsiento.setIdAsiento(asiento.getId());
-            cuentaAsiento.setIdCuenta(cuentaMovimiento.getCuenta().getId());
+            cuentaAsiento.setCodigoCuenta(cuentaMovimiento.getCuenta().getCodigo());
             
             // Manejo de debe y haber en lugar de monto
             if (cuentaMovimiento.getTipo().equalsIgnoreCase("DEBE")) {

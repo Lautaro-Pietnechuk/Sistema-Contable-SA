@@ -44,14 +44,14 @@ public class CuentaAsiento {
         this.id = id;
     }
 
-    public Long getIdCuenta() {
-        return cuenta.getId(); // Devuelve el id de la entidad Cuenta
+    public Long getCodigoCuenta() {
+        return cuenta.getCodigo(); // Devuelve el id de la entidad Cuenta
     }
 
-    public void setIdCuenta(Long idCuenta) {
+    public void setCodigoCuenta(Long CodigoCuenta) {
         // Aquí podrías buscar la cuenta por su id o recibir un objeto Cuenta directamente
         this.cuenta = new Cuenta(); // Esto es solo un ejemplo, normalmente tendrías que recuperar la cuenta de la base de datos.
-        this.cuenta.setId(idCuenta); // Asignas el id a la entidad
+        this.cuenta.setCodigo(CodigoCuenta); // Asignas el id a la entidad
     }
 
     public Long getIdAsiento() {

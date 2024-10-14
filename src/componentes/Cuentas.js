@@ -3,50 +3,55 @@ import axios from 'axios';
 
 const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);
-    const [error, setError] = useState(''); // Inicializa el estado para los errores
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
 
-    // Función para obtener las cuentas desde la API
     const obtenerCuentas = async () => {
+        setLoading(true);
         try {
-            const token = localStorage.getItem('token'); // Obtener el token del localStorage
-            console.log('Token:', token); // Agrega esta línea para depuración
-    
+            const token = localStorage.getItem('token');
+            console.log('Token:', token);
             const respuesta = await axios.get('http://localhost:8080/api/cuentas', {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Incluir el token en la cabecera
+                    Authorization: `Bearer ${token}`,
                 },
             });
+            console.log('Respuesta:', respuesta.data);
             
-            console.log('Respuesta de la API:', respuesta.data); // Log para ver la respuesta de la API
-            
-            setCuentas(respuesta.data); // Guardar las cuentas en el estado
-            setError(''); // Limpiar el mensaje de error en caso de éxito
+            setCuentas(respuesta.data);
+            setError('');
         } catch (error) {
             console.error('Error obteniendo cuentas:', error);
-            setCuentas([]); // Asegurarse de que cuentas sea un array en caso de error
-            setError('Error al obtener cuentas.'); // Establecer el mensaje de error
+            setCuentas([]);
+            setError(error.response?.data?.message || 'Error al obtener cuentas.'); // Mensaje de error detallado
+        } finally {
+            setLoading(false);
         }
     };
-    
 
-    // Ejecutar obtenerCuentas cuando el componente se monte
     useEffect(() => {
-        obtenerCuentas(); // Llamar a la función aquí
+        obtenerCuentas();
     }, []);
 
     return (
         <div>
             <h2>Lista de Cuentas</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>} {/* Mostrar el mensaje de error si existe */}
-            <ul>
-                {Array.isArray(cuentas) && cuentas.length > 0 ? (
-                    cuentas.map((cuenta) => (
-                        <li key={cuenta.id}>{cuenta.nombre}</li>
-                    ))
-                ) : (
-                    <li>No hay cuentas disponibles</li>
-                )}
-            </ul>
+            {loading ? (
+                <p>Cargando...</p>
+            ) : (
+                <>
+                    {error && <p style={{ color: 'red' }} aria-live="assertive">{error}</p>}
+                    <ul>
+                        {Array.isArray(cuentas) && cuentas.length > 0 ? (
+                            cuentas.map((cuenta) => (
+                                <li key={cuenta.id}>{cuenta.nombre}</li>
+                            ))
+                        ) : (
+                            <li>No hay cuentas disponibles</li>
+                        )}
+                    </ul>
+                </>
+            )}
         </div>
     );
 };

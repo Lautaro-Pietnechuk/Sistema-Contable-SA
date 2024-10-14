@@ -1,53 +1,87 @@
-// src/App.js
-
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Login from './componentes/Login'; // Asegúrate de importar tu componente de Login
-import Register from './componentes/Register'; // Importa el componente de Registro
-import Cuentas from './componentes/Cuentas'; // Importa el componente de Cuentas
-import AgregarCuentas from './componentes/AgregarCuentas'; // Importa el componente para agregar cuentas
-import ListaCuentas from './componentes/ListaCuentas'; // Importa el componente para listar cuentas
-import Asientos from './componentes/Asientos'; // Importa el componente de Asientos
-import AsignarRol from './componentes/AsignarRol'; // Importa el componente AsignarRol
-import PrivateRoute from './componentes/PrivateRoute'; // Importa el componente PrivateRoute
+import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext, AuthProvider } from './AuthContext'; // Importar el contexto de autenticación
+import Login from './componentes/Login';
+import Register from './componentes/Register';
+import Cuentas from './componentes/Cuentas';
+import AgregarCuentas from './componentes/AgregarCuentas';
+import Asientos from './componentes/Asientos';
+import AsignarRol from './componentes/AsignarRol';
+import Roles from './componentes/Roles';
+import PrivateRoute from './componentes/PrivateRoute';
+import NotFound from './componentes/NotFound';
 
 const App = () => {
     return (
-        <Router>
-            <nav>
-                <Link to="/login">Login</Link> &nbsp;
-                <Link to="/register">Registro</Link> &nbsp;
-                <Link to="/cuentas">Cuentas</Link> &nbsp;
-                <Link to="/asientos">Asientos</Link> &nbsp;
-                <Link to="/cuentas/agregar">Agregar Cuentas</Link> &nbsp; {/* Enlace a Agregar Cuentas */}
-                <Link to="/asignar-rol">Asignar Rol</Link> {/* Enlace a Asignar Rol */}
-            </nav>
-
-            <Routes>
-                <Route path="/login" element={<Login />} /> {/* Página de Login */}
-                <Route path="/register" element={<Register />} /> {/* Página de Registro */}
-                <Route path="/cuentas" element={
-                    <PrivateRoute>
-                        <Cuentas />
-                    </PrivateRoute>
-                } /> {/* Página de Cuentas */}
-                <Route path="/cuentas/agregar" element={
-                    <PrivateRoute>
-                        <AgregarCuentas />
-                    </PrivateRoute>
-                } />  {/* Página para listar cuentas */}
-                <Route path="/asientos" element={
-                    <PrivateRoute>
-                        <Asientos />
-                    </PrivateRoute>
-                } /> {/* Página de Asientos */}
-                <Route path="/asignar-rol" element={
-                    <PrivateRoute>
-                        <AsignarRol />
-                    </PrivateRoute>
-                } /> {/* Página de Asignar Rol */}
-            </Routes>
-        </Router>
+        <AuthProvider>
+            <Router>
+                <Navigation />
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/cuentas" element={
+                        <PrivateRoute>
+                            <Cuentas />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/cuentas/agregar" element={
+                        <PrivateRoute>
+                            <AgregarCuentas />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/asientos" element={
+                        <PrivateRoute>
+                            <Asientos />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/asignar-rol" element={
+                        <PrivateRoute>
+                            <AsignarRol />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/roles" element={
+                        <PrivateRoute>
+                            <Roles />
+                        </PrivateRoute>
+                    } />
+                    <Route path="*" element={<NotFound />} />
+                    <Route path="/" element={<Navigate to="/login" />} /> {/* Redirigir al login si no está autenticado */}
+                </Routes>
+            </Router>
+        </AuthProvider>
     );
 };
+
+const Navigation = () => {
+    const { isAuthenticated, logout } = useContext(AuthContext);
+
+    return (
+        <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
+            <div>
+                {!isAuthenticated ? (
+                    <>
+                        <NavLink to="/login">Login</NavLink> &nbsp;
+                        <NavLink to="/register">Registro</NavLink> &nbsp;
+                    </>
+                ) : (
+                    <>
+                        <NavLink to="/cuentas">Cuentas</NavLink> &nbsp;
+                        <NavLink to="/asientos">Asientos</NavLink> &nbsp;
+                        <NavLink to="/cuentas/agregar">Agregar Cuentas</NavLink> &nbsp;
+                        <NavLink to="/asignar-rol">Asignar Rol</NavLink> &nbsp;
+                        <NavLink to="/roles">Roles</NavLink> &nbsp;
+                    </>
+                )}
+            </div>
+
+            {isAuthenticated && (
+                <div>
+                    <button onClick={logout} style={{ marginLeft: 'auto' }}>Cerrar Sesión</button>
+                </div>
+            )}
+        </nav>
+    );
+};
+
 
 export default App;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './AgregarCuentas.css'; // Importa el archivo CSS
-import { useNavigate } from 'react-router-dom'; // Asegúrate de que estás usando React Router
+import './AgregarCuentas.css';
+import { useNavigate } from 'react-router-dom';
 
 const AgregarCuentas = () => {
     const [nombre, setNombre] = useState('');
@@ -9,14 +9,14 @@ const AgregarCuentas = () => {
     const [recibeSaldo, setRecibeSaldo] = useState(false);
     const [codigo, setCodigo] = useState('');
     const [token, setToken] = useState('');
-    const navigate = useNavigate(); // Hook para navegación
+    const [mensajeExito, setMensajeExito] = useState(''); // Estado para el mensaje de éxito
+    const navigate = useNavigate();
 
-    // Obtener el token del localStorage y redirigir si no existe
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         if (!storedToken) {
             alert('Sesión expirada o no iniciada. Por favor, inicie sesión.');
-            navigate('/login'); // Redirige al login si no hay token
+            navigate('/login');
         } else {
             setToken(storedToken);
         }
@@ -24,24 +24,26 @@ const AgregarCuentas = () => {
 
     const manejarEnvio = async (e) => {
         e.preventDefault();
-
         const nuevaCuenta = { nombre, tipo, codigo, recibeSaldo };
-        console.log('Token:', token);
-        console.log('Nueva Cuenta:', nuevaCuenta);
+        
         try {
-            await axios.post('http://localhost:8080/api/cuentas', nuevaCuenta, {
+            await axios.post('http://localhost:8080/api/cuentas/crear', nuevaCuenta, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            // Código exitoso...
+            setMensajeExito('Cuenta creada con éxito.');
+            setTimeout(() => setMensajeExito(''), 3000); // Mensaje desaparecerá después de 3 segundos
+            setNombre('');
+            setTipo('');
+            setCodigo('');
+            setRecibeSaldo(false);
         } catch (error) {
             if (error.response) {
                 console.error('Error del servidor:', error.response.data);
-                console.error('Detalles del error:', error.response); // Agregar este console.log
                 alert(`Error: ${error.response.status} - ${error.response.data.error || error.response.data.message}`);
                 if (error.response.status === 401) {
                     alert('Sesión expirada. Por favor, inicie sesión nuevamente.');
                     localStorage.removeItem('token');
-                    navigate('/login'); // Redirige al login si el token es inválido
+                    navigate('/login');
                 }
             } else if (error.request) {
                 console.error('No se recibió respuesta del servidor:', error.request);
@@ -51,7 +53,6 @@ const AgregarCuentas = () => {
                 alert('Error desconocido al agregar la cuenta.');
             }
         }
-        
     };
 
     const handleTipoChange = (e) => {
@@ -69,6 +70,7 @@ const AgregarCuentas = () => {
     return (
         <div>
             <h2>Agregar Nueva Cuenta</h2>
+            {mensajeExito && <p className="mensaje-exito">{mensajeExito}</p>} {/* Mostrar mensaje de éxito */}
             <form onSubmit={manejarEnvio}>
                 <div>
                     <label htmlFor="nombre">Nombre:</label>

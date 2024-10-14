@@ -7,7 +7,7 @@ const Asientos = () => {
     useEffect(() => {
         const fetchAsientos = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/asientos');
+                const response = await axios.get('http://localhost:8080/api/asientos/listar');
                 // Asegúrate de que la respuesta sea un array
                 if (Array.isArray(response.data)) {
                     setAsientos(response.data);

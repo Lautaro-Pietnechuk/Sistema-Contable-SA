@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { AuthContext } from '../AuthContext';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -7,6 +9,7 @@ const Login = () => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext); // Usar el contexto de autenticación
 
     const handleLogin = async () => {
         if (!username || !password) {
@@ -14,38 +17,27 @@ const Login = () => {
             return;
         }
 
-        setLoading(true); // Indicar que la solicitud está en curso
+        setLoading(true); // Mostrar indicador de carga
 
         try {
-            const response = await fetch('http://localhost:8080/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ nombreUsuario: username, contraseña: password }),
+            const response = await axios.post('http://localhost:8080/api/login', {
+                nombreUsuario: username,
+                contraseña: password,
             });
 
-            setLoading(false); // Terminar la carga
+            login(response.data.token); // Llamar a la función login del contexto
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                setMessage(`Error en el login: ${response.status} ${errorData.error || 'Error desconocido'}`);
-                return;
-            }
-
-            const data = await response.json();
-            localStorage.setItem('token', data.token); // Almacenar el token en localStorage
             setMessage('Inicio de sesión exitoso.');
-
-            // Limpiar los campos
-            setUsername('');
-            setPassword('');
-
-            // Redirigir al usuario a la página de cuentas o a donde desees
-            navigate('/cuentas');
+            navigate('/cuentas'); // Redirigir al usuario
         } catch (error) {
-            setLoading(false); // Terminar la carga
-            setMessage(`Error de red: ${error.message}`);
+            setLoading(false);
+            if (error.response) {
+                setMessage(`Error en el login: ${error.response.status} ${error.response.data.error || 'Error desconocido'}`);
+            } else {
+                setMessage(`Error de red: ${error.message}`);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
