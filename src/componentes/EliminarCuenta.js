@@ -50,10 +50,16 @@ const EliminarCuenta = () => {
             setMensajeError('');
             setCuentaSeleccionada('');
             obtenerCuentas(token); // Actualizar la lista de cuentas
+            setTimeout(() => setMensajeExito(''), 3000); // Mensaje desaparecerá después de 3 segundos
         } catch (error) {
             if (error.response) {
                 console.error('Error del servidor:', error.response.data);
-                setMensajeError(`Error: ${error.response.data.error || error.response.data.message}`);
+                // Verificación específica para permisos de administrador
+                if (error.response.status === 403) {
+                    setMensajeError('Necesitas permisos de administrador para poder eliminar una cuenta.');
+                } else {
+                    setMensajeError(`Error: ${error.response.data.error || error.response.data.message}`);
+                }
             } else {
                 console.error('Error al eliminar la cuenta:', error.message);
                 setMensajeError('Error desconocido al eliminar la cuenta.');
@@ -68,7 +74,7 @@ const EliminarCuenta = () => {
             {mensajeError && <p className="mensaje-error">{mensajeError}</p>} {/* Mostrar mensaje de error */}
             <form onSubmit={manejarEnvio}>
                 <div>
-                    <label htmlFor="cuenta">Selecciona una cuenta a eliminar:</label>
+                    <label htmlFor="cuenta">Seleccionar cuenta a eliminar:</label>
                     <select
                         id="cuenta"
                         value={cuentaSeleccionada}
@@ -77,8 +83,8 @@ const EliminarCuenta = () => {
                     >
                         <option value="">Seleccionar cuenta</option>
                         {cuentas.map((cuenta) => (
-                            <option key={cuenta.codigo} value={cuenta.codigo}>
-                                {cuenta.nombre} (Código: {cuenta.codigo})
+                            <option key={cuenta.id} value={cuenta.id}>
+                                {cuenta.nombre} - {cuenta.codigo}
                             </option>
                         ))}
                     </select>

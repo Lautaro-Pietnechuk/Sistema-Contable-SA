@@ -6972,3 +6972,132 @@ This generated password is for development use only. Your security configuration
 2024-10-15T22:56:05.711-03:00 DEBUG 5720 --- [contable] [http-nio-8080-exec-6] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
 2024-10-15T22:56:05.713-03:00  INFO 5720 --- [contable] [http-nio-8080-exec-6] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
 2024-10-15T22:56:05.713-03:00 DEBUG 5720 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:00:32.415-03:00  INFO 5720 --- [contable] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-15T23:00:32.417-03:00  INFO 5720 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-15T23:00:32.424-03:00  INFO 5720 --- [contable] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-10-15T23:01:50.971-03:00  INFO 15368 --- [contable] [main] com.sa.contable.ContableApplication      : Starting ContableApplication using Java 21.0.4 with PID 15368 (C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\target\classes started by Rama in C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA)
+2024-10-15T23:01:50.973-03:00 DEBUG 15368 --- [contable] [main] com.sa.contable.ContableApplication      : Running with Spring Boot v3.3.4, Spring v6.1.13
+2024-10-15T23:01:50.975-03:00  INFO 15368 --- [contable] [main] com.sa.contable.ContableApplication      : No active profile set, falling back to 1 default profile: "default"
+2024-10-15T23:01:51.956-03:00  INFO 15368 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-15T23:01:52.026-03:00  INFO 15368 --- [contable] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 61 ms. Found 5 JPA repository interfaces.
+2024-10-15T23:01:52.796-03:00  INFO 15368 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-15T23:01:52.810-03:00  INFO 15368 --- [contable] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-15T23:01:52.811-03:00  INFO 15368 --- [contable] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-15T23:01:52.886-03:00  INFO 15368 --- [contable] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-15T23:01:52.887-03:00  INFO 15368 --- [contable] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1860 ms
+2024-10-15T23:01:53.032-03:00  INFO 15368 --- [contable] [main] com.sa.contable.configuracion.JwtUtil    : JwtUtil inicializado correctamente.
+2024-10-15T23:01:53.074-03:00 DEBUG 15368 --- [contable] [main] c.s.c.c.JwtAuthenticationFilter          : Filter 'jwtAuthenticationFilter' configured for use
+2024-10-15T23:01:53.211-03:00  INFO 15368 --- [contable] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-15T23:01:53.277-03:00  INFO 15368 --- [contable] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-15T23:01:53.325-03:00  INFO 15368 --- [contable] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-15T23:01:53.657-03:00  INFO 15368 --- [contable] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-15T23:01:53.689-03:00  INFO 15368 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-15T23:01:53.856-03:00  INFO 15368 --- [contable] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5cbe72b9
+2024-10-15T23:01:53.858-03:00  INFO 15368 --- [contable] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-15T23:01:54.943-03:00  INFO 15368 --- [contable] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-15T23:01:55.060-03:00  INFO 15368 --- [contable] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-15T23:01:55.558-03:00  WARN 15368 --- [contable] [main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 39368417-3411-4736-a898-1dc61b55d524
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2024-10-15T23:01:55.574-03:00  INFO 15368 --- [contable] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2024-10-15T23:01:55.655-03:00  INFO 15368 --- [contable] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: ServletContext resource [/index.html]
+2024-10-15T23:01:55.938-03:00  INFO 15368 --- [contable] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2024-10-15T23:01:56.003-03:00 DEBUG 15368 --- [contable] [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2024-10-15T23:01:56.374-03:00  INFO 15368 --- [contable] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2024-10-15T23:01:56.388-03:00  INFO 15368 --- [contable] [main] com.sa.contable.ContableApplication      : Started ContableApplication in 5.878 seconds (process running for 6.302)
+2024-10-15T23:01:56.922-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-10-15T23:01:56.923-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-10-15T23:01:56.924-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-10-15T23:01:56.945-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/login
+2024-10-15T23:01:56.976-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /api/login
+2024-10-15T23:01:56.982-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured POST /api/login
+2024-10-15T23:01:56.983-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-2] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:01:57.037-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-2] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:01:57.039-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:01:57.099-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-2] c.s.c.controladores.UsuarioControlador   : Intento de inicio de sesión para el usuario: Rama
+2024-10-15T23:01:57.296-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-2] c.s.c.controladores.UsuarioControlador   : Rol del usuario: ROLE_USUARIO
+2024-10-15T23:01:57.296-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-2] c.s.c.controladores.UsuarioControlador   : Login exitoso para el usuario: Rama
+2024-10-15T23:01:57.361-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-15T23:01:57.364-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-15T23:01:57.372-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-15T23:01:57.374-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-15T23:01:57.375-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-5] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:01:57.377-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-5] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:01:57.378-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:01:57.425-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-15T23:01:57.428-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-15T23:01:57.429-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-6] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:01:57.431-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-6] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:01:57.431-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:02:04.029-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas/crear
+2024-10-15T23:02:04.036-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing POST /api/cuentas/crear
+2024-10-15T23:02:04.038-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured POST /api/cuentas/crear
+2024-10-15T23:02:04.039-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-8] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:02:04.041-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-8] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:02:04.041-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:02:04.047-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-8] com.sa.contable.configuracion.JwtUtil    : Validando token.
+2024-10-15T23:02:04.048-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-8] com.sa.contable.configuracion.JwtUtil    : El token es válido.
+2024-10-15T23:02:04.049-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-8] com.sa.contable.configuracion.JwtUtil    : Obteniendo rol del token.
+2024-10-15T23:02:04.051-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-8] com.sa.contable.configuracion.JwtUtil    : Rol obtenido del token: ROLE_USUARIO
+2024-10-15T23:02:06.606-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing POST /api/cuentas/crear
+2024-10-15T23:02:06.607-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured POST /api/cuentas/crear
+2024-10-15T23:02:06.607-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-9] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:02:06.609-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-9] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:02:06.610-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:02:06.611-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-9] com.sa.contable.configuracion.JwtUtil    : Validando token.
+2024-10-15T23:02:06.613-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-9] com.sa.contable.configuracion.JwtUtil    : El token es válido.
+2024-10-15T23:02:06.613-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-9] com.sa.contable.configuracion.JwtUtil    : Obteniendo rol del token.
+2024-10-15T23:02:06.615-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-9] com.sa.contable.configuracion.JwtUtil    : Rol obtenido del token: ROLE_USUARIO
+2024-10-15T23:05:52.613-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas/crear
+2024-10-15T23:05:52.621-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing POST /api/cuentas/crear
+2024-10-15T23:05:52.623-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured POST /api/cuentas/crear
+2024-10-15T23:05:52.624-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-3] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:05:52.626-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-3] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:05:52.627-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:05:52.629-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-3] com.sa.contable.configuracion.JwtUtil    : Validando token.
+2024-10-15T23:05:52.632-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-3] com.sa.contable.configuracion.JwtUtil    : El token es válido.
+2024-10-15T23:05:52.632-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-3] com.sa.contable.configuracion.JwtUtil    : Obteniendo rol del token.
+2024-10-15T23:05:52.634-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-3] com.sa.contable.configuracion.JwtUtil    : Rol obtenido del token: ROLE_USUARIO
+2024-10-15T23:05:58.039-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-15T23:05:58.042-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-15T23:05:58.049-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-15T23:05:58.050-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-15T23:05:58.050-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-6] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:05:58.052-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-6] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:05:58.052-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:05:58.066-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-15T23:05:58.067-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-15T23:05:58.069-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-7] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:05:58.070-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-7] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:05:58.071-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:06:41.031-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-15T23:06:41.040-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-15T23:06:41.042-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-15T23:06:41.042-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-9] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:06:41.044-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-9] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:06:41.045-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:06:46.896-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas/111
+2024-10-15T23:06:46.902-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing DELETE /api/cuentas/111
+2024-10-15T23:06:46.903-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured DELETE /api/cuentas/111
+2024-10-15T23:06:46.904-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-1] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:06:46.906-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-1] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:06:46.906-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:06:46.908-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-1] com.sa.contable.configuracion.JwtUtil    : Validando token.
+2024-10-15T23:06:46.910-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-1] com.sa.contable.configuracion.JwtUtil    : El token es válido.
+2024-10-15T23:06:46.910-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-1] com.sa.contable.configuracion.JwtUtil    : Obteniendo rol del token.
+2024-10-15T23:06:46.912-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-1] com.sa.contable.configuracion.JwtUtil    : Rol obtenido del token: ROLE_USUARIO
+2024-10-15T23:06:49.681-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-15T23:06:49.681-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/cuentas
+2024-10-15T23:06:49.690-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-15T23:06:49.691-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-15T23:06:49.691-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-4] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:06:49.693-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-4] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:06:49.694-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2024-10-15T23:06:49.706-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/cuentas
+2024-10-15T23:06:49.707-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/cuentas
+2024-10-15T23:06:49.708-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-5] com.sa.contable.configuracion.JwtUtil    : Obteniendo usuario del token.
+2024-10-15T23:06:49.710-03:00  INFO 15368 --- [contable] [http-nio-8080-exec-5] com.sa.contable.configuracion.JwtUtil    : Usuario obtenido del token: Rama
+2024-10-15T23:06:49.710-03:00 DEBUG 15368 --- [contable] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext

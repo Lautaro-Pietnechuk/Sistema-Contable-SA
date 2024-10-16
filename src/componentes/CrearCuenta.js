@@ -57,6 +57,7 @@ const CrearCuenta = () => {
             setMensajeExito('Cuenta creada con éxito.');
             setMensajeError(''); // Limpiar mensaje de error
             setTimeout(() => setMensajeExito(''), 3000); // Mensaje desaparecerá después de 3 segundos
+            // Limpiar formulario
             setNombre('');
             setTipo('');
             setCodigo('');
@@ -64,11 +65,15 @@ const CrearCuenta = () => {
         } catch (error) {
             if (error.response) {
                 console.error('Error del servidor:', error.response.data);
-                alert(`Error: ${error.response.status} - ${error.response.data.error || error.response.data.message}`);
+                // Aquí se puede verificar el código de estado o el mensaje del error
                 if (error.response.status === 401) {
                     alert('Sesión expirada. Por favor, inicie sesión nuevamente.');
                     localStorage.removeItem('token');
                     navigate('/login');
+                } else if (error.response.status === 403) {
+                    setMensajeError('Necesitas permisos de administrador para poder crear una cuenta.');
+                } else {
+                    alert(`Error: ${error.response.status} - ${error.response.data.error || error.response.data.message}`);
                 }
             } else if (error.request) {
                 console.error('No se recibió respuesta del servidor:', error.request);
@@ -79,7 +84,7 @@ const CrearCuenta = () => {
             }
         }
     };
-
+    
     const modificarCodigo = (tipoSeleccionado) => {
         switch (tipoSeleccionado) {
             case 'Activo':
