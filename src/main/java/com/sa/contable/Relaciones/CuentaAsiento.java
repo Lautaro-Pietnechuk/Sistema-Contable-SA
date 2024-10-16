@@ -1,7 +1,7 @@
-package com.sa.contable.Relaciones;
+package com.sa.contable.relaciones;
 
-import com.sa.contable.Asiento.Asiento;
-import com.sa.contable.cuenta.Cuenta;
+import com.sa.contable.entidades.Asiento;
+import com.sa.contable.entidades.Cuenta;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +19,7 @@ public class CuentaAsiento {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "cuenta_id", nullable = false)
+    @JoinColumn(name = "cuenta_codigo", nullable = false)
     private Cuenta cuenta; // Relación con la entidad Cuenta
 
     @ManyToOne

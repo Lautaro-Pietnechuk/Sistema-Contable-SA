@@ -10,7 +10,8 @@ import Asientos from './componentes/Asientos';
 import CrearAsiento from './componentes/CrearAsiento'; // Importar el componente AgregarAsiento
 import AsignarRol from './componentes/AsignarRol';
 import PrivateRoute from './componentes/PrivateRoute';
-import NotFound from './componentes/NotFound';
+import NotFound from './componentes/NotFound'; // Corregido: eliminado 's'
+import axios from './axiosConfig'; // Asegúrate de importar tu configuración de Axios
 
 const App = () => {
     return (

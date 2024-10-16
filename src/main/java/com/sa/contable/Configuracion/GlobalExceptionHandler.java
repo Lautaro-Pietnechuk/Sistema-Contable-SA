@@ -1,4 +1,4 @@
-package com.sa.contable.Configuracion;
+package com.sa.contable.configuracion;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;

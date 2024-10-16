@@ -14,14 +14,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.sa.contable.Asiento.Asiento;
-import com.sa.contable.Asiento.AsientoRepositorio;
-import com.sa.contable.Asiento.AsientoServicio;
-import com.sa.contable.DTO.AsientoDTO;
-import com.sa.contable.DTO.CuentaMovimientoDTO;
-import com.sa.contable.Relaciones.CuentaAsiento;
-import com.sa.contable.Relaciones.CuentaAsientoRepositorio;
-import com.sa.contable.cuenta.Cuenta;
+import com.sa.contable.dto.AsientoDTO;
+import com.sa.contable.dto.CuentaMovimientoDTO;
+import com.sa.contable.relaciones.CuentaAsiento;
+import com.sa.contable.relaciones.CuentaAsientoRepositorio;
+import com.sa.contable.entidades.Asiento;
+import com.sa.contable.entidades.Cuenta;
+import com.sa.contable.repositorios.AsientoRepositorio;
+import com.sa.contable.servicios.AsientoServicio;
 
 @ExtendWith(MockitoExtension.class)
 public class AsientoServiceTest {

@@ -16,17 +16,21 @@ const Login = () => {
             setMessage('Por favor, complete todos los campos.');
             return;
         }
-
+    
         setLoading(true); // Mostrar indicador de carga
-
+    
         try {
             const response = await axios.post('http://localhost:8080/api/login', {
                 nombreUsuario: username,
                 contraseña: password,
             });
+    
+            // Asegúrate de que el servidor esté devolviendo un solo rol
+            console.log("Respuesta del servidor:", response.data);
+            const { token, rol } = response.data; // Extraer token y rol
 
-            login(response.data.token); // Llamar a la función login del contexto
-
+            login(token, rol); // Llamar a la función login del contexto con token y rol
+    
             setMessage('Inicio de sesión exitoso.');
             navigate('/cuentas'); // Redirigir al usuario
         } catch (error) {

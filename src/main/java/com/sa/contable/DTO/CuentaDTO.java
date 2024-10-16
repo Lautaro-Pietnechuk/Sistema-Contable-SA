@@ -1,4 +1,4 @@
-package com.sa.contable.DTO;
+package com.sa.contable.dto;
 
 import java.util.List;
 

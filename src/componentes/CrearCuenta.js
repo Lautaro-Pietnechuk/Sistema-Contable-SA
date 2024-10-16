@@ -35,9 +35,21 @@ const CrearCuenta = () => {
             setMensajeError('El código para una cuenta de tipo Pasivo debe comenzar con 2.');
             return;
         }
+        if (tipo === 'Patrimonio' && !codigo.startsWith('3')) {
+            setMensajeError('El código para una cuenta de tipo Patrimonio debe comenzar con 3.');
+            return;
+        }
+        if (tipo === 'Ingreso' && !codigo.startsWith('4')) {
+            setMensajeError('El código para una cuenta de tipo Ingreso debe comenzar con 4.');
+            return;
+        }
+        if (tipo === 'Egreso' && !codigo.startsWith('5')) {
+            setMensajeError('El código para una cuenta de tipo Egreso debe comenzar con 5.');
+            return;
+        }
 
         const nuevaCuenta = { nombre, tipo, codigo, recibeSaldo };
-        
+
         try {
             await axios.post('http://localhost:8080/api/cuentas/crear', nuevaCuenta, {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -69,16 +81,20 @@ const CrearCuenta = () => {
     };
 
     const modificarCodigo = (tipoSeleccionado) => {
-        if (codigo === '') {
-            return tipoSeleccionado === 'Activo' ? '100' : '200'; // Establecer a 100 o 200 si el código está vacío
-        } else {
-            if (tipoSeleccionado === 'Activo') {
+        switch (tipoSeleccionado) {
+            case 'Activo':
                 return '1' + codigo.slice(1); // Cambiar solo el primer dígito a '1'
-            } else if (tipoSeleccionado === 'Pasivo') {
+            case 'Pasivo':
                 return '2' + codigo.slice(1); // Cambiar solo el primer dígito a '2'
-            }
+            case 'Patrimonio':
+                return '3' + codigo.slice(1); // Cambiar solo el primer dígito a '3'
+            case 'Ingreso':
+                return '4' + codigo.slice(1); // Establecer a '400'
+            case 'Egreso':
+                return '5' + codigo.slice(1); // Establecer a '500'
+            default:
+                return codigo; // Retornar el código sin cambios si no es un tipo válido
         }
-        return codigo; // Retorna el código sin cambios si no es tipo "Activo" o "Pasivo"
     };
 
     const handleTipoChange = (e) => {
@@ -116,6 +132,9 @@ const CrearCuenta = () => {
                         <option value="">Seleccionar tipo</option>
                         <option value="Activo">Activo</option>
                         <option value="Pasivo">Pasivo</option>
+                        <option value="Patrimonio">Patrimonio</option>
+                        <option value="Ingreso">Ingreso</option>
+                        <option value="Egreso">Egreso</option>
                     </select>
                 </div>
                 <div className="codigo-recibe-saldo">

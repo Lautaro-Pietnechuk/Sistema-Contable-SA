@@ -12,9 +12,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.sa.contable.cuenta.Cuenta;
-import com.sa.contable.cuenta.CuentaRepositorio;
-import com.sa.contable.cuenta.CuentaServicio;
+import com.sa.contable.entidades.Cuenta;
+import com.sa.contable.repositorios.CuentaRepositorio;
+import com.sa.contable.servicios.CuentaServicio;
 
 @ExtendWith(MockitoExtension.class)
 public class CuentaServicioTest {

@@ -4,7 +4,7 @@ const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(false); // Indicar si está procesando la solicitud
+    const [loading, setLoading] = useState(false);
 
     const handleRegister = async () => {
         if (!username || !password) {
@@ -12,7 +12,7 @@ const Register = () => {
             return;
         }
 
-        setLoading(true); // Iniciar el indicador de carga
+        setLoading(true);
 
         try {
             const response = await fetch('http://localhost:8080/api/register', {
@@ -23,20 +23,22 @@ const Register = () => {
                 body: JSON.stringify({ nombreUsuario: username, contraseña: password }),
             });
 
+            // Verificar si la respuesta tiene contenido JSON válido
+            const isJson = response.headers.get('content-type')?.includes('application/json');
+            const data = isJson ? await response.json() : await response.text();
+
             if (!response.ok) {
-                const errorData = await response.json(); // Procesar el error como JSON
-                console.error('Error:', response.status, errorData);
-                throw new Error(`Error en el registro: ${response.status} ${errorData.message || 'Error desconocido'}`);
+                console.error('Error:', response.status, data);
+                throw new Error(data.message || `Error en el registro: ${response.status}`);
             }
 
-            const data = await response.json(); // Procesar la respuesta
             setMessage(data.message || 'Registro exitoso.');
             setUsername('');
             setPassword('');
         } catch (error) {
             setMessage(error.message);
         } finally {
-            setLoading(false); // Finalizar el indicador de carga
+            setLoading(false);
         }
     };
 

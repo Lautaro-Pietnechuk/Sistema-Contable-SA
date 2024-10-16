@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 
 const Cuentas = () => {
@@ -9,38 +9,39 @@ const Cuentas = () => {
     // Función para estructurar las cuentas en árbol
     const construirArbolDeCuentas = (cuentasPlanas) => {
         const cuentasMap = {};
-    
+
         // Inicializa el mapa de cuentas por código
         cuentasPlanas.forEach(cuenta => {
             cuentasMap[cuenta.codigo] = { ...cuenta, subCuentas: [] };
         });
-    
+
         const arbol = [];
-    
+
         cuentasPlanas.forEach(cuenta => {
             const codigo = String(cuenta.codigo); // Convertir a cadena
-    
+
             const codigoPadre = codigo.length === 3 && codigo.startsWith('110') 
                 ? '100' 
                 : codigo.startsWith('11') && codigo.length === 3 
                 ? '110' 
                 : null;
-    
+
             if (codigoPadre && cuentasMap[codigoPadre]) {
                 cuentasMap[codigoPadre].subCuentas.push(cuentasMap[codigo]);
             } else {
                 arbol.push(cuentasMap[codigo]);
             }
         });
-    
+
         return arbol;
     };
-    
 
-    const obtenerCuentas = async () => {
+    // Función para obtener cuentas usando useCallback
+    const obtenerCuentas = useCallback(async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
+            console.log('Token recuperado:', token);
             const respuesta = await axios.get('http://localhost:8080/api/cuentas', {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -56,11 +57,11 @@ const Cuentas = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []); // Puedes agregar 'token' aquí si se obtiene de otra fuente y puede cambiar.
 
     useEffect(() => {
         obtenerCuentas();
-    }, []);
+    }, [obtenerCuentas]);
 
     // Componente recursivo para renderizar el árbol de cuentas
     const CuentaItem = ({ cuenta }) => (
