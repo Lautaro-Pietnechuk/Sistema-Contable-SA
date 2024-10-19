@@ -1,7 +1,6 @@
 com\sa\contable\repositorios\CuentaRepositorio.class
 com\sa\contable\dto\CuentaDTO.class
 com\sa\contable\servicios\AsientoServicio.class
-com\sa\contable\controladores\AsientoControlador.class
 com\sa\contable\servicios\CuentaServicio.class
 com\sa\contable\dto\CuentaMovimientoDTO.class
 com\sa\contable\configuracion\GlobalExceptionHandler.class
@@ -24,7 +23,6 @@ com\sa\contable\configuracion\JwtUtil.class
 com\sa\contable\entidades\Usuario.class
 com\sa\contable\relaciones\CuentaAsiento.class
 com\sa\contable\entidades\Rol.class
-com\sa\contable\configuracion\GenerarClaveJwt.class
 com\sa\contable\ContableApplication.class
 com\sa\contable\repositorios\AsientoRepositorio.class
 com\sa\contable\repositorios\UsuarioRepositorio.class

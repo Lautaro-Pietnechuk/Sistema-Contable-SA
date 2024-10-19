@@ -1,14 +1,14 @@
 package com.sa.contable.controladores;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,15 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sa.contable.configuracion.JwtUtil;
 import com.sa.contable.dto.CuentaDTO;
+import com.sa.contable.dto.SaldoDTO;
 import com.sa.contable.entidades.Cuenta;
 import com.sa.contable.servicios.CuentaServicio;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 @RestController
 @RequestMapping("/api/cuentas")
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true") // Permitir cookies
 public class CuentaControlador {
+
+    private static final Logger logger = LoggerFactory.getLogger(CuentaControlador.class);
 
     @Autowired
     private CuentaServicio cuentaServicio;
@@ -124,5 +126,49 @@ public class CuentaControlador {
         }
         
         return dto;
+ 
+ 
     }
+    @GetMapping("/recibeSaldo")
+    public ResponseEntity<List<CuentaDTO>> listarCuentasRecibeSaldo() {
+        logger.info("Solicitud recibida para listar cuentas que reciben saldo.");
+        try {
+            List<Cuenta> cuentas = cuentaServicio.obtenerCuentasRecibeSaldo(); // Llama al servicio para obtener cuentas
+    
+            if (cuentas == null || cuentas.isEmpty()) {
+                logger.warn("No se encontraron cuentas que reciben saldo.");
+                return ResponseEntity.noContent().build();  // 204 No Content
+            }
+    
+            // Convertir cuentas a DTO antes de devolver
+            List<CuentaDTO> cuentaDTOs = cuentas.stream()
+                .map(this::convertirACuentaDTO) // Convierte a DTO
+                .collect(Collectors.toList());
+    
+            logger.info("Devolviendo {} cuentas que reciben saldo.", cuentaDTOs.size());
+            return ResponseEntity.ok(cuentaDTOs);  // 200 OK
+        } catch (Exception e) {
+            logger.error("Error al listar cuentas: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();  // 500 Internal Server Error
+        }
+    }
+
+
+    @GetMapping("/{codigo}/saldo")
+    public ResponseEntity<SaldoDTO> obtenerSaldo(@PathVariable Long codigo) {
+        // Buscar la cuenta por su código
+        Optional<Cuenta> cuenta = cuentaServicio.obtenerCuentaPorCodigo(codigo);
+        
+        // Verificar si la cuenta existe
+        if (cuenta == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Retornar 404 si no se encuentra la cuenta
+        }
+        
+        // Crear la respuesta con el saldo actual
+        SaldoDTO saldoDTO = new SaldoDTO(cuenta.get().getCodigo(), cuenta.get().getSaldoActual());
+        saldoDTO.setSaldo(cuenta.get().getSaldoActual());
+        
+        return ResponseEntity.ok(saldoDTO); // Retornar 200 OK con el saldo
+    }
+
 }

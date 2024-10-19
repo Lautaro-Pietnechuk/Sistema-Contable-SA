@@ -8,6 +8,7 @@ import com.sa.contable.relaciones.CuentaAsiento;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,7 +30,7 @@ public class Asiento {
     @Column(nullable = false)
     private Long id_usuario;
 
-    @OneToMany(mappedBy = "asiento", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "asiento", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<CuentaAsiento> cuentasAsientos;
 
     // Getters y Setters

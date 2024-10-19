@@ -44,24 +44,23 @@ public class CuentaAsiento {
         this.id = id;
     }
 
-    public Long getCodigoCuenta() {
+    public Long getCuenta() {
         return cuenta.getCodigo(); // Devuelve el id de la entidad Cuenta
     }
 
-    public void setCodigoCuenta(Long CodigoCuenta) {
+    public void setCuenta(Cuenta cuenta) {
         // Aquí podrías buscar la cuenta por su id o recibir un objeto Cuenta directamente
-        this.cuenta = new Cuenta(); // Esto es solo un ejemplo, normalmente tendrías que recuperar la cuenta de la base de datos.
-        this.cuenta.setCodigo(CodigoCuenta); // Asignas el id a la entidad
+        this.cuenta = cuenta; // Esto es solo un ejemplo, normalmente tendrías que recuperar la cuenta de la base de datos.
     }
 
-    public Long getIdAsiento() {
+    public Long getAsiento() {
         return asiento.getId(); // Devuelve el id de la entidad Asiento
     }
 
-    public void setIdAsiento(Long idAsiento) {
+    public void setAsiento(Asiento asiento) {
         // Aquí podrías buscar el asiento por su id o recibir un objeto Asiento directamente
-        this.asiento = new Asiento(); // Esto es solo un ejemplo, normalmente tendrías que recuperar el asiento de la base de datos.
-        this.asiento.setId(idAsiento); // Asignas el id a la entidad
+        this.asiento = asiento; // Esto es solo un ejemplo, normalmente tendrías que recuperar el asiento de la base de datos.
+
     }
 
     public Double getDebe() {

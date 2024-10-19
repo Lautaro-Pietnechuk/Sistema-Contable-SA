@@ -40,7 +40,7 @@ public class Cuenta {
     @Column(nullable = false)
     private Long saldoActual = 0L;
 
-    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<CuentaAsiento> cuentasAsientos = new HashSet<>(); // Inicialización
 
     // Constructores

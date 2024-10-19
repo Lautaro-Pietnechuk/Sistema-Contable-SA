@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './Asientos.css'; // Asegúrate de tener un archivo de estilos para mejorar la presentación
+import './Asientos.css'; // Asegúrate de tener un archivo de estilos
 
 const Asientos = () => {
     const [asientos, setAsientos] = useState([]);
@@ -9,48 +9,67 @@ const Asientos = () => {
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
 
-    // Calcular las fechas de inicio y fin por defecto (hace 30 días y la fecha actual)
+    // Calcular fechas por defecto (30 días atrás y hoy)
     useEffect(() => {
         const hoy = new Date();
         const hace30Dias = new Date();
         hace30Dias.setDate(hoy.getDate() - 30);
 
-        setFechaInicio(hace30Dias.toISOString().split('T')[0]); // Formato YYYY-MM-DD
+        setFechaInicio(hace30Dias.toISOString().split('T')[0]); // YYYY-MM-DD
         setFechaFin(hoy.toISOString().split('T')[0]);
     }, []);
 
     useEffect(() => {
         const fetchAsientos = async () => {
+            const storedToken = localStorage.getItem('token');
+            console.log('Token almacenado:', storedToken);
+            if (!storedToken) {
+                setError('No se encontró el token. Por favor, inicie sesión.');
+                setCargando(false);
+                return;
+            }
+
             try {
                 const response = await axios.get('http://localhost:8080/api/asientos/listar', {
-                    params: {
-                        fechaInicio,
-                        fechaFin,
-                    }
+                    params: { fechaInicio, fechaFin },
+                    headers: { Authorization: `Bearer ${storedToken}` }
                 });
+
                 if (Array.isArray(response.data)) {
                     setAsientos(response.data);
                 } else {
                     console.error('La respuesta no es un array:', response.data);
                     setAsientos([]);
+                    setError('No se encontraron asientos.');
                 }
             } catch (error) {
-                console.error('Error fetching asientos:', error);
-                setError('No se pudieron cargar los asientos. Intente más tarde.');
+                console.error('Error al obtener asientos:', error);
+                setError(error.response ? error.response.data.message : 'Error al cargar los asientos.');
             } finally {
                 setCargando(false);
             }
         };
 
         fetchAsientos();
-    }, [fechaInicio, fechaFin]); // Ejecutar de nuevo cuando cambian las fechas
+    }, [fechaInicio, fechaFin]);
 
     const handleFechaInicioChange = (e) => {
-        setFechaInicio(e.target.value);
+        const nuevaFechaInicio = e.target.value;
+        setFechaInicio(nuevaFechaInicio);
+
+        if (nuevaFechaInicio > fechaFin) {
+            setFechaFin(nuevaFechaInicio);
+        }
     };
 
     const handleFechaFinChange = (e) => {
-        setFechaFin(e.target.value);
+        const nuevaFechaFin = e.target.value;
+        if (nuevaFechaFin < fechaInicio) {
+            setError('La fecha de fin no puede ser anterior a la fecha de inicio.');
+        } else {
+            setError('');
+            setFechaFin(nuevaFechaFin);
+        }
     };
 
     if (cargando) {
@@ -100,7 +119,7 @@ const Asientos = () => {
                                 <td>{new Date(asiento.fecha).toLocaleDateString()}</td>
                                 <td>{asiento.descripcion}</td>
                                 <td>
-                                    {Array.isArray(asiento.movimientos) && asiento.movimientos.length > 0 ? (
+                                    {asiento.movimientos && asiento.movimientos.length > 0 ? (
                                         asiento.movimientos.map((movimiento, index) => (
                                             <div key={index}>
                                                 {movimiento.cuenta.nombre}: {movimiento.monto} {movimiento.tipo}

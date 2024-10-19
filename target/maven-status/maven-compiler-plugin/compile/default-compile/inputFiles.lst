@@ -1,4 +1,3 @@
-C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\configuracion\GenerarClaveJwt.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\configuracion\GlobalExceptionHandler.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\configuracion\JwtAuthenticationFilter.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\configuracion\JwtResponse.java
@@ -10,14 +9,17 @@ C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\AsientoControlador.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\CorsTestController.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\CuentaControlador.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\MovimientoControlador.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\PublicController.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\RolControlador.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\UsuarioControlador.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\AsientoDTO.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\CuentaDTO.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\CuentaMovimientoDTO.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\SaldoDTO.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\entidades\Asiento.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\entidades\Cuenta.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\entidades\Movimiento.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\entidades\Rol.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\entidades\Usuario.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\relaciones\CuentaAsiento.java
@@ -25,9 +27,11 @@ C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\relaciones\InicializadorDeRoles.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\repositorios\AsientoRepositorio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\repositorios\CuentaRepositorio.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\repositorios\MovimientoRepositorio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\repositorios\RolRepositorio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\repositorios\UsuarioRepositorio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\AsientoServicio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\CuentaServicio.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\MovimientoServicio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\RolServicio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\UsuarioServicio.java

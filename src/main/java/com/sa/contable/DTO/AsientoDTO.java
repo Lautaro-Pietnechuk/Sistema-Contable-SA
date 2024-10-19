@@ -1,12 +1,14 @@
 package com.sa.contable.dto;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 public class AsientoDTO {
     private Date fecha;
     private String descripcion;
+    private Long idUsuario;
     private List<CuentaMovimientoDTO> movimientos;
+
 
     // Getters y Setters
     public Date getFecha() {
@@ -31,6 +33,14 @@ public class AsientoDTO {
 
     public void setMovimientos(List<CuentaMovimientoDTO> movimientos) {
         this.movimientos = movimientos;
+    }
+
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
     }
 }
  

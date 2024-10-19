@@ -1,0 +1,26 @@
+.movimiento {
+    display: flex;
+    flex-direction: column; /* Cambiar a columna para mejor alineación */
+    margin-bottom: 15px;
+}
+
+.monto-saldo {
+    display: flex;
+    align-items: center; /* Alinear verticalmente */
+}
+
+.monto-saldo input {
+    margin-right: 10px; /* Espacio entre el input y el saldo */
+}
+
+.saldo-actual {
+    margin-left: 10px; /* Espacio para el saldo actual */
+}
+
+.mensaje-exito {
+    color: green;
+}
+
+.mensaje-error {
+    color: red;
+}

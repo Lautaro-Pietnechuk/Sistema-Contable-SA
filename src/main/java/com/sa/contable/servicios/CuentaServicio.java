@@ -2,7 +2,10 @@ package com.sa.contable.servicios;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +15,8 @@ import com.sa.contable.repositorios.CuentaRepositorio;
 
 @Service
 public class CuentaServicio {
+
+    private static final Logger logger = LoggerFactory.getLogger(CuentaServicio.class);
 
     @Autowired
     private CuentaRepositorio cuentaRepositorio;
@@ -60,5 +65,13 @@ public class CuentaServicio {
     @Transactional(readOnly = true)
     public List<Cuenta> obtenerCuentasPorPadre(Cuenta cuentaPadre) {
         return cuentaRepositorio.findByCuentaPadre(cuentaPadre);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Cuenta> obtenerCuentasRecibeSaldo() {
+    return cuentaRepositorio.findAll()
+            .stream()
+            .filter(Cuenta::getRecibeSaldo) // Filtrar solo las cuentas que reciben saldo
+            .collect(Collectors.toList());
     }
 }
