@@ -62,4 +62,14 @@ public class AsientoServicio {
         return asientoRepositorio.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Asiento no encontrado"));
     }
+
+    
+    @Transactional
+    public void eliminarAsiento(Long id) {
+        // Verificamos si la cuenta existe antes de eliminar
+        if (!asientoRepositorio.existsById(id)) {
+            throw new RuntimeException("Asiento no encontrado con ID: " + id);
+        }
+        asientoRepositorio.deleteById(id);
+    }
 }
