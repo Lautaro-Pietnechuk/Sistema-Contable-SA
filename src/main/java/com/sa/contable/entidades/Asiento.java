@@ -3,8 +3,6 @@ package com.sa.contable.entidades;
 import java.util.Date;
 import java.util.Set;
 
-import com.sa.contable.relaciones.CuentaAsiento;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,8 +27,8 @@ public class Asiento {
 
     @Column(nullable = false)
     private Long id_usuario;
-
-    @OneToMany(mappedBy = "asiento", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    
+    @OneToMany(mappedBy = "asiento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<CuentaAsiento> cuentasAsientos;
 
     // Getters y Setters

@@ -3,8 +3,6 @@ package com.sa.contable.entidades;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.sa.contable.relaciones.CuentaAsiento;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

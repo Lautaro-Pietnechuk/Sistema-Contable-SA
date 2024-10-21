@@ -7,7 +7,7 @@ public class AsientoDTO {
     private Date fecha;
     private String descripcion;
     private Long idUsuario;
-    private List<CuentaMovimientoDTO> movimientos;
+    private List<CuentaAsientoDTO> movimientos;
 
 
     // Getters y Setters
@@ -27,11 +27,11 @@ public class AsientoDTO {
         this.descripcion = descripcion;
     }
 
-    public List<CuentaMovimientoDTO> getMovimientos() {
+    public List<CuentaAsientoDTO> getMovimientos() {
         return movimientos;
     }
 
-    public void setMovimientos(List<CuentaMovimientoDTO> movimientos) {
+    public void setMovimientos(List<CuentaAsientoDTO> movimientos) {
         this.movimientos = movimientos;
     }
 

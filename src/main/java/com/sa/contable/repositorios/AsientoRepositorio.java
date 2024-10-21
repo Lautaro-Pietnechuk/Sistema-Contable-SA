@@ -12,7 +12,7 @@ import com.sa.contable.entidades.Asiento;
 
 @Repository
 public interface AsientoRepositorio extends JpaRepository<Asiento, Long> {
-    @Query("SELECT a FROM Asiento a WHERE a.fecha BETWEEN :fechaInicio AND :fechaFin")
+    @Query("SELECT a FROM Asiento a LEFT JOIN FETCH a.cuentasAsientos WHERE a.fecha BETWEEN :fechaInicio AND :fechaFin")
     List<Asiento> findAllBetweenDates(@Param("fechaInicio") Date fechaInicio, @Param("fechaFin") Date fechaFin);
     
     // Método existente

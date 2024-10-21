@@ -30,10 +30,13 @@ const Asientos = () => {
             }
 
             try {
+                console.log('Fechas a enviar:', { fechaInicio, fechaFin }); // Log para ver las fechas
                 const response = await axios.get('http://localhost:8080/api/asientos/listar', {
                     params: { fechaInicio, fechaFin },
                     headers: { Authorization: `Bearer ${storedToken}` }
                 });
+
+                console.log('Respuesta de la API:', response.data); // Log para ver la respuesta
 
                 if (Array.isArray(response.data)) {
                     setAsientos(response.data);
@@ -122,7 +125,11 @@ const Asientos = () => {
                                     {asiento.movimientos && asiento.movimientos.length > 0 ? (
                                         asiento.movimientos.map((movimiento, index) => (
                                             <div key={index}>
-                                                {movimiento.cuenta.nombre}: {movimiento.monto} {movimiento.tipo}
+                                                {movimiento.cuentaNombre ? ( // Asegúrate de que estás usando el nombre correcto
+                                                    <span>{movimiento.cuentaNombre}: {movimiento.debe} (Debe), {movimiento.haber} (Haber)</span>
+                                                ) : (
+                                                    <span>Cuenta no definida</span>
+                                                )}
                                             </div>
                                         ))
                                     ) : (

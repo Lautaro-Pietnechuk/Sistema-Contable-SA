@@ -74,4 +74,9 @@ public class CuentaServicio {
             .filter(Cuenta::getRecibeSaldo) // Filtrar solo las cuentas que reciben saldo
             .collect(Collectors.toList());
     }
+
+    public Cuenta buscarPorCodigo(Long codigo) {
+        return cuentaRepositorio.findById(codigo)
+                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con ID: " + codigo));
+    }
 }

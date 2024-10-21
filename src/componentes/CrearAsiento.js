@@ -10,12 +10,12 @@ const CrearAsiento = () => {
     const [mensajeError, setMensajeError] = useState('');
     const [cuentas, setCuentas] = useState([]);
     const [cuentaSeleccionada, setCuentaSeleccionada] = useState('');
-    const [tipoMovimiento, setTipoMovimiento] = useState('debe');
     const [monto, setMonto] = useState('');
     const [saldoCuenta, setSaldoCuenta] = useState(0);
     const [asientos, setAsientos] = useState([]);
     const [asientoSeleccionado, setAsientoSeleccionado] = useState('');
-    const [saldoResultado, setSaldoResultado] = useState(0); // Nuevo estado para el saldo resultante
+    const [saldoResultado, setSaldoResultado] = useState(0); 
+    const [esDebe, setEsDebe] = useState(true); // Control para elegir entre 'Debe' y 'Haber'
     const navigate = useNavigate();
     const fechaActual = new Date().toISOString().slice(0, 10);
 
@@ -33,9 +33,7 @@ const CrearAsiento = () => {
     const cargarCuentas = async (token) => {
         try {
             const respuesta = await axios.get('http://localhost:8080/api/cuentas/recibeSaldo', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
             setCuentas(respuesta.data);
         } catch (error) {
@@ -47,11 +45,18 @@ const CrearAsiento = () => {
     const cargarAsientos = async (token) => {
         try {
             const respuesta = await axios.get('http://localhost:8080/api/asientos/listar', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
-            setAsientos(respuesta.data);
+    
+            console.log('Respuesta de asientos:', respuesta.data); // Verifica la respuesta
+    
+            // Asigna directamente la respuesta a `asientos`
+            if (Array.isArray(respuesta.data)) {
+                setAsientos(respuesta.data);
+            } else {
+                setAsientos([]); 
+                setMensajeError('La respuesta no contiene asientos.');
+            }
         } catch (error) {
             console.error('Error al obtener asientos:', error);
             setMensajeError('Error al obtener asientos.');
@@ -71,65 +76,71 @@ const CrearAsiento = () => {
 
     const manejarEnvioAsiento = async (e) => {
         e.preventDefault();
-        const nuevoAsiento = {
-            fecha: fechaActual,
-            descripcion,
-        };
-    
+
+        if (!descripcion.trim()) {
+            setMensajeError('La descripción no puede estar vacía.');
+            setTimeout(() => setMensajeError(''), 3000);
+            return;
+        }
+
+        const nuevoAsiento = { descripcion, fecha: fechaActual };
+
         try {
             const storedToken = localStorage.getItem('token');
-            const idUsuario = obtenerUsuarioDelToken();
-            await axios.post(`http://localhost:8080/api/asientos/crear/${idUsuario}`, nuevoAsiento, {
-                headers: { Authorization: `Bearer ${storedToken}` }
+            await axios.post('http://localhost:8080/api/asientos/crear', nuevoAsiento, {
+                headers: { Authorization: `Bearer ${storedToken}` },
             });
+
             setMensajeExito('Asiento creado con éxito.');
+            setTimeout(() => setMensajeExito(''), 3000);
+
             setDescripcion('');
-            cargarAsientos(storedToken);
+            cargarAsientos(storedToken); // Recarga los asientos
         } catch (error) {
             console.error('Error al crear el asiento:', error);
-            const mensaje = error.response?.data?.message || 'Error al crear el asiento.';
-            setMensajeError(mensaje);
+            setMensajeError(error.response?.data?.message || 'Error al crear el asiento.');
             setTimeout(() => setMensajeError(''), 3000);
         }
     };
 
     const manejarEnvioMovimiento = async (e) => {
         e.preventDefault();
+    
+        if (!monto || parseFloat(monto) <= 0) {
+            setMensajeError('El monto debe ser mayor a cero.');
+            setTimeout(() => setMensajeError(''), 3000);
+            return;
+        }
+    
         const nuevoMovimiento = {
-            cuenta_codigo: cuentaSeleccionada,
-            tipo: tipoMovimiento,
-            monto: parseFloat(monto),
-            asiento_id: asientoSeleccionado,
+            cuentaCodigo: parseInt(cuentaSeleccionada, 10),
+            debe: esDebe ? parseFloat(monto) : 0,
+            haber: esDebe ? 0 : parseFloat(monto),
+            asientoId: parseInt(asientoSeleccionado, 10),
+            saldo: saldoResultado,
         };
-
+    
         try {
             const storedToken = localStorage.getItem('token');
             await axios.post('http://localhost:8080/api/movimientos/crear', nuevoMovimiento, {
-                headers: { Authorization: `Bearer ${storedToken}` }
+                headers: { Authorization: `Bearer ${storedToken}` },
             });
-            const nuevoSaldo = tipoMovimiento === 'debe' ? saldoCuenta + parseFloat(monto) : saldoCuenta - parseFloat(monto);
-            setSaldoCuenta(nuevoSaldo);
+    
             setMensajeExito('Movimiento creado con éxito.');
             setTimeout(() => setMensajeExito(''), 3000);
+    
             setCuentaSeleccionada('');
-            setTipoMovimiento('debe');
             setMonto('');
             setAsientoSeleccionado('');
-            setSaldoResultado(0); // Reinicia el saldo resultante
+            setSaldoResultado(0);
+            cargarAsientos(storedToken); // Recarga los asientos después de crear un movimiento
         } catch (error) {
             console.error('Error al crear el movimiento:', error);
-            const mensaje = error.response?.data?.message || 'Error al crear el movimiento.';
-            setMensajeError(mensaje);
+            setMensajeError(error.response?.data?.message || 'Error al crear el movimiento.');
             setTimeout(() => setMensajeError(''), 3000);
         }
     };
-
-    const handleCuentaChange = (e) => {
-        const cuenta = e.target.value;
-        setCuentaSeleccionada(cuenta);
-        obtenerSaldoCuenta(cuenta);
-    };
-
+    
     const obtenerSaldoCuenta = async (cuentaCodigo) => {
         try {
             const storedToken = localStorage.getItem('token');
@@ -139,8 +150,7 @@ const CrearAsiento = () => {
             setSaldoCuenta(response.data.saldo);
         } catch (error) {
             console.error('Error al obtener saldo de la cuenta:', error);
-            const mensaje = error.response?.data?.message || 'Error al obtener saldo.';
-            setMensajeError(mensaje);
+            setMensajeError(error.response?.data?.message || 'Error al obtener saldo.');
             setTimeout(() => setMensajeError(''), 3000);
         }
     };
@@ -148,16 +158,22 @@ const CrearAsiento = () => {
     const calcularSaldoResultado = () => {
         if (monto) {
             const montoNumerico = parseFloat(monto);
-            const nuevoSaldo = tipoMovimiento === 'debe' ? saldoCuenta + montoNumerico : saldoCuenta - montoNumerico;
+            const nuevoSaldo = esDebe ? saldoCuenta + montoNumerico : saldoCuenta - montoNumerico;
             setSaldoResultado(nuevoSaldo);
         } else {
             setSaldoResultado(0);
         }
     };
 
+    const handleCuentaChange = (e) => {
+        const cuenta = e.target.value;
+        setCuentaSeleccionada(cuenta);
+        obtenerSaldoCuenta(cuenta);
+    };
+
     useEffect(() => {
-        calcularSaldoResultado(); // Calcular el saldo resultante cada vez que se cambia el monto o el tipo de movimiento
-    }, [monto, tipoMovimiento, saldoCuenta]);
+        calcularSaldoResultado();
+    }, [monto, esDebe, saldoCuenta]);
 
     return (
         <div className="crear-asiento">
@@ -175,12 +191,9 @@ const CrearAsiento = () => {
                 </div>
                 <button type="submit">Crear Asiento</button>
             </form>
-            {mensajeExito && <p className="success-message">{mensajeExito}</p>}
-            {mensajeError && <p className="error-message">{mensajeError}</p>}
-            
+
             <h2>Crear Movimiento</h2>
             <form onSubmit={manejarEnvioMovimiento}>
-                {/* Selector de Asientos */}
                 <div>
                     <label htmlFor="asiento">Seleccionar Asiento:</label>
                     <select
@@ -192,13 +205,11 @@ const CrearAsiento = () => {
                         <option value="">Seleccione un asiento</option>
                         {asientos.map((asiento) => (
                             <option key={asiento.id} value={asiento.id}>
-                                {asiento.descripcion} {/* Solo mostrar la descripción */}
+                                {asiento.descripcion}
                             </option>
                         ))}
                     </select>
                 </div>
-                
-                {/* Selector de Cuenta */}
                 <div>
                     <label htmlFor="cuenta">Seleccionar Cuenta:</label>
                     <select
@@ -215,18 +226,22 @@ const CrearAsiento = () => {
                         ))}
                     </select>
                 </div>
-                
-                {/* Resto del formulario de crear movimiento */}
                 <div>
-                    <label htmlFor="tipoMovimiento">Tipo de Movimiento:</label>
-                    <select
-                        id="tipoMovimiento"
-                        value={tipoMovimiento}
-                        onChange={(e) => setTipoMovimiento(e.target.value)}
-                    >
-                        <option value="debe">Debe</option>
-                        <option value="haber">Haber</option>
-                    </select>
+                    <label>Tipo de Movimiento:</label>
+                    <label>
+                        <input
+                            type="radio"
+                            checked={esDebe}
+                            onChange={() => setEsDebe(true)}
+                        /> Debe
+                    </label>
+                    <label>
+                        <input
+                            type="radio"
+                            checked={!esDebe}
+                            onChange={() => setEsDebe(false)}
+                        /> Haber
+                    </label>
                 </div>
                 <div>
                     <label htmlFor="monto">Monto:</label>
@@ -238,14 +253,14 @@ const CrearAsiento = () => {
                         required
                     />
                 </div>
-                {/* Mostrar el saldo resultante */}
                 <div>
                     <p>Saldo Resultante: {saldoResultado}</p>
                 </div>
                 <button type="submit">Crear Movimiento</button>
             </form>
-            {mensajeExito && <p className="success-message">{mensajeExito}</p>}
-            {mensajeError && <p className="error-message">{mensajeError}</p>}
+
+            {mensajeExito && <p className="exito">{mensajeExito}</p>}
+            {mensajeError && <p className="error">{mensajeError}</p>}
         </div>
     );
 };
