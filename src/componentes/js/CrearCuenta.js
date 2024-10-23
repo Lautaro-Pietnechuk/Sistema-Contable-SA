@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './CrearCuenta.css';
+import '../css/CrearCuenta.css';
 import { useNavigate } from 'react-router-dom';
 
 const CrearCuenta = () => {

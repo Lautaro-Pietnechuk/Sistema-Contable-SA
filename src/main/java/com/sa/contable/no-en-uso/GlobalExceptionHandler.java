@@ -1,4 +1,4 @@
-package com.sa.contable.configuracion;
+/* package com.sa.contable.configuracion;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,3 +14,4 @@ public class GlobalExceptionHandler {
         return "No tienes permiso para realizar esta acción.";
     }
 }
+ */

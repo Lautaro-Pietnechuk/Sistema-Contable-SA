@@ -1,17 +1,17 @@
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { useContext } from 'react';
-import { AuthContext, AuthProvider } from './AuthContext'; // Importar el contexto de autenticación
-import Login from './componentes/Login';
-import Register from './componentes/Register';
-import Cuentas from './componentes/Cuentas';
-import CrearCuenta from './componentes/CrearCuenta';
-import EliminarCuenta from './componentes/EliminarCuenta'; // Importar el componente EliminarCuenta
-import Asientos from './componentes/Asientos';
-import CrearAsiento from './componentes/CrearAsiento'; // Importar el componente AgregarAsiento
-import AsignarRol from './componentes/AsignarRol';
-import PrivateRoute from './componentes/PrivateRoute';
-import NotFound from './componentes/NotFound'; // Corregido: eliminado 's'
-import axios from './axiosConfig'; // Asegúrate de importar tu configuración de Axios
+import { AuthContext, AuthProvider } from './context/AuthContext';
+import Login from './componentes/js/Login';
+import Register from './componentes/js/Register';
+import Cuentas from './componentes/js/Cuentas';
+import CrearCuenta from './componentes/js/CrearCuenta';
+import EliminarCuenta from './componentes/js/EliminarCuenta'; // Importar el componente EliminarCuenta
+import Asientos from './componentes/js/Asientos';
+import CrearAsiento from './componentes/js/CrearAsiento'; // Importar el componente AgregarAsiento
+import AsignarRol from './componentes/js/AsignarRol';
+import PrivateRoute from './componentes/js/PrivateRoute';
+import NotFound from './componentes/js/NotFound'; // Corregido: eliminado 's'
+
 
 const App = () => {
     return (

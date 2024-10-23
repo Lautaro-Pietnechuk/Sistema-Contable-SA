@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './Asientos.css'; // Asegúrate de tener un archivo de estilos
+import '../css/Asientos.css'; // Asegúrate de tener un archivo de estilos
 
 const Asientos = () => {
     const [asientos, setAsientos] = useState([]);

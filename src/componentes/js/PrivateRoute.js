@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
-import { AuthContext } from '../AuthContext'; // Importar el contexto de autenticación
+import { AuthContext } from '../../context/AuthContext';
+
 
 const PrivateRoute = ({ children }) => {
     const { isAuthenticated } = useContext(AuthContext); // Obtener el estado de autenticación del contexto

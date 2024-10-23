@@ -1,4 +1,4 @@
-package com.sa.contable.configuracion;
+/* package com.sa.contable.configuracion;
 
 import com.sa.contable.entidades.Usuario;
 import org.springframework.security.core.GrantedAuthority;
@@ -70,3 +70,4 @@ public class UserDetailsImpl implements UserDetails {
         return id;
     }
 }
+ */

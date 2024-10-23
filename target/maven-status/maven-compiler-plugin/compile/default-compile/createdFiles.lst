@@ -3,14 +3,12 @@ com\sa\contable\dto\CuentaDTO.class
 com\sa\contable\servicios\AsientoServicio.class
 com\sa\contable\servicios\CuentaServicio.class
 com\sa\contable\servicios\CuentaAsientoServicio.class
-com\sa\contable\configuracion\GlobalExceptionHandler.class
 com\sa\contable\controladores\CuentaAsientoControlador.class
 com\sa\contable\dto\AsientoDTO.class
 com\sa\contable\servicios\UsuarioServicio.class
 com\sa\contable\controladores\CuentaControlador.class
 com\sa\contable\dto\CuentaAsientoDTO.class
 com\sa\contable\repositorios\CuentaAsientoRepositorio.class
-com\sa\contable\configuracion\UserDetailsImpl.class
 com\sa\contable\configuracion\JwtAuthenticationFilter.class
 com\sa\contable\dto\SaldoDTO.class
 com\sa\contable\controladores\UsuarioControlador.class

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import './CrearAsiento.css';
+import '../css/CrearAsiento.css';
 
 const CrearAsiento = () => {
     const [descripcion, setDescripcion] = useState('');
