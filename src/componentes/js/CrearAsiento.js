@@ -35,7 +35,14 @@ const CrearAsiento = () => {
             const respuesta = await axios.get('http://localhost:8080/api/cuentas/recibeSaldo', {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setCuentas(respuesta.data);
+            
+            // Verificar si la respuesta contiene cuentas
+            if (respuesta.data && respuesta.data.length > 0) {
+                setCuentas(respuesta.data);
+            } else {
+                // Si no hay cuentas, establece un mensaje de error
+                setMensajeError('No hay cuentas disponibles.');
+            }
         } catch (error) {
             console.error('Error al obtener cuentas:', error);
             setMensajeError('Error al obtener cuentas.');

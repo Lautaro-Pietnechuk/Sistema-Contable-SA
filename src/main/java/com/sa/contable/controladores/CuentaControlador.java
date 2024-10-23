@@ -48,30 +48,66 @@ public class CuentaControlador {
     }
 
     @PostMapping("/crear")
-    public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
-        ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
-        if (permisoResponse != null) {
-            return permisoResponse; // Si hay un error de permisos, retornar la respuesta
-        }
+public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
+    // Verificar permisos de administrador
+    ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
+    if (permisoResponse != null) {
+        return permisoResponse; // Retornar si no tiene permisos
+    }
 
-        try {
-            // Verificar que la cuenta padre exista
-            if (cuenta.getCuentaPadre() != null) {
-                Optional<Cuenta> cuentaPadreOpt = cuentaServicio.obtenerCuentaPorCodigo(cuenta.getCuentaPadre().getCodigo());
-                if (!cuentaPadreOpt.isPresent()) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Error: La cuenta padre no existe.");
-                }
-                cuenta.setCuentaPadre(cuentaPadreOpt.get());
-            }
-            // Crear la cuenta
-            cuentaServicio.crearCuenta(cuenta);
-            return ResponseEntity.ok("Cuenta creada con éxito");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error al crear la cuenta: " + e.getMessage());
+    try {
+        // Asignar la cuenta padre automáticamente basado en el código
+        asignarCuentaPadre(cuenta);
+
+        // Crear la cuenta
+        cuentaServicio.crearCuenta(cuenta);
+        return ResponseEntity.ok("Cuenta creada con éxito");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error al crear la cuenta: " + e.getMessage());
+    }
+}
+
+// Método para asignar automáticamente la cuenta padre basado en el código
+private void asignarCuentaPadre(Cuenta cuenta) {
+    long codigo = cuenta.getCodigo();
+    Long codigoPadre = null;
+
+    String codigoStr = String.valueOf(codigo); // Convertir el código a String
+
+    // Determinar el código de la cuenta padre basado en los últimos dígitos
+    if (codigoStr.length() == 3) {
+        // Para códigos de longitud 3
+        if (codigoStr.charAt(2) == '0') {
+            // Si el último dígito es 0, el código padre es el primer dígito seguido de 00
+            codigoPadre = Long.parseLong(codigoStr.charAt(0) + "00"); // Ej: 110 -> 100
+        } else {
+            // Si el último dígito no es 0, cambiar el último dígito a 0
+            codigoPadre = Long.parseLong(codigoStr.substring(0, 2) + "0"); // Ej: 111 -> 110
+        }
+    } else if (codigoStr.length() == 2) {
+        // Si tiene longitud 2, establecer el padre al primer dígito seguido de 00
+        codigoPadre = Long.parseLong(codigoStr.charAt(0) + "00"); // Ej: 110 -> 100
+    }
+
+    // Imprimir el código padre para verificación
+    System.out.println("Código de la cuenta: " + codigo + ", Código padre asignado: " + codigoPadre);
+
+    // Si se determinó un código padre, buscarlo en la base de datos
+    if (codigoPadre != null) {
+        Optional<Cuenta> cuentaPadreOpt = cuentaServicio.obtenerCuentaPorCodigo(codigoPadre);
+        if (cuentaPadreOpt.isPresent()) {
+            cuenta.setCuentaPadre(cuentaPadreOpt.get()); // Asignar la cuenta padre
+        } else {
+            throw new RuntimeException("La cuenta padre con código " + codigoPadre + " no existe.");
         }
     }
+}
+
+
+
+
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarCuenta(@PathVariable Long id) {
