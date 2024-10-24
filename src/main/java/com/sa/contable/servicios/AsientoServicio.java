@@ -11,12 +11,16 @@ import com.sa.contable.entidades.Asiento;
 import com.sa.contable.entidades.CuentaAsiento;
 import com.sa.contable.entidades.Usuario;
 import com.sa.contable.repositorios.AsientoRepositorio;
+import com.sa.contable.repositorios.CuentaAsientoRepositorio;
 import com.sa.contable.repositorios.UsuarioRepositorio;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class AsientoServicio {
+
+    @Autowired
+    private CuentaAsientoRepositorio cuentaAsientoRepositorio;
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
@@ -63,7 +67,10 @@ public class AsientoServicio {
                 .orElseThrow(() -> new IllegalArgumentException("Asiento no encontrado"));
     }
 
-    
+    public boolean tieneCuentaAsientos(Long asientoId) {
+        return cuentaAsientoRepositorio.existsByAsientoId(asientoId);
+    }
+
     @Transactional
     public void eliminarAsiento(Long id) {
         // Verificamos si la cuenta existe antes de eliminar

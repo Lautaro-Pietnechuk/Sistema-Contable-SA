@@ -128,9 +128,15 @@ public ResponseEntity<String> eliminarAsiento(@PathVariable Long id) {
         return permisoResponse; // Si hay un error de permisos, retornar la respuesta
     }
     
+    // Verificar si el asiento tiene algún CuentaAsiento asociado
+    if (asientoServicio.tieneCuentaAsientos(id)) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No se puede eliminar el asiento porque tiene movimientos asociados.");
+    }
+    
     asientoServicio.eliminarAsiento(id);
     return ResponseEntity.ok("Asiento eliminado con éxito.");
 }
+
 
 private ResponseEntity<String> verificarPermisoAdministrador() {
     // Obtener el token del encabezado de autorización

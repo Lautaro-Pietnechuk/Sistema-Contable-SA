@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +24,7 @@ import com.sa.contable.configuracion.JwtUtil;
 import com.sa.contable.dto.CuentaDTO;
 import com.sa.contable.dto.SaldoDTO;
 import com.sa.contable.entidades.Cuenta;
+import com.sa.contable.repositorios.CuentaAsientoRepositorio;
 import com.sa.contable.servicios.CuentaServicio;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +34,9 @@ import jakarta.servlet.http.HttpServletRequest;
 public class CuentaControlador {
 
     private static final Logger logger = LoggerFactory.getLogger(CuentaControlador.class);
+
+    @Autowired
+    private CuentaAsientoRepositorio cuentaAsientoRepositorio;
 
     @Autowired
     private CuentaServicio cuentaServicio;
@@ -111,14 +117,28 @@ private void asignarCuentaPadre(Cuenta cuenta) {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarCuenta(@PathVariable Long id) {
+        // Verificar si el usuario tiene permisos de administrador
         ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
         if (permisoResponse != null) {
             return permisoResponse; // Si hay un error de permisos, retornar la respuesta
         }
-        
+
+        // Verificar si la cuenta ha sido utilizada en algún asiento
+        if (haSidoUtilizadaEnAsiento(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("No se puede eliminar la cuenta porque ha sido utilizada en un asiento.");
+        }
+
+        // Si no ha sido utilizada, proceder a eliminarla
         cuentaServicio.eliminarCuenta(id);
         return ResponseEntity.ok("Cuenta eliminada con éxito.");
     }
+
+    public boolean haSidoUtilizadaEnAsiento(Long cuentaId) {
+        // Utiliza el repositorio inyectado para verificar la existencia
+        return cuentaAsientoRepositorio.existsByCuentaCodigo(cuentaId);
+    }
+    
 
     private ResponseEntity<String> verificarPermisoAdministrador() {
         // Obtener el token del encabezado de autorización
@@ -205,6 +225,29 @@ private void asignarCuentaPadre(Cuenta cuenta) {
         saldoDTO.setSaldo(cuenta.get().getSaldoActual());
         
         return ResponseEntity.ok(saldoDTO); // Retornar 200 OK con el saldo
+    }
+
+    @PutMapping("/editarNombre/{codigo}")
+public ResponseEntity<String> editarNombreCuenta(@PathVariable Long codigo, @RequestBody String nuevoNombre) {
+    ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
+    if (permisoResponse != null) {
+        return permisoResponse; // Si hay un error de permisos, retornar la respuesta
+    }
+    try {
+        cuentaServicio.editarNombreCuenta(codigo, nuevoNombre);
+        return ResponseEntity.ok("Nombre de la cuenta actualizado correctamente");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cuenta no encontrada");
+    }
+}
+
+
+
+
+
+    @GetMapping("/existsByCuentaCodigo/{cuentaCodigo}")
+    public boolean existsByCuentaCodigo(@PathVariable Long cuentaCodigo) {
+        return cuentaAsientoRepositorio.existsByCuentaCodigo(cuentaCodigo);
     }
 
     

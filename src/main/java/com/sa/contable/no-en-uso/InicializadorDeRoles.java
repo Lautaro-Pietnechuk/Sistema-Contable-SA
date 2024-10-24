@@ -1,4 +1,4 @@
-package com.sa.contable;
+/* package com.sa.contable.no-en-uso; */
 /* 
 
 import org.springframework.boot.CommandLineRunner;

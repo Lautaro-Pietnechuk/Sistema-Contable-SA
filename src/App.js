@@ -6,12 +6,12 @@ import Register from './componentes/js/Register';
 import Cuentas from './componentes/js/Cuentas';
 import CrearCuenta from './componentes/js/CrearCuenta';
 import EliminarCuenta from './componentes/js/EliminarCuenta'; // Importar el componente EliminarCuenta
+import EditarCuenta from './componentes/js/EditarCuenta'; // Importar el componente EditarCuenta
 import Asientos from './componentes/js/Asientos';
 import CrearAsiento from './componentes/js/CrearAsiento'; // Importar el componente AgregarAsiento
 import AsignarRol from './componentes/js/AsignarRol';
 import PrivateRoute from './componentes/js/PrivateRoute';
 import NotFound from './componentes/js/NotFound'; // Corregido: eliminado 's'
-
 
 const App = () => {
     return (
@@ -34,6 +34,11 @@ const App = () => {
                     <Route path="/cuentas/eliminar" element={ // Ruta para Eliminar Cuenta
                         <PrivateRoute>
                             <EliminarCuenta />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/cuentas/editarNombre" element={ // Ruta para Editar Cuenta
+                        <PrivateRoute>
+                            <EditarCuenta />
                         </PrivateRoute>
                     } />
                     <Route path="/asientos" element={
@@ -77,6 +82,7 @@ const Navigation = () => {
                         <NavLink to="/asientos/agregar">Agregar Asiento</NavLink> &nbsp; {/* Enlace para Agregar Asiento */}
                         <NavLink to="/cuentas/agregar">Agregar Cuentas</NavLink> &nbsp;
                         <NavLink to="/cuentas/eliminar">Eliminar Cuentas</NavLink> &nbsp; {/* Enlace para Eliminar Cuenta */}
+                        <NavLink to="/cuentas/editarNombre">Editar Cuentas</NavLink> &nbsp; {/* Enlace para Editar Cuenta */}
                         <NavLink to="/asignar-rol">Asignar Rol</NavLink> &nbsp;
                     </>
                 )}

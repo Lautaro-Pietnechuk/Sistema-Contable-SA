@@ -58,7 +58,6 @@ const EliminarCuenta = () => {
             setMensajeError('Seleccione una cuenta para eliminar.');
             return;
         }
-
         try {
             await axios.delete(`http://localhost:8080/api/cuentas/${cuentaSeleccionada}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -72,7 +71,7 @@ const EliminarCuenta = () => {
             if (error.response) {
                 console.error('Error del servidor:', error.response.data);
                 if (error.response.status === 403) {
-                    setMensajeError('Necesitas permisos de administrador para poder eliminar una cuenta.');
+                    setMensajeError(error.response.data.includes('No se puede eliminar la cuenta') ? 'No se puede eliminar la cuenta porque ha sido utilizada en un asiento.' : 'Necesitas permisos de administrador para poder eliminar una cuenta.');
                 } else {
                     setMensajeError(`Error: ${error.response.data.error || error.response.data.message}`);
                 }
@@ -89,7 +88,6 @@ const EliminarCuenta = () => {
             setMensajeError('Seleccione un asiento para eliminar.');
             return;
         }
-
         try {
             await axios.delete(`http://localhost:8080/api/asientos/${asientoSeleccionado}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -103,7 +101,11 @@ const EliminarCuenta = () => {
             if (error.response) {
                 console.error('Error del servidor:', error.response.data);
                 if (error.response.status === 403) {
-                    setMensajeError('Necesitas permisos de administrador para poder eliminar un asiento.');
+                    if (error.response.data.includes('No se puede eliminar el asiento porque tiene movimientos asociados.')) {
+                        setMensajeError('No se puede eliminar el asiento porque tiene movimientos asociados.');
+                    } else {
+                        setMensajeError('Necesitas permisos de administrador para poder eliminar un asiento.');
+                    }
                 } else {
                     setMensajeError(`Error: ${error.response.data.error || error.response.data.message}`);
                 }
@@ -113,6 +115,7 @@ const EliminarCuenta = () => {
             }
         }
     };
+    
 
     return (
         <div>
