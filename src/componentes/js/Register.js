@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-
-
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleRegister = async () => {
         if (!username || !password) {
@@ -20,12 +20,11 @@ const Register = () => {
             const response = await fetch('http://localhost:8080/api/register', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ nombreUsuario: username, contraseña: password }),
             });
 
-            // Verificar si la respuesta tiene contenido JSON válido
             const isJson = response.headers.get('content-type')?.includes('application/json');
             const data = isJson ? await response.json() : await response.text();
 
@@ -37,6 +36,11 @@ const Register = () => {
             setMessage(data.message || 'Registro exitoso.');
             setUsername('');
             setPassword('');
+
+            // Redirigir a la página de inicio de sesión después de 2 segundos
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
         } catch (error) {
             setMessage(error.message);
         } finally {
@@ -47,6 +51,7 @@ const Register = () => {
     return (
         <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto' }}>
             <h2>Registro</h2>
+            {message && <p style={{ color: 'red' }}>{message}</p>}
             <input
                 type="text"
                 placeholder="Nombre de usuario"
@@ -64,7 +69,6 @@ const Register = () => {
             <button onClick={handleRegister} disabled={loading} style={{ width: '100%', padding: '10px', margin: '5px 0' }}>
                 {loading ? 'Cargando...' : 'Registrarse'}
             </button>
-            {message && <p style={{ color: 'red' }}>{message}</p>}
         </div>
     );
 };

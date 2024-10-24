@@ -1,5 +1,6 @@
 package com.sa.contable.servicios;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
@@ -72,5 +73,9 @@ public class UsuarioServicio {
 
     public boolean existeUsuario(Long usuarioId) {
         return usuarioRepositorio.existsById(usuarioId);
+    }
+
+    public List<Usuario> obtenerTodosLosUsuarios() {
+        return usuarioRepositorio.findAll();
     }
 }

@@ -5,13 +5,14 @@ import Login from './componentes/js/Login';
 import Register from './componentes/js/Register';
 import Cuentas from './componentes/js/Cuentas';
 import CrearCuenta from './componentes/js/CrearCuenta';
-import EliminarCuenta from './componentes/js/EliminarCuenta'; // Importar el componente EliminarCuenta
-import EditarCuenta from './componentes/js/EditarCuenta'; // Importar el componente EditarCuenta
+import EliminarCuenta from './componentes/js/EliminarCuentaOAsiento';
+import EditarCuenta from './componentes/js/EditarCuenta';
 import Asientos from './componentes/js/Asientos';
-import CrearAsiento from './componentes/js/CrearAsiento'; // Importar el componente AgregarAsiento
+import CrearAsiento from './componentes/js/CrearAsiento';
 import AsignarRol from './componentes/js/AsignarRol';
+import EliminarUsuario from './componentes/js/EliminarUsuario'; // Importa el componente EliminarUsuario
 import PrivateRoute from './componentes/js/PrivateRoute';
-import NotFound from './componentes/js/NotFound'; // Corregido: eliminado 's'
+import NotFound from './componentes/js/NotFound';
 
 const App = () => {
     return (
@@ -31,12 +32,12 @@ const App = () => {
                             <CrearCuenta />
                         </PrivateRoute>
                     } />
-                    <Route path="/cuentas/eliminar" element={ // Ruta para Eliminar Cuenta
+                    <Route path="/cuentas/eliminar" element={
                         <PrivateRoute>
                             <EliminarCuenta />
                         </PrivateRoute>
                     } />
-                    <Route path="/cuentas/editarNombre" element={ // Ruta para Editar Cuenta
+                    <Route path="/cuentas/editarNombre" element={
                         <PrivateRoute>
                             <EditarCuenta />
                         </PrivateRoute>
@@ -46,7 +47,7 @@ const App = () => {
                             <Asientos />
                         </PrivateRoute>
                     } />
-                    <Route path="/asientos/agregar" element={ // Ruta para Agregar Asiento
+                    <Route path="/asientos/agregar" element={
                         <PrivateRoute>
                             <CrearAsiento />
                         </PrivateRoute>
@@ -54,6 +55,11 @@ const App = () => {
                     <Route path="/asignar-rol" element={
                         <PrivateRoute>
                             <AsignarRol />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/usuarios/eliminar" element={ // Ruta para Eliminar Usuario
+                        <PrivateRoute>
+                            <EliminarUsuario />
                         </PrivateRoute>
                     } />
                     <Route path="*" element={<NotFound />} />
@@ -66,7 +72,6 @@ const App = () => {
 
 const Navigation = () => {
     const { isAuthenticated, logout } = useContext(AuthContext);
-
     return (
         <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
             <div>
@@ -79,15 +84,15 @@ const Navigation = () => {
                     <>
                         <NavLink to="/cuentas">Cuentas</NavLink> &nbsp;
                         <NavLink to="/asientos">Asientos</NavLink> &nbsp;
-                        <NavLink to="/asientos/agregar">Agregar Asiento</NavLink> &nbsp; {/* Enlace para Agregar Asiento */}
+                        <NavLink to="/asientos/agregar">Agregar Asiento</NavLink> &nbsp;
                         <NavLink to="/cuentas/agregar">Agregar Cuentas</NavLink> &nbsp;
-                        <NavLink to="/cuentas/eliminar">Eliminar Cuentas</NavLink> &nbsp; {/* Enlace para Eliminar Cuenta */}
-                        <NavLink to="/cuentas/editarNombre">Editar Cuentas</NavLink> &nbsp; {/* Enlace para Editar Cuenta */}
+                        <NavLink to="/cuentas/eliminar">Eliminar Cuentas</NavLink> &nbsp;
+                        <NavLink to="/cuentas/editarNombre">Editar Cuentas</NavLink> &nbsp;
                         <NavLink to="/asignar-rol">Asignar Rol</NavLink> &nbsp;
+                        <NavLink to="/usuarios/eliminar">Eliminar Usuario</NavLink> &nbsp; {/* Enlace para Eliminar Usuario */}
                     </>
                 )}
             </div>
-
             {isAuthenticated && (
                 <div>
                     <button onClick={logout} style={{ marginLeft: 'auto' }}>Cerrar Sesión</button>

@@ -1,17 +1,21 @@
 package com.sa.contable.controladores;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,11 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sa.contable.configuracion.JwtUtil;
+import com.sa.contable.dto.UsuarioDTO;
 import com.sa.contable.entidades.Usuario;
 import com.sa.contable.servicios.RolServicio;
 import com.sa.contable.servicios.UsuarioServicio;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
@@ -41,6 +47,9 @@ public class UsuarioControlador {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private HttpServletRequest request;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario, HttpServletResponse response) {    
@@ -88,30 +97,33 @@ public class UsuarioControlador {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Usuario usuario) {
-        logger.info("Intento de registro para el usuario: {}", usuario.getNombreUsuario());
-
-        try {
-            if (usuarioServicio.esNombreUsuarioTomado(usuario.getNombreUsuario())) {
-                logger.warn("El nombre de usuario ya existe: {}", usuario.getNombreUsuario());
-                return ResponseEntity.status(400).body("El usuario ya existe");
-            }
-
-            usuarioServicio.registrar(usuario);
-            logger.info("Usuario registrado exitosamente: {}", usuario.getNombreUsuario());
-            return ResponseEntity.ok("Usuario registrado exitosamente");
-        } catch (DataAccessException e) {  // Errores de base de datos
-            logger.error("Error de base de datos: {}", e.getMessage());
-            return ResponseEntity.status(500).body("Error en la base de datos");
-        } catch (Exception e) {
-            logger.error("Error inesperado: {}", e.getMessage(), e);
-            return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());
+public ResponseEntity<?> register(@RequestBody Usuario usuario) {
+    logger.info("Intento de registro para el usuario: {}", usuario.getNombreUsuario());
+    try {
+        if (usuarioServicio.esNombreUsuarioTomado(usuario.getNombreUsuario())) {
+            logger.warn("El nombre de usuario ya existe: {}", usuario.getNombreUsuario());
+            return ResponseEntity.status(400).body("El usuario ya existe");
         }
+        usuarioServicio.registrar(usuario);
+        logger.info("Usuario registrado exitosamente: {}", usuario.getNombreUsuario());
+        return ResponseEntity.ok("Usuario registrado exitosamente");
+    } catch (DataAccessException e) {
+        logger.error("Error de base de datos: {}", e.getMessage());
+        return ResponseEntity.status(500).body("Error en la base de datos");
+    } catch (Exception e) {
+        logger.error("Error inesperado: {}", e.getMessage(), e);
+        return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());
     }
+}
 
-    @PreAuthorize("hasRole('ADMINISTRADOR')") 
+
+    
     @PostMapping("/{usuarioId}/roles/{rolId}")
     public ResponseEntity<?> agregarRol(@PathVariable Long usuarioId, @PathVariable Long rolId) {
+        ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
+        if (permisoResponse != null) {
+            return permisoResponse; // Si hay un error de permisos, retornar la respuesta
+        }
         logger.info("Intento de agregar rol con ID {} al usuario con ID {}", rolId, usuarioId);
         try {
             if (!usuarioServicio.existeUsuario(usuarioId)) {
@@ -134,9 +146,13 @@ public class UsuarioControlador {
         }
     }
 
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @DeleteMapping("/usuarios/{id}")
-    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
+    public ResponseEntity<String> eliminarUsuario(@PathVariable Long id) {
+        
+        ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
+        if (permisoResponse != null) {
+            return permisoResponse; // Si hay un error de permisos, retornar la respuesta
+        }
         logger.info("Intento de eliminar usuario con ID: {}", id);
         try {
             usuarioServicio.eliminarUsuario(id);
@@ -159,5 +175,46 @@ public class UsuarioControlador {
     
         logger.info("Logout exitoso");
         return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
+    }
+
+    @GetMapping("/usuarios")
+public List<UsuarioDTO> listarUsuarios() {
+    List<Usuario> usuarios = usuarioServicio.obtenerTodosLosUsuarios();
+    return usuarios.stream()
+                   .map(this::convertirAUsuarioDTO)
+                   .collect(Collectors.toList());
+}
+
+private UsuarioDTO convertirAUsuarioDTO(Usuario usuario) {
+    return new UsuarioDTO(
+        usuario.getId(),
+        usuario.getNombreUsuario(),
+        usuario.getRol().getNombre()  // Asumiendo que `Rol` tiene un campo `nombre`
+    );
+}
+
+
+    private ResponseEntity<String> verificarPermisoAdministrador() {
+        // Obtener el token del encabezado de autorización
+        String token = obtenerTokenDelEncabezado(request);
+        if (token == null || !jwtUtil.esTokenValido(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No estás autenticado. Por favor inicia sesión.");
+        }
+
+        // Obtener el rol del token
+        String rol = jwtUtil.obtenerRolDelToken(token);
+        if (!"ROLE_ADMINISTRADOR".equals(rol)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para realizar esta acción. Se requiere el rol 'ADMINISTRADOR'.");
+        }
+
+        return null; // Permiso verificado, retornar null
+    }
+
+    private String obtenerTokenDelEncabezado(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7); // Eliminar "Bearer " para obtener el token
+        }
+        return null; // Si no se encuentra el token
     }
 }
