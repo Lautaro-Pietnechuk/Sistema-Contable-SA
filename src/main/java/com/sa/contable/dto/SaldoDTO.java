@@ -1,11 +1,13 @@
 package com.sa.contable.dto;
 
+import java.math.BigDecimal;
+
 public class SaldoDTO {
     private Long codigoCuenta; // Código de la cuenta
-    private Long saldo; // Saldo actual
+    private BigDecimal saldo; // Saldo actual
 
     // Constructor
-    public SaldoDTO(Long codigoCuenta, Long saldo) {
+    public SaldoDTO(Long codigoCuenta, BigDecimal saldo) {
         this.codigoCuenta = codigoCuenta;
         this.saldo = saldo;
     }
@@ -19,11 +21,11 @@ public class SaldoDTO {
         this.codigoCuenta = codigoCuenta;
     }
 
-    public Long getSaldo() {
+    public BigDecimal getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(Long saldo) {
+    public void setSaldo(BigDecimal saldo) {
         this.saldo = saldo;
     }
 }

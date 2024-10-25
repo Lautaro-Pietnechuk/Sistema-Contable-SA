@@ -5,8 +5,6 @@ import { useNavigate } from 'react-router-dom';
 const EliminarCuenta = () => {
     const [cuentas, setCuentas] = useState([]);
     const [cuentaSeleccionada, setCuentaSeleccionada] = useState('');
-    const [asientos, setAsientos] = useState([]);
-    const [asientoSeleccionado, setAsientoSeleccionado] = useState('');
     const [mensajeExito, setMensajeExito] = useState('');
     const [mensajeError, setMensajeError] = useState('');
     const [token, setToken] = useState('');
@@ -20,7 +18,6 @@ const EliminarCuenta = () => {
         } else {
             setToken(storedToken);
             obtenerCuentas(storedToken);
-            obtenerAsientos(storedToken);
         }
     }, [navigate]);
 
@@ -35,20 +32,6 @@ const EliminarCuenta = () => {
         } catch (error) {
             console.error('Error al obtener cuentas:', error);
             setMensajeError('Error al obtener cuentas.');
-        }
-    };
-
-    const obtenerAsientos = async (token) => {
-        try {
-            const respuesta = await axios.get('http://localhost:8080/api/asientos/listar', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setAsientos(respuesta.data);
-        } catch (error) {
-            console.error('Error al obtener asientos:', error);
-            setMensajeError('Error al obtener asientos.');
         }
     };
 
@@ -82,44 +65,9 @@ const EliminarCuenta = () => {
         }
     };
 
-    const manejarEnvioAsiento = async (e) => {
-        e.preventDefault();
-        if (!asientoSeleccionado) {
-            setMensajeError('Seleccione un asiento para eliminar.');
-            return;
-        }
-        try {
-            await axios.delete(`http://localhost:8080/api/asientos/${asientoSeleccionado}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            setMensajeExito('Asiento eliminado con éxito.');
-            setMensajeError('');
-            setAsientoSeleccionado('');
-            obtenerAsientos(token); // Actualizar la lista de asientos
-            setTimeout(() => setMensajeExito(''), 3000); // Mensaje desaparecerá después de 3 segundos
-        } catch (error) {
-            if (error.response) {
-                console.error('Error del servidor:', error.response.data);
-                if (error.response.status === 403) {
-                    if (error.response.data.includes('No se puede eliminar el asiento porque tiene movimientos asociados.')) {
-                        setMensajeError('No se puede eliminar el asiento porque tiene movimientos asociados.');
-                    } else {
-                        setMensajeError('Necesitas permisos de administrador para poder eliminar un asiento.');
-                    }
-                } else {
-                    setMensajeError(`Error: ${error.response.data.error || error.response.data.message}`);
-                }
-            } else {
-                console.error('Error al eliminar el asiento:', error.message);
-                setMensajeError('Error desconocido al eliminar el asiento.');
-            }
-        }
-    };
-    
-
     return (
         <div>
-            <h2>Eliminar Cuenta y Asiento</h2>
+            <h2>Eliminar Cuenta</h2>
             {mensajeExito && <p className="mensaje-exito">{mensajeExito}</p>}
             {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
 
@@ -142,27 +90,6 @@ const EliminarCuenta = () => {
                     </select>
                 </div>
                 <button type="submit">Eliminar Cuenta</button>
-            </form>
-
-            {/* Formulario para eliminar asientos */}
-            <form onSubmit={manejarEnvioAsiento}>
-                <div>
-                    <label htmlFor="asiento">Seleccionar asiento a eliminar:</label>
-                    <select
-                        id="asiento"
-                        value={asientoSeleccionado}
-                        onChange={(e) => setAsientoSeleccionado(e.target.value)}
-                        required
-                    >
-                        <option value="">Seleccionar asiento</option>
-                        {asientos.map((asiento) => (
-                            <option key={asiento.id} value={asiento.id}>
-                                {asiento.descripcion}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <button type="submit">Eliminar Asiento</button>
             </form>
         </div>
     );

@@ -69,7 +69,7 @@ const EditarCuenta = () => {
                     }}
                     required
                 >
-                    <option value="">-- Selecciona una cuenta --</option>
+                    <option value=""> Selecciona una cuenta </option>
                     {cuentas.map((cuenta) => (
                         <option key={cuenta.codigo} value={cuenta.codigo}>
                             {cuenta.nombre}

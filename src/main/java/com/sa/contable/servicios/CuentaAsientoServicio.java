@@ -1,6 +1,8 @@
 package com.sa.contable.servicios;
 
 
+import java.math.BigDecimal;
+
 import org.hibernate.boot.model.internal.Nullability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +24,7 @@ public class CuentaAsientoServicio {
     public void crearMovimiento(CuentaAsiento movimiento) {
         logger.info("Iniciando la creación de movimiento: {}", movimiento);
         // Asegúrate de que los datos sean válidos antes de guardar
-        if (movimiento.getCuenta() == null || movimiento.getSaldo() < 0 || movimiento.getAsiento() == null) {
+        if (movimiento.getCuenta() == null || movimiento.getSaldo().compareTo(BigDecimal.ZERO) < 0 || movimiento.getAsiento() == null) {
             logger.warn("Datos inválidos para el movimiento: {}", movimiento);
             throw new IllegalArgumentException("Datos inválidos para el movimiento");
         }

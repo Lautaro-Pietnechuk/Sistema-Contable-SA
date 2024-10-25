@@ -5,7 +5,7 @@ import Login from './componentes/js/Login';
 import Register from './componentes/js/Register';
 import Cuentas from './componentes/js/Cuentas';
 import CrearCuenta from './componentes/js/CrearCuenta';
-import EliminarCuenta from './componentes/js/EliminarCuentaOAsiento';
+import EliminarCuenta from './componentes/js/EliminarCuenta';
 import EditarCuenta from './componentes/js/EditarCuenta';
 import Asientos from './componentes/js/Asientos';
 import CrearAsiento from './componentes/js/CrearAsiento';
@@ -13,6 +13,7 @@ import AsignarRol from './componentes/js/AsignarRol';
 import EliminarUsuario from './componentes/js/EliminarUsuario'; // Importa el componente EliminarUsuario
 import PrivateRoute from './componentes/js/PrivateRoute';
 import NotFound from './componentes/js/NotFound';
+
 
 const App = () => {
     return (

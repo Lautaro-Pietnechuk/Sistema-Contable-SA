@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.math.BigDecimal;
 
 @Entity
 public class CuentaAsiento {
@@ -24,13 +25,13 @@ public class CuentaAsiento {
     private Asiento asiento; // Relación con la entidad Asiento
 
     @Column(nullable = false)
-    private Double debe;
+    private BigDecimal debe; // Cambiado de Double a BigDecimal
 
     @Column(nullable = false)
-    private Double haber;
+    private BigDecimal haber; // Cambiado de Double a BigDecimal
 
     @Column(nullable = false)
-    private Double saldo; // Saldo parcial con el que queda la cuenta
+    private BigDecimal saldo; // Cambiado de Double a BigDecimal
 
     public CuentaAsiento() {
     }
@@ -45,7 +46,6 @@ public class CuentaAsiento {
                 '}';
     }
 
-
     // Getters y Setters
     public Long getId() {
         return id;
@@ -56,45 +56,42 @@ public class CuentaAsiento {
     }
 
     public Cuenta getCuenta() {
-        return cuenta; // Devuelve el id de la entidad Cuenta
+        return cuenta; // Devuelve el objeto Cuenta
     }
 
     public void setCuenta(Cuenta cuenta) {
-        // Aquí podrías buscar la cuenta por su id o recibir un objeto Cuenta directamente
-        this.cuenta = cuenta; // Esto es solo un ejemplo, normalmente tendrías que recuperar la cuenta de la base de datos.
+        this.cuenta = cuenta; // Recibe un objeto Cuenta directamente
     }
 
-    public Long getAsiento() {
-        return asiento.getId(); // Devuelve el id de la entidad Asiento
+    public Asiento getAsiento() {
+        return asiento; // Devuelve el objeto Asiento
     }
 
     public void setAsiento(Asiento asiento) {
-        // Aquí podrías buscar el asiento por su id o recibir un objeto Asiento directamente
-        this.asiento = asiento; // Esto es solo un ejemplo, normalmente tendrías que recuperar el asiento de la base de datos.
-
+        this.asiento = asiento; // Recibe un objeto Asiento directamente
     }
 
-    public Double getDebe() {
-        return debe;
+    public BigDecimal getDebe() {
+        return debe; // Cambiado a BigDecimal
     }
 
-    public void setDebe(Double debe) {
-        this.debe = debe;
+    public void setDebe(BigDecimal debe) {
+        this.debe = debe; // Cambiado a BigDecimal
     }
 
-    public Double getHaber() {
-        return haber;
+    public BigDecimal getHaber() {
+        return haber; // Cambiado a BigDecimal
     }
 
-    public void setHaber(Double haber) {
-        this.haber = haber;
+    public void setHaber(BigDecimal haber) {
+        this.haber = haber; // Cambiado a BigDecimal
     }
 
-    public Double getSaldo() {
-        return saldo;
+    public BigDecimal getSaldo() {
+        return saldo; // Cambiado a BigDecimal
     }
 
-    public void setSaldo(Double saldo) {
-        this.saldo = saldo;
+    public void setSaldo(BigDecimal saldo) {
+        this.saldo = saldo; // Cambiado a BigDecimal
     }
 }

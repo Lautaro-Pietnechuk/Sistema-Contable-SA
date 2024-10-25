@@ -1,5 +1,6 @@
 package com.sa.contable.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class CuentaDTO {
@@ -9,11 +10,24 @@ public class CuentaDTO {
     private Long codigo; // Cambiado a Long
     private String tipo;
     private Boolean recibeSaldo; 
-    private Long saldoActual; 
+    private BigDecimal saldoActual; // Cambiado a BigDecimal
     private List<CuentaDTO> subCuentas;
     
-    // Getters y Setters
+    // Constructor
+    public CuentaDTO(Long id, String nombre, Long codigo, String tipo, Boolean recibeSaldo, BigDecimal saldoActual, List<CuentaDTO> subCuentas) {
+        this.id = id;
+        this.nombre = nombre;
+        this.codigo = codigo;
+        this.tipo = tipo;
+        this.recibeSaldo = recibeSaldo;
+        this.saldoActual = saldoActual;
+        this.subCuentas = subCuentas;
+    }
 
+    public CuentaDTO() {
+    }
+
+    // Getters y Setters
     public Long getCodigo() {
         return codigo;
     }
@@ -38,11 +52,11 @@ public class CuentaDTO {
         this.recibeSaldo = recibeSaldo;
     }
 
-    public Long getSaldoActual() {
+    public BigDecimal getSaldoActual() {
         return saldoActual;
     }
 
-    public void setSaldoActual(Long saldoActual) {
+    public void setSaldoActual(BigDecimal saldoActual) {
         this.saldoActual = saldoActual;
     }
 
@@ -68,5 +82,18 @@ public class CuentaDTO {
 
     public void setSubCuentas(List<CuentaDTO> subCuentas) {
         this.subCuentas = subCuentas;
+    }
+
+    @Override
+    public String toString() {
+        return "CuentaDTO{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", codigo=" + codigo +
+                ", tipo='" + tipo + '\'' +
+                ", recibeSaldo=" + recibeSaldo +
+                ", saldoActual=" + saldoActual +
+                ", subCuentas=" + subCuentas +
+                '}';
     }
 }

@@ -1,27 +1,27 @@
 package com.sa.contable.dto;
 
+import java.math.BigDecimal;
+
 public class CuentaAsientoDTO {
     private String cuentaNombre;
-    private Long cuentaCodigo;
-    private Double debe;
-    private Double haber;
+    private Long cuentaCodigo; // Este atributo se puede dejar como Long si el código de cuenta sigue siendo un número entero
+    private BigDecimal debe; // Cambiado a BigDecimal
+    private BigDecimal haber; // Cambiado a BigDecimal
     private Long asientoId;
-    private Double saldo;
+    private BigDecimal saldo; // Cambiado a BigDecimal
     private Long id;
 
-    public CuentaAsientoDTO(long cuentaCodigo, double debe, double haber, long asientoId, double saldo) {
+    public CuentaAsientoDTO(Long cuentaCodigo, BigDecimal debe, BigDecimal haber, Long asientoId, BigDecimal saldo) {
         this.cuentaCodigo = cuentaCodigo;
         this.debe = debe;
         this.haber = haber;
         this.asientoId = asientoId;
         this.saldo = saldo;
-
     }
 
     public CuentaAsientoDTO() {
     }
 
-    
     // Getters y setters
 
     public String getCuentaNombre() {
@@ -40,19 +40,19 @@ public class CuentaAsientoDTO {
         this.cuentaCodigo = cuentaCodigo;
     }
 
-    public Double getDebe() {
+    public BigDecimal getDebe() {
         return debe;
     }
 
-    public void setDebe(Double debe) {
+    public void setDebe(BigDecimal debe) {
         this.debe = debe;
     }
 
-    public Double getHaber() {
+    public BigDecimal getHaber() {
         return haber;
     }
 
-    public void setHaber(Double haber) {
+    public void setHaber(BigDecimal haber) {
         this.haber = haber;
     }
 
@@ -64,11 +64,11 @@ public class CuentaAsientoDTO {
         this.asientoId = asientoId;
     }
 
-    public Double getSaldo() {
+    public BigDecimal getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(Double saldo) {
+    public void setSaldo(BigDecimal saldo) {
         this.saldo = saldo;
     }
 
@@ -80,5 +80,3 @@ public class CuentaAsientoDTO {
         return id;
     }
 }
-
-

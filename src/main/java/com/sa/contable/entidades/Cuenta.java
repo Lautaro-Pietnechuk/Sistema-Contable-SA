@@ -1,5 +1,6 @@
 package com.sa.contable.entidades;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,7 +37,7 @@ public class Cuenta {
     private Boolean recibeSaldo; // Solo las hojas reciben saldo
 
     @Column(nullable = false)
-    private Long saldoActual = 0L;
+    private BigDecimal saldoActual = BigDecimal.ZERO; // Cambiado a BigDecimal
 
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<CuentaAsiento> cuentasAsientos = new HashSet<>(); // Inicialización
@@ -77,11 +78,11 @@ public class Cuenta {
         this.recibeSaldo = recibeSaldo;
     }
 
-    public Long getSaldoActual() {
-        return saldoActual;
+    public BigDecimal getSaldoActual() {
+        return saldoActual; // Cambiado a BigDecimal
     }
 
-    public void setSaldoActual(Long saldoActual) {
+    public void setSaldoActual(BigDecimal saldoActual) { // Cambiado a BigDecimal
         this.saldoActual = saldoActual;
     }
 

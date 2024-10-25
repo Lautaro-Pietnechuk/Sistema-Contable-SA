@@ -27,7 +27,11 @@ public class CuentaServicio {
 
     @Transactional
     public Cuenta crearCuenta(Cuenta cuenta) {
-        // Aquí puedes agregar validaciones si es necesario
+        // Validaciones antes de guardar
+        if (cuenta.getNombre() == null || cuenta.getNombre().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de la cuenta no puede estar vacío.");
+        }
+        // Aquí puedes agregar más validaciones si es necesario
         return cuentaRepositorio.save(cuenta);
     }
 
@@ -49,7 +53,6 @@ public class CuentaServicio {
         
         // Actualizamos los campos necesarios
         cuentaExistente.setNombre(cuentaActualizada.getNombre());
-        cuentaExistente.setCodigo(cuentaActualizada.getCodigo());
         cuentaExistente.setTipo(cuentaActualizada.getTipo());
         cuentaExistente.setRecibeSaldo(cuentaActualizada.getRecibeSaldo());
         cuentaExistente.setSaldoActual(cuentaActualizada.getSaldoActual());
@@ -73,17 +76,16 @@ public class CuentaServicio {
 
     @Transactional(readOnly = true)
     public List<Cuenta> obtenerCuentasRecibeSaldo() {
-    return cuentaRepositorio.findAll()
-            .stream()
-            .filter(Cuenta::getRecibeSaldo) // Filtrar solo las cuentas que reciben saldo
-            .collect(Collectors.toList());
+        return cuentaRepositorio.findAll()
+                .stream()
+                .filter(Cuenta::getRecibeSaldo) // Filtrar solo las cuentas que reciben saldo
+                .collect(Collectors.toList());
     }
 
     public Cuenta buscarPorCodigo(Long codigo) {
         return cuentaRepositorio.findById(codigo)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con ID: " + codigo));
     }
-
 
     public boolean haSidoUtilizadaEnAsiento(Long cuentaId) {
         return cuentaAsientoRepositorio.existsByCuentaCodigo(cuentaId);

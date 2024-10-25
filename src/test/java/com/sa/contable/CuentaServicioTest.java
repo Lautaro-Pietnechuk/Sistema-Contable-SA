@@ -10,6 +10,9 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sa.contable.entidades.Cuenta;
@@ -31,7 +34,7 @@ public class CuentaServicioTest {
         cuenta.setNombre("Test Cuenta");
         cuenta.setTipo("Activo");
         cuenta.setRecibeSaldo(true);
-        cuenta.setSaldoActual(0L);
+        cuenta.setSaldoActual(BigDecimal.ZERO);
 
         when(cuentaRepositorio.save(any(Cuenta.class))).thenReturn(cuenta);
 
