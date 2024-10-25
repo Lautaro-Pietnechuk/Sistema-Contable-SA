@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
-
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -10,7 +10,7 @@ const Login = () => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext); // Usar el contexto de autenticación
+    const { login } = useContext(AuthContext);
 
     const handleLogin = async () => {
         if (!username || !password) {
@@ -18,7 +18,7 @@ const Login = () => {
             return;
         }
     
-        setLoading(true); // Mostrar indicador de carga
+        setLoading(true);
     
         try {
             const response = await axios.post('http://localhost:8080/api/login', {
@@ -26,14 +26,18 @@ const Login = () => {
                 contraseña: password,
             });
     
-            // Asegúrate de que el servidor esté devolviendo un solo rol
-            console.log("Respuesta del servidor:", response.data);
-            const { token, rol } = response.data; // Extraer token y rol
+            const { token } = response.data; // Extraer solo el token de la respuesta
 
-            login(token, rol); // Llamar a la función login del contexto con token y rol
+            // Decodificar el token
+            const decodedToken = jwtDecode(token);
+            const rol = decodedToken.rol; // Obtener el rol del token
+            const userId = decodedToken.sub; // Obtener el ID del usuario del token
+
+            // Llamar a la función login del contexto
+            login(token, [rol], userId);
     
             setMessage('Inicio de sesión exitoso.');
-            navigate('/cuentas'); // Redirigir al usuario
+            navigate('/cuentas');
         } catch (error) {
             setLoading(false);
             if (error.response) {

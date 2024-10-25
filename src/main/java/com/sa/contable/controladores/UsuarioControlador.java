@@ -12,7 +12,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,47 +51,51 @@ public class UsuarioControlador {
     private HttpServletRequest request;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Usuario usuario, HttpServletResponse response) {    
-        logger.info("Intento de inicio de sesión para el usuario: {}", usuario.getNombreUsuario());
-        try {
-            Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
-            if (loggedInUser.isPresent()) {
-                Usuario user = loggedInUser.get();
+public ResponseEntity<?> login(@RequestBody Usuario usuario, HttpServletResponse response) {    
+    logger.info("Intento de inicio de sesión para el usuario: {}", usuario.getNombreUsuario());
+    try {
+        Optional<Usuario> loggedInUser = usuarioServicio.iniciarSesion(usuario.getNombreUsuario(), usuario.getContraseña());
+        if (loggedInUser.isPresent()) {
+            Usuario user = loggedInUser.get();
 
             // Generar el token utilizando el servicio
-                String token = usuarioServicio.generarToken(user);
+            String token = usuarioServicio.generarToken(user);
 
             // Crear la cookie con el token
-                Cookie cookie = new Cookie("token", token);
-                cookie.setHttpOnly(true); // No accesible desde JavaScript
-                cookie.setSecure(false); // Cambiado a false para pruebas locales
-                cookie.setPath("/"); // Disponible para todas las rutas del backend
-                cookie.setMaxAge(24 * 60 * 60); // 1 día de duración
-                response.addCookie(cookie); // Agregar la cookie a la respuesta
+            Cookie cookie = new Cookie("token", token);
+            cookie.setHttpOnly(true); // No accesible desde JavaScript
+            cookie.setSecure(false); // Cambiado a false para pruebas locales
+            cookie.setPath("/"); // Disponible para todas las rutas del backend
+            cookie.setMaxAge(24 * 60 * 60); // 1 día de duración
+            response.addCookie(cookie); // Agregar la cookie a la respuesta
 
             // Obtener el nombre del rol del usuario
-                String rolNombre = user.getRol().getNombre(); // Obtener el nombre del rol
+            String rolNombre = user.getRol().getNombre(); // Obtener el nombre del rol
 
-                logger.info("Rol del usuario: {}", rolNombre);
-                logger.info("Login exitoso para el usuario: {}", usuario.getNombreUsuario());
+            // Obtener la ID del usuario
+            Long userId = user.getId(); // Obtener la ID del usuario
 
-            // Devolver token y rol en la respuesta
-                return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of("message", "Login exitoso", "token", token, "rol", rolNombre));
-            } else {
-                logger.warn("Usuario o contraseña incorrectos para: {}", usuario.getNombreUsuario());
-                return ResponseEntity.status(401)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of("error", "Usuario o contraseña incorrectos"));
-            }
-        } catch (Exception e) {
-            logger.error("Error en el inicio de sesión para el usuario: {}", usuario.getNombreUsuario(), e);
-            return ResponseEntity.status(500)
+            logger.info("Rol del usuario: {}", rolNombre);
+            logger.info("Login exitoso para el usuario: {}", usuario.getNombreUsuario());
+
+            // Devolver token, rol y ID en la respuesta
+            return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Map.of("error", "Error en el servidor"));
+                .body(Map.of("message", "Login exitoso", "token", token, "rol", rolNombre, "id", userId)); // Agregar ID aquí
+        } else {
+            logger.warn("Usuario o contraseña incorrectos para: {}", usuario.getNombreUsuario());
+            return ResponseEntity.status(401)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("error", "Usuario o contraseña incorrectos"));
         }
+    } catch (Exception e) {
+        logger.error("Error en el inicio de sesión para el usuario: {}", usuario.getNombreUsuario(), e);
+        return ResponseEntity.status(500)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(Map.of("error", "Error en el servidor"));
     }
+}
+
 
 
 

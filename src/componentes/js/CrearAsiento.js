@@ -1,258 +1,197 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import '../css/CrearAsiento.css';
+import { jwtDecode } from "jwt-decode";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const CrearAsiento = () => {
-    const [descripcion, setDescripcion] = useState('');
-    const [mensajeExito, setMensajeExito] = useState('');
-    const [mensajeError, setMensajeError] = useState('');
-    const [cuentas, setCuentas] = useState([]);
-    const [cuentaSeleccionada, setCuentaSeleccionada] = useState('');
-    const [monto, setMonto] = useState('');
-    const [saldoCuenta, setSaldoCuenta] = useState(0);
-    const [asientos, setAsientos] = useState([]);
-    const [asientoSeleccionado, setAsientoSeleccionado] = useState('');
-    const [saldoResultado, setSaldoResultado] = useState(0);
-    const [esDebe, setEsDebe] = useState(true); // Control entre 'Debe' y 'Haber'
-    const navigate = useNavigate();
-    const fechaActual = new Date().toISOString().slice(0, 10);
+  const [usuario, setUsuario] = useState(null);
+  const [mensajeError, setMensajeError] = useState("");
+  const [mensajeExito, setMensajeExito] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [transacciones, setTransacciones] = useState([{ cuenta: "", tipo: "debe", monto: 0 }]);
+  const [cuentas, setCuentas] = useState([]);
+  
+  // Fecha actual
+  const fechaActual = new Date().toISOString().split("T")[0];
 
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        if (!storedToken) {
-            alert('Sesión expirada o no iniciada. Por favor, inicie sesión.');
-            navigate('/login');
-        } else {
-            cargarCuentas(storedToken);
-            cargarAsientos(storedToken);
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) {
+      setMensajeError("Sesión expirada o no iniciada. Por favor, inicie sesión.");
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(storedToken);
+      console.log("Contenido decodificado del token:", decoded);
+
+      // Verificar que el token contenga la información necesaria
+      if (!decoded.sub || !decoded.id || !decoded.rol) {
+        setMensajeError("Información del usuario incompleta en el token.");
+        return; // Detener la ejecución si la información es incompleta
+      }
+
+      // Establecer el usuario usando el ID y nombre de usuario
+      setUsuario({ id: decoded.id, nombre: decoded.sub, rol: decoded.roles });
+
+      // Cargar cuentas
+      cargarCuentas(storedToken);
+    } catch (error) {
+      console.error("Error al decodificar el token:", error);
+      setMensajeError("Error al decodificar el token.");
+    }
+  }, []);
+
+  const cargarCuentas = async (token) => {
+    try {
+      const respuesta = await axios.get("http://localhost:8080/api/cuentas/recibeSaldo", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const cuentasFiltradas = respuesta.data.filter((cuenta) => cuenta.recibeSaldo);
+      setCuentas(cuentasFiltradas);
+    } catch (error) {
+      console.error("Error al obtener cuentas:", error);
+      setMensajeError("Error al obtener cuentas.");
+    }
+  };
+
+  const handleAddTransaccion = () => {
+    setTransacciones([...transacciones, { cuenta: "", tipo: "debe", monto: 0 }]);
+  };
+
+  const handleRemoveTransaccion = (index) => {
+    const nuevasTransacciones = transacciones.filter((_, i) => i !== index);
+    setTransacciones(nuevasTransacciones);
+  };
+
+  const handleTransaccionChange = (index, field, value) => {
+    const nuevasTransacciones = [...transacciones];
+    nuevasTransacciones[index][field] = value;
+    setTransacciones(nuevasTransacciones);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const storedToken = localStorage.getItem("token");
+
+    const movimientos = transacciones.map((transaccion) => ({
+      cuentaCodigo: transaccion.cuenta,
+      debe: transaccion.tipo === "debe" ? transaccion.monto : 0,
+      haber: transaccion.tipo === "haber" ? transaccion.monto : 0,
+    }));
+
+    // Verificar si hay al menos dos movimientos antes de enviar
+    if (movimientos.length < 2) {
+      setMensajeError("El asiento debe contener al menos dos movimientos.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/asientos/crear/${usuario.id}`, // ID del usuario en la URL
+        {
+          descripcion,
+          movimientos, // Movimientos en el cuerpo de la solicitud
+          fecha: fechaActual // Incluye la fecha actual en la solicitud
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${storedToken}`, // Token de autenticación
+          },
         }
-    }, [navigate]);
+      );
 
-    const cargarCuentas = async (token) => {
-        try {
-            const respuesta = await axios.get('http://localhost:8080/api/cuentas/recibeSaldo', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            
-            // Verificar si la respuesta contiene cuentas
-            if (respuesta.data && respuesta.data.length > 0) {
-                setCuentas(respuesta.data);
-            } else {
-                // Si no hay cuentas, establece un mensaje de error
-                setMensajeError('No hay cuentas disponibles.');
-            }
-        } catch (error) {
-            console.error('Error al obtener cuentas:', error);
-            setMensajeError('Error al obtener cuentas.');
-        }
-    };
+      console.log("Respuesta del servidor:", response.data); // Log de la respuesta
+      if (response.status === 200) {
+        setMensajeExito("Asiento registrado con éxito.");
+        setDescripcion("");
+        setTransacciones([{ cuenta: "", tipo: "debe", monto: 0 }]);
+        setMensajeError(""); // Limpiar mensaje de error al registrar con éxito
+      }
+    } catch (error) {
+      console.error("Error al registrar el asiento:", error);
+      if (error.response) {
+        console.error("Detalles del error:", error.response.data);
+        const errorMsg = error.response.data.mensaje || "Error al registrar el asiento.";
+        setMensajeError(errorMsg);
+      } else {
+        setMensajeError("Error al registrar el asiento.");
+      }
+    }
+  };
 
-    const cargarAsientos = async (token) => {
-        try {
-            const respuesta = await axios.get('http://localhost:8080/api/asientos/listar', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            console.log('Asientos cargados:', respuesta.data); // Log para verificar la respuesta
-            setAsientos(respuesta.data || []);
-        } catch (error) {
-            console.error('Error al obtener asientos:', error);
-            setMensajeError('Error al obtener asientos.');
-        }
-    };
-
-    const obtenerUsuarioDelToken = () => {
-        try {
-            const storedToken = localStorage.getItem('token');
-            const decoded = jwtDecode(storedToken);
-            return decoded.usuarioId || 1;
-        } catch (error) {
-            console.error('Error al decodificar el token:', error);
-            return 1;
-        }
-    };
-
-    const manejarEnvioAsiento = async (e) => {
-        e.preventDefault();
-        if (!descripcion.trim()) {
-            setMensajeError('La descripción no puede estar vacía.');
-            return;
-        }
-
-        const nuevoAsiento = { descripcion, fecha: fechaActual };
-        try {
-            const token = localStorage.getItem('token');
-            await axios.post('http://localhost:8080/api/asientos/crear', nuevoAsiento, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            setMensajeExito('Asiento creado con éxito.');
-            setDescripcion('');
-            cargarAsientos(token);
-        } catch (error) {
-            console.error('Error al crear el asiento:', error);
-            setMensajeError('Error al crear el asiento.');
-        }
-    };
-
-    const manejarEnvioMovimiento = async (e) => {
-        e.preventDefault();
-    
-        // Agregar log para verificar el valor de asientoSeleccionado
-        console.log('Asiento seleccionado:', asientoSeleccionado);
-    
-        if (!asientoSeleccionado) {
-            setMensajeError('Debe seleccionar un asiento válido.');
-            setTimeout(() => setMensajeError(''), 3000);
-            return;
-        }
-    
-        if (!monto || parseFloat(monto) <= 0) {
-            setMensajeError('El monto debe ser mayor a cero.');
-            setTimeout(() => setMensajeError(''), 3000);
-            return;
-        }
-    
-        const nuevoMovimiento = {
-            cuentaCodigo: parseInt(cuentaSeleccionada, 10),
-            debe: esDebe ? parseFloat(monto) : 0,
-            haber: esDebe ? 0 : parseFloat(monto),
-            asientoId: parseInt(asientoSeleccionado, 10), // Asegúrate de que aquí se envía el ID correcto
-            saldo: saldoResultado,
-        };
-    
-        console.log('Movimiento a enviar:', nuevoMovimiento);
-    
-        try {
-            const storedToken = localStorage.getItem('token');
-            await axios.post('http://localhost:8080/api/movimientos/crear', nuevoMovimiento, {
-                headers: { Authorization: `Bearer ${storedToken}` },
-            });
-    
-            setMensajeExito('Movimiento creado con éxito.');
-            setTimeout(() => setMensajeExito(''), 3000);
-    
-            // Limpiar los campos del formulario después de enviar
-            setCuentaSeleccionada('');
-            setMonto('');
-            setAsientoSeleccionado('');
-            setSaldoResultado(0);
-    
-            cargarAsientos(storedToken);
-        } catch (error) {
-            console.error('Error al crear el movimiento:', error);
-            setMensajeError(error.response?.data?.message || 'Error al crear el movimiento.');
-            setTimeout(() => setMensajeError(''), 3000);
-        }
-    };
-    
-    const obtenerSaldoCuenta = async (cuentaCodigo) => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8080/api/cuentas/${cuentaCodigo}/saldo`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setSaldoCuenta(response.data.saldo);
-        } catch (error) {
-            console.error('Error al obtener saldo:', error);
-            setMensajeError('Error al obtener saldo.');
-        }
-    };
-
-    const calcularSaldoResultado = () => {
-        const montoNumerico = parseFloat(monto) || 0;
-        const nuevoSaldo = esDebe ? saldoCuenta + montoNumerico : saldoCuenta - montoNumerico;
-        setSaldoResultado(nuevoSaldo);
-    };
-
-    useEffect(() => {
-        calcularSaldoResultado();
-    }, [monto, esDebe, saldoCuenta]);
-
-    const handleCuentaChange = (e) => {
-        const cuenta = e.target.value;
-        setCuentaSeleccionada(cuenta);
-        obtenerSaldoCuenta(cuenta);
-    };
-
-    return (
-        <div className="crear-asiento">
-            <h2>Crear Asiento</h2>
-            <form onSubmit={manejarEnvioAsiento}>
-                <label htmlFor="descripcion">Descripción:</label>
-                <input
-                    type="text"
-                    id="descripcion"
-                    value={descripcion}
-                    onChange={(e) => setDescripcion(e.target.value)}
-                    required
-                />
-                <button type="submit">Crear Asiento</button>
-            </form>
-
-            <h2>Crear Movimiento</h2>
-            <form onSubmit={manejarEnvioMovimiento}>
-                <label htmlFor="asiento">Seleccionar Asiento:</label>
-                <select
-                    id="asiento"
-                    value={asientoSeleccionado}
-                    onChange={(e) => {
-                        console.log('Asiento seleccionado:', e.target.value); // Log para verificar el valor seleccionado
-                        setAsientoSeleccionado(e.target.value);
-                    }}
-                    required
-                >
-                    <option value="">Seleccione un asiento</option>
-                    {asientos.map((asiento) => (
-                        <option key={asiento.id} value={asiento.id}>
-                            {asiento.descripcion}
-                        </option>
-                    ))}
-                </select>
-
-                <label htmlFor="cuenta">Seleccionar Cuenta:</label>
-                <select
-                    id="cuenta"
-                    value={cuentaSeleccionada}
-                    onChange={handleCuentaChange}
-                    required
-                >
-                    <option value="">Seleccione una cuenta</option>
-                    {cuentas.map((cuenta) => (
-                        <option key={cuenta.codigo} value={cuenta.codigo}>
-                            {cuenta.nombre}
-                        </option>
-                    ))}
-                </select>
-
-                <div>
-                    <label>Tipo de Movimiento:</label>
-                    <label>
-                        <input type="radio" checked={esDebe} onChange={() => setEsDebe(true)} /> Debe
-                    </label>
-                    <label>
-                        <input type="radio" checked={!esDebe} onChange={() => setEsDebe(false)} /> Haber
-                    </label>
-                </div>
-
-                <label htmlFor="monto">Monto:</label>
-                <input
-                    type="number"
-                    id="monto"
-                    value={monto}
-                    onChange={(e) => setMonto(e.target.value)}
-                    required
-                />
-
-                <p>Saldo Resultante: {saldoResultado}</p>
-                <button type="submit">Crear Movimiento</button>
-            </form>
-
-            {mensajeExito && <p className="exito">{mensajeExito}</p>}
-            {mensajeError && <p className="error">{mensajeError}</p>}
+  return (
+    <div>
+      <h2>Registrar Asiento Contable</h2>
+      {usuario && (
+        <div>
+          <strong>Usuario:</strong> {usuario.nombre}
         </div>
-    );
+      )}
+      <div>
+        <strong>Fecha:</strong> {fechaActual}
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Descripción:</label>
+          <input
+            type="text"
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+            required
+          />
+        </div>
+
+        <h3>Transacciones</h3>
+        {transacciones.map((transaccion, index) => (
+          <div key={index} style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+            <select
+              value={transaccion.cuenta}
+              onChange={(e) => handleTransaccionChange(index, "cuenta", e.target.value)}
+              required
+            >
+              <option value="">Seleccione una cuenta</option>
+              {cuentas.map((cuenta) => (
+                <option key={cuenta.id} value={cuenta.codigo}>
+                  {cuenta.nombre}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={transaccion.tipo}
+              onChange={(e) => handleTransaccionChange(index, "tipo", e.target.value)}
+            >
+              <option value="debe">Debe</option>
+              <option value="haber">Haber</option>
+            </select>
+
+            <input
+              type="number"
+              value={transaccion.monto}
+              onChange={(e) => handleTransaccionChange(index, "monto", parseFloat(e.target.value))}
+              placeholder="Monto"
+              min="0"
+              required
+            />
+
+            <button type="button" onClick={() => handleRemoveTransaccion(index)}>
+              Eliminar
+            </button>
+          </div>
+        ))}
+        <button type="button" onClick={handleAddTransaccion}>
+          Agregar Transacción
+        </button>
+
+        <button type="submit">Registrar Asiento</button>
+      </form>
+
+      {mensajeError && <p style={{ color: "red" }}>{mensajeError}</p>}
+      {mensajeExito && <p className="exito">{mensajeExito}</p>}
+    </div>
+  );
 };
 
 export default CrearAsiento;

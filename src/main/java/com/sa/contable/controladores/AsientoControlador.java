@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -56,80 +57,91 @@ public class AsientoControlador {
 
     // Endpoint para crear un nuevo asiento contable
     @PostMapping("/crear/{idUsuario}")
-    public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody AsientoDTO asientoDTO) {
-        // Validar que el ID del usuario no sea nulo
-        if (idUsuario == null) {
-            return ResponseEntity.badRequest().body("El ID del usuario no puede ser nulo");
-        }
-    
-        // Verificar que haya al menos dos movimientos
-        if (asientoDTO.getMovimientos() == null || asientoDTO.getMovimientos().size() < 2) {
-            return ResponseEntity.badRequest().body("El asiento debe contener al menos dos movimientos.");
-        }
-    
-        // Verificar que las cuentas de los movimientos sean diferentes
-        Set<Long> cuentasUnicas = asientoDTO.getMovimientos().stream()
-                                            .map(CuentaAsientoDTO::getCuentaCodigo)
-                                            .collect(Collectors.toSet());
-        if (cuentasUnicas.size() < 2) {
-            return ResponseEntity.badRequest().body("Los movimientos deben involucrar al menos dos cuentas diferentes.");
-        }
-    
-        // Calcular el total del debe y el haber
-        BigDecimal totalDebe = asientoDTO.getMovimientos().stream()
-            .map(CuentaAsientoDTO::getDebe)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-    
-        BigDecimal totalHaber = asientoDTO.getMovimientos().stream()
-            .map(CuentaAsientoDTO::getHaber)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-    
-        // Verificar que el total de debe sea igual al total de haber
-        if (totalDebe.compareTo(totalHaber) != 0) {
-            return ResponseEntity.badRequest().body("El total del debe debe ser igual al total del haber.");
-        }
-    
-        // Si todas las validaciones pasan, proceder a crear el asiento
-        try {
-            Asiento nuevoAsiento = asientoServicio.crearAsiento(asientoDTO, idUsuario);
-            
-            // Crear los movimientos y asociarlos con el nuevo asiento
-            for (CuentaAsientoDTO movimientoDTO : asientoDTO.getMovimientos()) {
-                Cuenta cuenta = cuentaServicio.buscarPorCodigo(movimientoDTO.getCuentaCodigo());
-                if (cuenta == null) {
-                    return ResponseEntity.badRequest().body("La cuenta con código " + movimientoDTO.getCuentaCodigo() + " no existe.");
-                }
-    
-                // Crear el nuevo movimiento
-                CuentaAsiento nuevoMovimiento = new CuentaAsiento();
-                nuevoMovimiento.setCuenta(cuenta);
-                nuevoMovimiento.setAsiento(nuevoAsiento);
-                nuevoMovimiento.setDebe(movimientoDTO.getDebe());
-                nuevoMovimiento.setHaber(movimientoDTO.getHaber());
-    
-                // Calcular y establecer el nuevo saldo de la cuenta
-                BigDecimal saldoActual = Optional.ofNullable(cuenta.getSaldoActual()).orElse(BigDecimal.ZERO);
-                nuevoMovimiento.setSaldo(saldoActual.add(Optional.ofNullable(movimientoDTO.getDebe()).orElse(BigDecimal.ZERO))
-                                                      .subtract(Optional.ofNullable(movimientoDTO.getHaber()).orElse(BigDecimal.ZERO)));
-    
-                // Guardar el movimiento
-                cuentaAsientoServicio.crearMovimiento(nuevoMovimiento);
-    
-                // Actualizar el saldo de la cuenta
-                cuenta.setSaldoActual(nuevoMovimiento.getSaldo());
-                cuentaServicio.actualizarCuenta(cuenta.getCodigo(), cuenta); // Asegúrate de que tienes un método para actualizar la cuenta
-            }
-    
-            return ResponseEntity.ok(nuevoAsiento);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Error interno del servidor: " + e.getMessage());
-        }
+public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody AsientoDTO asientoDTO) {
+    // Validar que el ID del usuario no sea nulo
+    if (idUsuario == null) {
+        return ResponseEntity.badRequest().body("El ID del usuario no puede ser nulo.");
     }
+
+    // Verificar que haya al menos dos movimientos
+    if (asientoDTO.getMovimientos() == null || asientoDTO.getMovimientos().size() < 2) {
+        return ResponseEntity.badRequest().body("El asiento debe contener al menos dos movimientos.");
+    }
+
+    // Verificar que las cuentas de los movimientos sean diferentes
+    Set<Long> cuentasUnicas = asientoDTO.getMovimientos().stream()
+                                        .map(CuentaAsientoDTO::getCuentaCodigo)
+                                        .collect(Collectors.toSet());
+    if (cuentasUnicas.size() < 2) {
+        return ResponseEntity.badRequest().body("Los movimientos deben involucrar al menos dos cuentas diferentes.");
+    }
+
+    // Calcular el total del debe y el haber
+    BigDecimal totalDebe = asientoDTO.getMovimientos().stream()
+        .map(CuentaAsientoDTO::getDebe)
+        .filter(Objects::nonNull)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    BigDecimal totalHaber = asientoDTO.getMovimientos().stream()
+        .map(CuentaAsientoDTO::getHaber)
+        .filter(Objects::nonNull)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    // Verificar que el total de debe sea igual al total de haber
+    if (totalDebe.compareTo(totalHaber) != 0) {
+        String mensaje = String.format(
+            "El saldo no cierra: El total del debe (%s) no coincide con el total del haber (%s).",
+            totalDebe, totalHaber
+        );
+        return ResponseEntity.badRequest().body(Map.of("mensaje", mensaje));
+    }
+
+    // Si todas las validaciones pasan, proceder a crear el asiento
+    try {
+        Asiento nuevoAsiento = asientoServicio.crearAsiento(asientoDTO, idUsuario);
+
+        // Crear los movimientos y asociarlos con el nuevo asiento
+        for (CuentaAsientoDTO movimientoDTO : asientoDTO.getMovimientos()) {
+            Cuenta cuenta = cuentaServicio.buscarPorCodigo(movimientoDTO.getCuentaCodigo());
+            if (cuenta == null) {
+                return ResponseEntity.badRequest().body(
+                    Map.of("mensaje", "La cuenta con código " + movimientoDTO.getCuentaCodigo() + " no existe.")
+                );
+            }
+
+            // Crear el nuevo movimiento
+            CuentaAsiento nuevoMovimiento = new CuentaAsiento();
+            nuevoMovimiento.setCuenta(cuenta);
+            nuevoMovimiento.setAsiento(nuevoAsiento);
+            nuevoMovimiento.setDebe(movimientoDTO.getDebe());
+            nuevoMovimiento.setHaber(movimientoDTO.getHaber());
+
+            // Calcular y establecer el nuevo saldo de la cuenta
+            BigDecimal saldoActual = Optional.ofNullable(cuenta.getSaldoActual()).orElse(BigDecimal.ZERO);
+            nuevoMovimiento.setSaldo(
+                saldoActual.add(Optional.ofNullable(movimientoDTO.getDebe()).orElse(BigDecimal.ZERO))
+                           .subtract(Optional.ofNullable(movimientoDTO.getHaber()).orElse(BigDecimal.ZERO))
+            );
+
+            // Guardar el movimiento
+            cuentaAsientoServicio.crearMovimiento(nuevoMovimiento);
+
+            // Actualizar el saldo de la cuenta
+            cuenta.setSaldoActual(nuevoMovimiento.getSaldo());
+            cuentaServicio.actualizarCuenta(cuenta.getCodigo(), cuenta);
+        }
+
+        return ResponseEntity.ok(nuevoAsiento);
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).body(
+            Map.of("mensaje", "Error interno del servidor: " + e.getMessage())
+        );
+    }
+}
+
     
 
 

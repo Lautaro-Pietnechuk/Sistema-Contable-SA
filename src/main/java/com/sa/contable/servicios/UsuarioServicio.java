@@ -59,6 +59,7 @@ public class UsuarioServicio {
         return Jwts.builder()
                 .setSubject(usuario.getNombreUsuario())
                 .claim("rol", usuario.getRol().getNombre()) // Añadir rol al token
+                .claim("id", usuario.getId()) // Añadir ID del usuario al token
                 .signWith(key, SignatureAlgorithm.HS512) // Usar la clave secreta convertida
                 .compact();
     }
