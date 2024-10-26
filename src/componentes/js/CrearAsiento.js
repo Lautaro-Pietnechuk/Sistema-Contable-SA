@@ -9,9 +9,7 @@ const CrearAsiento = () => {
   const [descripcion, setDescripcion] = useState("");
   const [transacciones, setTransacciones] = useState([{ cuenta: "", tipo: "debe", monto: 0 }]);
   const [cuentas, setCuentas] = useState([]);
-  
-  // Fecha actual
-  const fechaActual = new Date().toISOString().split("T")[0];
+  const [fechaActual, setFechaActual] = useState(""); // Nuevo estado para la fecha
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -24,17 +22,14 @@ const CrearAsiento = () => {
       const decoded = jwtDecode(storedToken);
       console.log("Contenido decodificado del token:", decoded);
 
-      // Verificar que el token contenga la información necesaria
       if (!decoded.sub || !decoded.id || !decoded.rol) {
         setMensajeError("Información del usuario incompleta en el token.");
-        return; // Detener la ejecución si la información es incompleta
+        return;
       }
 
-      // Establecer el usuario usando el ID y nombre de usuario
       setUsuario({ id: decoded.id, nombre: decoded.sub, rol: decoded.roles });
-
-      // Cargar cuentas
       cargarCuentas(storedToken);
+      setFechaActual(obtenerFechaActual()); // Establecer la fecha actual aquí
     } catch (error) {
       console.error("Error al decodificar el token:", error);
       setMensajeError("Error al decodificar el token.");
@@ -70,6 +65,17 @@ const CrearAsiento = () => {
     setTransacciones(nuevasTransacciones);
   };
 
+  const obtenerFechaActual = () => {
+    const fecha = new Date();
+    return new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000).toISOString().split("T")[0]; // YYYY-MM-DD
+  };
+
+  const sumarUnDia = (fecha) => {
+    const nuevaFecha = new Date(fecha);
+    nuevaFecha.setDate(nuevaFecha.getDate() + 1); // Sumar un día
+    return nuevaFecha.toISOString().split("T")[0]; // Retorna la fecha en formato YYYY-MM-DD
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const storedToken = localStorage.getItem("token");
@@ -80,33 +86,34 @@ const CrearAsiento = () => {
       haber: transaccion.tipo === "haber" ? transaccion.monto : 0,
     }));
 
-    // Verificar si hay al menos dos movimientos antes de enviar
     if (movimientos.length < 2) {
       setMensajeError("El asiento debe contener al menos dos movimientos.");
       return;
     }
 
+    console.log("Datos a enviar al backend:", { descripcion, movimientos, fecha: fechaActual });
+
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/asientos/crear/${usuario.id}`, // ID del usuario en la URL
+        `http://localhost:8080/api/asientos/crear/${usuario.id}`,
         {
           descripcion,
-          movimientos, // Movimientos en el cuerpo de la solicitud
-          fecha: fechaActual // Incluye la fecha actual en la solicitud
+          movimientos,
+          fecha: sumarUnDia(fechaActual), // Suma un día a la fecha antes de enviarla
         },
         {
           headers: {
-            Authorization: `Bearer ${storedToken}`, // Token de autenticación
+            Authorization: `Bearer ${storedToken}`,
           },
         }
       );
 
-      console.log("Respuesta del servidor:", response.data); // Log de la respuesta
+      console.log("Respuesta del servidor:", response.data);
       if (response.status === 200) {
         setMensajeExito("Asiento registrado con éxito.");
         setDescripcion("");
         setTransacciones([{ cuenta: "", tipo: "debe", monto: 0 }]);
-        setMensajeError(""); // Limpiar mensaje de error al registrar con éxito
+        setMensajeError("");
       }
     } catch (error) {
       console.error("Error al registrar el asiento:", error);
@@ -129,7 +136,7 @@ const CrearAsiento = () => {
         </div>
       )}
       <div>
-        <strong>Fecha:</strong> {fechaActual}
+        <strong>Fecha:</strong> {fechaActual} {/* Muestra la fecha actual guardada en el estado */}
       </div>
 
       <form onSubmit={handleSubmit}>

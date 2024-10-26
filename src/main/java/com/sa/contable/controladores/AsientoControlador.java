@@ -58,17 +58,14 @@ public class AsientoControlador {
     // Endpoint para crear un nuevo asiento contable
     @PostMapping("/crear/{idUsuario}")
 public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody AsientoDTO asientoDTO) {
-    // Validar que el ID del usuario no sea nulo
     if (idUsuario == null) {
         return ResponseEntity.badRequest().body("El ID del usuario no puede ser nulo.");
     }
 
-    // Verificar que haya al menos dos movimientos
     if (asientoDTO.getMovimientos() == null || asientoDTO.getMovimientos().size() < 2) {
         return ResponseEntity.badRequest().body("El asiento debe contener al menos dos movimientos.");
     }
 
-    // Verificar que las cuentas de los movimientos sean diferentes
     Set<Long> cuentasUnicas = asientoDTO.getMovimientos().stream()
                                         .map(CuentaAsientoDTO::getCuentaCodigo)
                                         .collect(Collectors.toSet());
@@ -76,7 +73,6 @@ public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody
         return ResponseEntity.badRequest().body("Los movimientos deben involucrar al menos dos cuentas diferentes.");
     }
 
-    // Calcular el total del debe y el haber
     BigDecimal totalDebe = asientoDTO.getMovimientos().stream()
         .map(CuentaAsientoDTO::getDebe)
         .filter(Objects::nonNull)
@@ -87,7 +83,6 @@ public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody
         .filter(Objects::nonNull)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    // Verificar que el total de debe sea igual al total de haber
     if (totalDebe.compareTo(totalHaber) != 0) {
         String mensaje = String.format(
             "El saldo no cierra: El total del debe (%s) no coincide con el total del haber (%s).",
@@ -96,11 +91,9 @@ public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody
         return ResponseEntity.badRequest().body(Map.of("mensaje", mensaje));
     }
 
-    // Si todas las validaciones pasan, proceder a crear el asiento
     try {
         Asiento nuevoAsiento = asientoServicio.crearAsiento(asientoDTO, idUsuario);
 
-        // Crear los movimientos y asociarlos con el nuevo asiento
         for (CuentaAsientoDTO movimientoDTO : asientoDTO.getMovimientos()) {
             Cuenta cuenta = cuentaServicio.buscarPorCodigo(movimientoDTO.getCuentaCodigo());
             if (cuenta == null) {
@@ -109,25 +102,22 @@ public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody
                 );
             }
 
-            // Crear el nuevo movimiento
             CuentaAsiento nuevoMovimiento = new CuentaAsiento();
             nuevoMovimiento.setCuenta(cuenta);
             nuevoMovimiento.setAsiento(nuevoAsiento);
             nuevoMovimiento.setDebe(movimientoDTO.getDebe());
             nuevoMovimiento.setHaber(movimientoDTO.getHaber());
 
-            // Calcular y establecer el nuevo saldo de la cuenta
             BigDecimal saldoActual = Optional.ofNullable(cuenta.getSaldoActual()).orElse(BigDecimal.ZERO);
-            nuevoMovimiento.setSaldo(
-                saldoActual.add(Optional.ofNullable(movimientoDTO.getDebe()).orElse(BigDecimal.ZERO))
-                           .subtract(Optional.ofNullable(movimientoDTO.getHaber()).orElse(BigDecimal.ZERO))
-            );
 
-            // Guardar el movimiento
+            // Calcular el nuevo saldo considerando el tipo de cuenta
+            BigDecimal nuevoSaldo = calcularNuevoSaldo(cuenta, saldoActual, movimientoDTO);
+
+            nuevoMovimiento.setSaldo(nuevoSaldo);
+
             cuentaAsientoServicio.crearMovimiento(nuevoMovimiento);
 
-            // Actualizar el saldo de la cuenta
-            cuenta.setSaldoActual(nuevoMovimiento.getSaldo());
+            cuenta.setSaldoActual(nuevoSaldo);
             cuentaServicio.actualizarCuenta(cuenta.getCodigo(), cuenta);
         }
 
@@ -142,68 +132,104 @@ public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody
     }
 }
 
+// Método para calcular el nuevo saldo según el tipo de cuenta
+private BigDecimal calcularNuevoSaldo(Cuenta cuenta, BigDecimal saldoActual, CuentaAsientoDTO movimientoDTO) {
+    BigDecimal debe = Optional.ofNullable(movimientoDTO.getDebe()).orElse(BigDecimal.ZERO);
+    BigDecimal haber = Optional.ofNullable(movimientoDTO.getHaber()).orElse(BigDecimal.ZERO);
+
+    switch (cuenta.getTipo().toLowerCase()) {
+        case "activo":
+        case "egreso":
+            // El debe suma y el haber resta
+            return saldoActual.add(debe).subtract(haber);
+
+        case "pasivo":
+        case "patrimonio":
+        case "ingreso":
+            // El debe resta y el haber suma
+            return saldoActual.subtract(debe).add(haber);
+
+        default:
+            throw new IllegalArgumentException(
+                "Tipo de cuenta desconocido: " + cuenta.getTipo()
+            );
+    }
+}
+
+
+
     
 
 
 
-    @GetMapping("/listar")
-    public List<AsientoDTO> listarAsientos(
-            @RequestParam(required = false) String fechaInicio,
-            @RequestParam(required = false) String fechaFin) {
+@GetMapping("/listar")
+public List<AsientoDTO> listarAsientos(
+        @RequestParam(required = false) String fechaInicio,
+        @RequestParam(required = false) String fechaFin) {
 
-        // Formato para las fechas
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    // Formato para las fechas
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        // Si fechaFin es null o está en blanco, usa la fecha actual
-        LocalDate fin = (fechaFin == null || fechaFin.isBlank()) 
-                ? LocalDate.now() 
-                : LocalDate.parse(fechaFin.trim(), formatter);
+    // Si fechaFin es null o está en blanco, usa la fecha actual
+    LocalDate fin = (fechaFin == null || fechaFin.isBlank()) 
+            ? LocalDate.now() 
+            : LocalDate.parse(fechaFin.trim(), formatter);
 
-        // Si fechaInicio es null o está en blanco, usa 30 días atrás como valor por defecto
-        LocalDate inicio = (fechaInicio == null || fechaInicio.isBlank()) 
-                ? fin.minusDays(30) 
-                : LocalDate.parse(fechaInicio.trim(), formatter);
+    // Si fechaInicio es null o está en blanco, usa 30 días atrás como valor por defecto
+    LocalDate inicio = (fechaInicio == null || fechaInicio.isBlank()) 
+            ? fin.minusDays(30) 
+            : LocalDate.parse(fechaInicio.trim(), formatter);
 
-        // Convertimos LocalDate a Date para usarlo en la consulta
-        Date sqlFechaInicio = Date.valueOf(inicio);
-        Date sqlFechaFin = Date.valueOf(fin);
+    // Convertimos LocalDate a Date para usarlo en la consulta
+    Date sqlFechaInicio = Date.valueOf(inicio);
+    Date sqlFechaFin = Date.valueOf(fin);
 
-        // Lógica para listar los asientos entre fechaInicio y fechaFin
-        List<Asiento> asientos = asientoServicio.listarAsientos(sqlFechaInicio, sqlFechaFin);
+    // Llamada al servicio y log de la cantidad de asientos obtenidos
+    List<Asiento> asientos = asientoServicio.listarAsientos(sqlFechaInicio, sqlFechaFin);
+    System.out.println("Número de asientos obtenidos: " + asientos.size());
+
+    // Convertir a DTO
+    List<AsientoDTO> asientosDTO = asientos.stream().map(asiento -> {
+        AsientoDTO dto = new AsientoDTO();
         
-        // Convertir a DTO
-        List<AsientoDTO> asientosDTO = asientos.stream().map(asiento -> {
-            AsientoDTO dto = new AsientoDTO();
-            dto.setFecha(new java.sql.Date(asiento.getFecha().getTime()));
-            dto.setDescripcion(asiento.getDescripcion());
-            dto.setIdUsuario(asiento.getId_usuario());
-            dto.setId(asiento.getId());
-            
-            // Convertir cuentasAsientos a CuentaAsientoDTO
-            List<CuentaAsientoDTO> movimientosDTO = asiento.getCuentasAsientos().stream()
-                .map(cuentaAsiento -> {
-                    CuentaAsientoDTO movimientoDTO = new CuentaAsientoDTO();
-                    movimientoDTO.setId(cuentaAsiento.getId());
-                    
-                    // Asegúrate de asignar todos los campos necesarios
-                    if (cuentaAsiento.getCuenta() != null) {
-                        movimientoDTO.setCuentaNombre(cuentaAsiento.getCuenta().getNombre()); // Nombre de la cuenta
-                        movimientoDTO.setCuentaCodigo(cuentaAsiento.getCuenta().getCodigo()); // Código de la cuenta
-                    }
-                    movimientoDTO.setDebe(cuentaAsiento.getDebe());
-                    movimientoDTO.setHaber(cuentaAsiento.getHaber());
-                    movimientoDTO.setAsientoId(cuentaAsiento.getAsiento().getId()); // ID del asiento
-                    movimientoDTO.setSaldo(cuentaAsiento.getSaldo()); // Saldo
+        // Sumar un día a la fecha del asiento
+        LocalDate fechaAsiento = new java.sql.Date(asiento.getFecha().getTime()).toLocalDate().plusDays(1);
+        
+        dto.setFecha(java.sql.Date.valueOf(fechaAsiento));
+        dto.setDescripcion(asiento.getDescripcion());
+        dto.setIdUsuario(asiento.getId_usuario());
+        dto.setId(asiento.getId());
 
-                    return movimientoDTO;
-                }).collect(Collectors.toList());
+        // Convertir cuentasAsientos a CuentaAsientoDTO
+        List<CuentaAsientoDTO> movimientosDTO = asiento.getCuentasAsientos().stream()
+            .map(cuentaAsiento -> {
+                CuentaAsientoDTO movimientoDTO = new CuentaAsientoDTO();
+                movimientoDTO.setId(cuentaAsiento.getId());
 
-            dto.setMovimientos(movimientosDTO);
-            return dto;
-        }).collect(Collectors.toList());
+                // Log en caso de cuenta nula
+                if (cuentaAsiento.getCuenta() != null) {
+                    movimientoDTO.setCuentaNombre(cuentaAsiento.getCuenta().getNombre());
+                    movimientoDTO.setCuentaCodigo(cuentaAsiento.getCuenta().getCodigo());
+                } else {
+                    System.out.println("Cuenta nula en asiento ID: " + cuentaAsiento.getAsiento().getId());
+                }
 
-        return asientosDTO;
-    }
+                movimientoDTO.setDebe(cuentaAsiento.getDebe());
+                movimientoDTO.setHaber(cuentaAsiento.getHaber());
+                movimientoDTO.setAsientoId(cuentaAsiento.getAsiento().getId());
+                movimientoDTO.setSaldo(cuentaAsiento.getSaldo());
+
+                return movimientoDTO;
+            }).collect(Collectors.toList());
+
+        dto.setMovimientos(movimientosDTO);
+        return dto;
+    }).collect(Collectors.toList());
+
+    return asientosDTO;
+}
+
+
 
     private ResponseEntity<String> verificarPermisoAdministrador() {
         // Obtener el token del encabezado de autorización

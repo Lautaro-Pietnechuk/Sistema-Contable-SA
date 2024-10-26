@@ -18,4 +18,6 @@ public interface AsientoRepositorio extends JpaRepository<Asiento, Long> {
     // Método existente
     @Query("SELECT a FROM Asiento a")
     List<Asiento> findAllWithoutCuentasAsientos();
+
+    
 }

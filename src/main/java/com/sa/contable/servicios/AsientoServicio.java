@@ -56,7 +56,7 @@ public class AsientoServicio {
     for (Asiento asiento : asientos) {
         System.out.println("Asiento ID: " + asiento.getId());
         for (CuentaAsiento cuentaAsiento : asiento.getCuentasAsientos()) {
-            System.out.println("  Movimiento: " + cuentaAsiento);
+            System.out.println("Movimiento: " + cuentaAsiento);
         }
     }
     return asientos;
