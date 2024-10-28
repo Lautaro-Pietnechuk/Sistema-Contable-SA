@@ -1,9 +1,8 @@
 package com.sa.contable.entidades;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,7 +19,7 @@ public class Asiento {
     private Long id;
 
     @Column(nullable = false)
-    private Date fecha;
+    private LocalDate fecha;
 
     @Column(nullable = false)
     private String descripcion;
@@ -28,7 +27,7 @@ public class Asiento {
     @Column(nullable = false)
     private Long id_usuario;
     
-    @OneToMany(mappedBy = "asiento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "asiento", fetch = FetchType.EAGER)
     private Set<CuentaAsiento> cuentasAsientos;
 
     // Getters y Setters
@@ -40,11 +39,11 @@ public class Asiento {
         this.id = id;
     }
 
-    public Date getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 

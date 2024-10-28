@@ -22,6 +22,7 @@ C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\entidades\CuentaAsiento.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\entidades\Rol.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\entidades\Usuario.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\GlobalExceptionHandler.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\no-en-uso\GlobalExceptionHandler.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\no-en-uso\InicializadorDeRoles.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\repositorios\AsientoRepositorio.java
@@ -29,6 +30,7 @@ C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\repositorios\CuentaRepositorio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\repositorios\RolRepositorio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\repositorios\UsuarioRepositorio.java
+C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\response\AsientosResponse.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\AsientoServicio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\CuentaAsientoServicio.java
 C:\Users\cuent\OneDrive\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\CuentaServicio.java

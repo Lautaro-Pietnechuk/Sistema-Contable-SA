@@ -1,10 +1,10 @@
 package com.sa.contable.dto;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class AsientoDTO {
-    private Date fecha;
+    private LocalDate fecha;
     private String descripcion;
     private Long idUsuario;
     private List<CuentaAsientoDTO> movimientos;
@@ -20,11 +20,11 @@ public class AsientoDTO {
         this.id = id;
     }
     
-    public Date getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 

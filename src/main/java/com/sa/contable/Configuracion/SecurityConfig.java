@@ -119,7 +119,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     http.csrf(csrf -> csrf.disable())
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/api/login", "/api/register", "/api/usuarios/**").permitAll()
+            .requestMatchers("/api/login", "/api/register", "/api/usuarios/**", "/api/asientos/**").permitAll()
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
