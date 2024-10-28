@@ -1,11 +1,10 @@
-/* package com.sa.contable.no-en-uso; */
-/* 
+package com.sa.contable.entidades;
+
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-
-import com.sa.contable.usuario.UsuarioServicio;
+import com.sa.contable.servicios.UsuarioServicio;
 
 @Component
 public class InicializadorDeRoles {
@@ -19,8 +18,8 @@ public class InicializadorDeRoles {
     @Bean
     public CommandLineRunner asignarRolAdministrador() {
         return args -> {
-            Long usuarioId = 7L; // ID del usuario al que quieres asignar el rol
-            Long rolId = 7L;     // ID del rol 'Administrador'
+            Long usuarioId = 1L; // ID del usuario al que quieres asignar el rol
+            Long rolId = 1L;     // ID del rol 'Administrador'
 
             try {
                 if (usuarioServicio.existeUsuario(usuarioId)) {
@@ -34,4 +33,4 @@ public class InicializadorDeRoles {
             }
         };
     }
-} */
+} 

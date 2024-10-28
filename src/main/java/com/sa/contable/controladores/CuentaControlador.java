@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sa.contable.configuracion.JwtUtil;
-import com.sa.contable.dto.CuentaDTO;
-import com.sa.contable.dto.SaldoDTO;
+import com.sa.contable.DTO.CuentaDTO;
+import com.sa.contable.DTO.SaldoDTO;
 import com.sa.contable.entidades.Cuenta;
 import com.sa.contable.repositorios.CuentaAsientoRepositorio;
 import com.sa.contable.servicios.CuentaServicio;
@@ -81,6 +81,13 @@ private void asignarCuentaPadre(Cuenta cuenta) {
 
     String codigoStr = String.valueOf(codigo); // Convertir el código a String
 
+    // Verificar si el código es de una cuenta principal (como 100, 200, 300, etc.)
+    if (codigoStr.length() == 3 && codigoStr.endsWith("00")) {
+        // Estas cuentas no deben tener cuenta padre, así que finaliza el método aquí.
+        System.out.println("Código de la cuenta: " + codigo + " es una cuenta principal sin cuenta padre.");
+        return;
+    }
+
     // Determinar el código de la cuenta padre basado en los últimos dígitos
     if (codigoStr.length() == 3) {
         // Para códigos de longitud 3
@@ -109,8 +116,6 @@ private void asignarCuentaPadre(Cuenta cuenta) {
         }
     }
 }
-
-
 
 
 

@@ -1,15 +1,29 @@
-/* src/componentes/AgregarCuentas.css */
-
-.blocked-checkbox {
-    pointer-events: none;
-    opacity: 0.6;
+.crear-cuenta-modal {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.codigo-recibe-saldo {
-    display: flex;
-    align-items: center;
+.crear-cuenta-title {
+    margin-bottom: 20px;
+    font-size: 24px;
 }
 
-.codigo-recibe-saldo > div {
-    margin-right: 10px;
+.form-group {
+    margin-bottom: 15px;
+}
+
+.input-text, .input-select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.crear-cuenta-boton {
+    background-color: #007bff;
+    color: white;
+    padding: 10px
 }

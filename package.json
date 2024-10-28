@@ -63,7 +63,6 @@
     "nth-check": "^2.0.1",
     "postcss": "^8.4.31"
   },
-  "proxy": "http://localhost:8080",
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }

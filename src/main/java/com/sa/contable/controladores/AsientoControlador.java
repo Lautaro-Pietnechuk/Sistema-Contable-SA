@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sa.contable.configuracion.JwtUtil;
-import com.sa.contable.dto.AsientoDTO;
-import com.sa.contable.dto.CuentaAsientoDTO;
+import com.sa.contable.DTO.AsientoDTO;
+import com.sa.contable.DTO.CuentaAsientoDTO;
 import com.sa.contable.entidades.Asiento;
 import com.sa.contable.entidades.Cuenta;
 import com.sa.contable.entidades.CuentaAsiento;
