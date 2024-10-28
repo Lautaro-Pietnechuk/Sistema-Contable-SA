@@ -1,4 +1,4 @@
-package com.sa.contable.servicios; 
+/* package com.sa.contable.servicios; 
 
 
 import org.springframework.boot.CommandLineRunner;
@@ -33,3 +33,4 @@ public class InicializadorDeRoles {
         };
     }
 } 
+ */
