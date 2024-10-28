@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -80,6 +79,13 @@ private void asignarCuentaPadre(Cuenta cuenta) {
     Long codigoPadre = null;
 
     String codigoStr = String.valueOf(codigo); // Convertir el código a String
+
+    // Verificar si el código es de una cuenta principal (como 100, 200, 300, etc.)
+    if (codigoStr.length() == 3 && codigoStr.endsWith("00")) {
+        // Estas cuentas no deben tener cuenta padre, así que finaliza el método aquí.
+        System.out.println("Código de la cuenta: " + codigo + " es una cuenta principal sin cuenta padre.");
+        return;
+    }
 
     // Determinar el código de la cuenta padre basado en los últimos dígitos
     if (codigoStr.length() == 3) {
