@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.sa.contable.entidades.CuentaAsiento;
 import com.sa.contable.repositorios.CuentaAsientoRepositorio;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class CuentaAsientoServicio {
 
@@ -20,6 +22,7 @@ public class CuentaAsientoServicio {
     private static final Logger logger = LoggerFactory.getLogger(CuentaAsientoServicio.class);
 
 
+    @Transactional
     public void crearMovimiento(CuentaAsiento movimiento) {
         logger.info("Iniciando la creación de movimiento: {}", movimiento);
     
@@ -50,6 +53,7 @@ public class CuentaAsientoServicio {
             throw new RuntimeException("Hubo un error al guardar el movimiento. Inténtalo de nuevo.");
         }
     }
+    
     
     
 }

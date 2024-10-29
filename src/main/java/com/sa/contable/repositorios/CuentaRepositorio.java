@@ -15,4 +15,6 @@ public interface CuentaRepositorio extends JpaRepository<Cuenta, Long> {
     @EntityGraph(attributePaths = {"cuentasAsientos"})
     List<Cuenta> findByRecibeSaldo(boolean recibeSaldo);
 
+    Cuenta findByCodigo(Long codigo);
+
 }
