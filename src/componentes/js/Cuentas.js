@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
+import '../css/Cuentas.css'
 
 const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);

@@ -1,3 +1,4 @@
+package com.sa.contable.configuracion;
 /* package com.sa.contable.configuracion;
 
 import com.sa.contable.entidades.Usuario;

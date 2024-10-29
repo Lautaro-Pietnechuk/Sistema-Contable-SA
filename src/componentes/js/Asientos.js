@@ -100,14 +100,15 @@ const Asientos = () => {
     }
 
     return (
-        <div>
-            <h2>Libro de Asientos</h2>
+        <div class = "contenedor-asientos">
+            <h2>Libro Diario</h2>
             <div>
                 <label htmlFor="fechaInicio">Desde:</label>
                 <input type="date" id="fechaInicio" value={fechaInicio} onChange={handleFechaInicioChange} />
                 <label htmlFor="fechaFin">Hasta:</label>
                 <input type="date" id="fechaFin" value={fechaFin} onChange={handleFechaFinChange} />
             </div>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
             {asientos.length === 0 ? (
                 <p>No hay asientos disponibles para las fechas seleccionadas.</p>
             ) : (
@@ -162,3 +163,4 @@ const Asientos = () => {
 };
 
 export default Asientos;
+        

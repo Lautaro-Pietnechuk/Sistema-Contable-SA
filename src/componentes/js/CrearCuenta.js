@@ -116,12 +116,12 @@ const CrearCuenta = () => {
     };
 
     return (
-        <div>
-            <h2>Agregar Nueva Cuenta</h2>
+        <div className="crear-cuenta-modal">
+            <h2 className="crear-cuenta-title">Agregar Nueva Cuenta</h2>
             {mensajeExito && <p className="mensaje-exito">{mensajeExito}</p>} {/* Mostrar mensaje de éxito */}
             {mensajeError && <p className="mensaje-error">{mensajeError}</p>} {/* Mostrar mensaje de error */}
-            <form onSubmit={manejarEnvio}>
-                <div>
+            <form onSubmit={manejarEnvio} className="crear-cuenta-form">
+                <div className="form-group">
                     <label htmlFor="nombre">Nombre:</label>
                     <input
                         type="text"
@@ -129,11 +129,12 @@ const CrearCuenta = () => {
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
                         required
+                        className="input-text"
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label htmlFor="tipo">Tipo:</label>
-                    <select id="tipo" value={tipo} onChange={handleTipoChange} required>
+                    <select id="tipo" value={tipo} onChange={handleTipoChange} required className="input-select">
                         <option value="">Seleccionar tipo</option>
                         <option value="Activo">Activo</option>
                         <option value="Pasivo">Pasivo</option>
@@ -143,7 +144,8 @@ const CrearCuenta = () => {
                     </select>
                 </div>
                 <div className="codigo-recibe-saldo">
-                    <div>
+
+                    <div className="form-group">
                         <label htmlFor="codigo">Código:</label>
                         <input
                             type="text"
@@ -151,9 +153,10 @@ const CrearCuenta = () => {
                             value={codigo}
                             onChange={handleCodigoChange}
                             required
+                            className="input-text"
                         />
                     </div>
-                    <div className="recibe-saldo">
+                    <div className= "check-container">
                         <label>
                             <input
                                 type="checkbox"
@@ -165,7 +168,7 @@ const CrearCuenta = () => {
                         </label>
                     </div>
                 </div>
-                <button type="submit">Agregar Cuenta</button>
+                <button type="submit" className="crear-cuenta-boton">Agregar Cuenta</button>
             </form>
         </div>
     );

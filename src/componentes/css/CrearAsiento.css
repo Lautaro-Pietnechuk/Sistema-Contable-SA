@@ -1,26 +1,112 @@
-.movimiento {
+/* Contenedor del modal */
+.crear-asiento-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow: hidden;
+    z-index: 1000;
     display: flex;
-    flex-direction: column; /* Cambiar a columna para mejor alineación */
-    margin-bottom: 15px;
+    flex-direction: column;
 }
 
-.monto-saldo {
+/* Encabezado */
+.crear-asiento-header {
     display: flex;
-    align-items: center; /* Alinear verticalmente */
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.monto-saldo input {
-    margin-right: 10px; /* Espacio entre el input y el saldo */
+.crear-asiento-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #34495e;
+    text-align: center;
+    margin: 0 0 15px 0;
 }
 
-.saldo-actual {
-    margin-left: 10px; /* Espacio para el saldo actual */
+.crear-asiento-descripcion,
+.crear-asiento-tabla th,
+.crear-asiento-tabla td {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
-.mensaje-exito {
-    color: green;
+/* Ajuste de la tabla sin margen adicional */
+.crear-asiento-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    padding-right: 15px; /* Aumentado para agregar un poco más de espacio a la derecha */
 }
 
-.mensaje-error {
-    color: red;
+.crear-asiento-tabla th,
+.crear-asiento-tabla td {
+    padding: 10px; /* Espaciado interno ajustado */
+    text-align: left;
+}
+
+/* Botones */
+.boton-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.crear-asiento-boton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background-color: #3498db;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.crear-asiento-boton:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.crear-asiento-boton.eliminar {
+    background-color: #e74c3c;
+}
+
+.crear-asiento-boton.eliminar:hover {
+    background-color: #c0392b;
+}
+
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 600px) {
+    .crear-asiento-modal {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .crear-asiento-title {
+        font-size: 1.5rem;
+    }
+
+    .crear-asiento-boton {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Contenedor de formulario */
+.contenedor-formulario {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
 }

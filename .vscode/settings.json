@@ -44,5 +44,6 @@
     "java.configuration.maven.updateSnapshots": true,
     
     // Configuración para reiniciar automáticamente el servidor de lenguaje si se detectan cambios en pom.xml o build.gradle
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "CodeGPT.apiKey": "CodeGPT Plus Beta"
 }

@@ -1,15 +1,74 @@
-/* src/componentes/AgregarCuentas.css */
-
-.blocked-checkbox {
-    pointer-events: none;
-    opacity: 0.6;
+.crear-cuenta-modal {
+    width: 400px;
+    max-width: 90%;
+    padding: 20px;
+    background-color: #ecf0f1;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    transition: transform 0.3s ease;
 }
 
-.codigo-recibe-saldo {
+.crear-cuenta-title {
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #2c3e50;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-.codigo-recibe-saldo > div {
-    margin-right: 10px;
+.input-text, .input-select {
+    width: 100%;
+    max-width: 95%; 
+    padding: 12px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 16px;
+}
+
+.crear-cuenta-boton {
+    background-color: #3498db;
+    color: white;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.crear-cuenta-boton:hover {
+    background-color: #2980b9;
+}
+
+.check-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.mensaje-exito, .mensaje-error {
+    text-align: center;
+}
+
+.mensaje-exito {
+    color: #27ae60;
+    margin-top: 10px;
+}
+
+.mensaje-error {
+    color: #e74c3c;
+    margin-top: 10px;
 }

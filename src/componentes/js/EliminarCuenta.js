@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import '../css/EliminarCuenta.css'
 
 const EliminarCuenta = () => {
     const [cuentas, setCuentas] = useState([]);

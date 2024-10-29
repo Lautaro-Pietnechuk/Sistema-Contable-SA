@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../css/EditarCuenta.css'
 
 const EditarCuenta = () => {
     const [cuentas, setCuentas] = useState([]);

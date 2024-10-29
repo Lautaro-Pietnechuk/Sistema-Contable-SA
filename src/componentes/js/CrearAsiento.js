@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import '../css/CrearAsiento.css';
 
 const CrearAsiento = () => {
   const [usuario, setUsuario] = useState(null);
@@ -128,75 +129,95 @@ const CrearAsiento = () => {
   };
 
   return (
-    <div>
-      <h2>Registrar Asiento Contable</h2>
-      {usuario && (
-        <div>
-          <strong>Usuario:</strong> {usuario.nombre}
-        </div>
-      )}
-      <div>
-        <strong>Fecha:</strong> {fechaActual} {/* Muestra la fecha actual guardada en el estado */}
+    <div className="crear-asiento-modal">
+      <div className="crear-asiento-header">
+        {usuario && <div className="usuario">Usuario: {usuario.nombre}</div>}
+        <div className="fecha">Fecha: {fechaActual}</div>
       </div>
+      <h2 className="crear-asiento-title">Registrar Asiento Contable</h2>
 
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Descripción:</label>
-          <input
-            type="text"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            required
-          />
-        </div>
+        <input
+          className="crear-asiento-descripcion"
+          type="text"
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          placeholder="Descripción del asiento"
+          required
+        />
 
         <h3>Transacciones</h3>
-        {transacciones.map((transaccion, index) => (
-          <div key={index} style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
-            <select
-              value={transaccion.cuenta}
-              onChange={(e) => handleTransaccionChange(index, "cuenta", e.target.value)}
-              required
-            >
-              <option value="">Seleccione una cuenta</option>
-              {cuentas.map((cuenta) => (
-                <option key={cuenta.id} value={cuenta.codigo}>
-                  {cuenta.nombre}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={transaccion.tipo}
-              onChange={(e) => handleTransaccionChange(index, "tipo", e.target.value)}
-            >
-              <option value="debe">Debe</option>
-              <option value="haber">Haber</option>
-            </select>
-
-            <input
-              type="number"
-              value={transaccion.monto}
-              onChange={(e) => handleTransaccionChange(index, "monto", parseFloat(e.target.value))}
-              placeholder="Monto"
-              min="0"
-              required
-            />
-
-            <button type="button" onClick={() => handleRemoveTransaccion(index)}>
-              Eliminar
-            </button>
-          </div>
-        ))}
-        <button type="button" onClick={handleAddTransaccion}>
-          Agregar Transacción
-        </button>
-
-        <button type="submit">Registrar Asiento</button>
+        <table className="crear-asiento-tabla">
+          <thead>
+            <tr>
+              <th>Cuenta</th>
+              <th>Tipo</th>
+              <th>Monto</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transacciones.map((transaccion, index) => (
+              <tr key={index}>
+                <td>
+                  <select
+                    value={transaccion.cuenta}
+                    onChange={(e) => handleTransaccionChange(index, "cuenta", e.target.value)}
+                    required
+                  >
+                    <option value="">Seleccione una cuenta</option>
+                    {cuentas.map((cuenta) => (
+                      <option key={cuenta.id} value={cuenta.codigo}>
+                        {cuenta.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <select
+                    value={transaccion.tipo}
+                    onChange={(e) => handleTransaccionChange(index, "tipo", e.target.value)}
+                  >
+                    <option value="debe">Debe</option>
+                    <option value="haber">Haber</option>
+                  </select>
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    value={transaccion.monto}
+                    onChange={(e) => handleTransaccionChange(index, "monto", parseFloat(e.target.value))}
+                    placeholder="Monto"
+                    min="0"
+                    required
+                  />
+                </td>
+                <td>
+                  <button
+                    className="crear-asiento-boton eliminar"
+                    type="button"
+                    onClick={() => handleRemoveTransaccion(index)}
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        
+        <div className="boton-container"> {/* Contenedor para los botones */}
+          <button className="crear-asiento-boton" type="button" onClick={handleAddTransaccion}>
+            Agregar Transacción
+          </button>
+          <button className="crear-asiento-boton" type="submit">
+            Registrar Asiento
+          </button>
+        </div>
       </form>
 
-      {mensajeError && <p style={{ color: "red" }}>{mensajeError}</p>}
-      {mensajeExito && <p className="exito">{mensajeExito}</p>}
+      {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
+      {mensajeExito && <p className="mensaje-exito">{mensajeExito}</p>}
     </div>
   );
 };

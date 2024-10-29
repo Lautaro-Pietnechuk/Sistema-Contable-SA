@@ -1,0 +1,92 @@
+/* Estilos generales para el contenedor del componente */
+.container {
+    max-width: 600px; /* Ancho máximo del contenedor */
+    margin: 20px auto; /* Centrar el contenedor horizontalmente, pero no verticalmente */
+    padding: 20px; /* Espaciado interno */
+    background-color: #ecf0f1; /* Color de fondo claro */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+/* Estilo para el encabezado */
+h2 {
+    font-size: 2rem; /* Tamaño de fuente del encabezado */
+    color: #2c3e50; /* Color del encabezado */
+    text-align: left; /* Alinear texto a la izquierda */
+    margin-bottom: 20px; /* Espaciado inferior */
+}
+
+/* Estilo para mensajes de éxito y error */
+.mensaje-exito {
+    color: #28a745; /* Verde para mensajes de éxito */
+    background-color: #d4edda; /* Fondo claro para el mensaje de éxito */
+    border: 1px solid #c3e6cb; /* Borde verde claro */
+    padding: 10px; /* Espaciado interno */
+    border-radius: 4px; /* Bordes redondeados */
+    margin-bottom: 20px; /* Espaciado inferior */
+}
+
+.mensaje-error {
+    color: #dc3545; /* Rojo para mensajes de error */
+    background-color: #f8d7da; /* Fondo claro para el mensaje de error */
+    border: 1px solid #f5c6cb; /* Borde rojo claro */
+    padding: 10px; /* Espaciado interno */
+    border-radius: 4px; /* Bordes redondeados */
+    margin-bottom: 20px; /* Espaciado inferior */
+}
+
+/* Estilo para el formulario */
+form {
+    display: flex; /* Usar flexbox para disposición */
+    flex-direction: column; /* Disposición en columna */
+}
+
+/* Estilo para la etiqueta del campo de selección */
+label {
+    margin-bottom: 10px; /* Espaciado inferior */
+    font-weight: bold; /* Hacer que la etiqueta sea negrita */
+}
+
+/* Estilo para el campo de selección */
+select {
+    padding: 10px; /* Espaciado interno */
+    border: 1px solid #ced4da; /* Borde gris */
+    border-radius: 4px; /* Bordes redondeados */
+    margin-bottom: 20px; /* Espaciado inferior */
+    font-size: 1rem; /* Tamaño de fuente */
+}
+
+/* Estilo para el botón de envío */
+button {
+    padding: 10px; /* Espaciado interno */
+    background-color: #007bff; /* Color de fondo azul */
+    color: #fff; /* Texto blanco */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambiar cursor al pasar el mouse */
+    font-size: 1rem; /* Tamaño de fuente */
+    transition: background-color 0.3s; /* Transición suave para el color de fondo */
+    width: auto; /* Cambiar el ancho a automático */
+    max-width: 200px; /* Ancho máximo del botón */
+    align-self: flex-start; /* Alinear el botón a la izquierda del formulario */
+}
+
+button:hover {
+    background-color: #0056b3; /* Color más oscuro al pasar el mouse */
+}
+
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 600px) {
+    .container {
+        width: 90%; /* Ancho del contenedor en pantallas pequeñas */
+        padding: 15px; /* Ajustar espaciado interno */
+    }
+
+    h2 {
+        font-size: 1.5rem; /* Reducir tamaño del encabezado */
+    }
+    
+    button {
+        padding: 8px; /* Ajustar espaciado interno del botón */
+    }
+}

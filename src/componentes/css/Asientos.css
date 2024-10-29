@@ -1,0 +1,131 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.contenedor-asientos {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Título principal */
+h2 {
+    font-size: 2em;
+    color: #4a90e2;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Contenedor de filtros */
+div label {
+    font-size: 0.9em;
+    color: #666;
+    margin-right: 5px;
+}
+
+input[type="date"] {
+    margin: 0 15px 20px 0;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    background-color: #fff;
+    color: #333;
+}
+
+input[type="date"]:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 4px rgba(74, 144, 226, 0.5);
+}
+
+/* Tabla de asientos */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #4a90e2;
+    color: white;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Movimientos */
+td div {
+    padding: 5px 0;
+}
+
+td div span {
+    display: inline-block;
+    padding: 5px;
+    color: #555;
+    background-color: #eaf1f8;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* Paginación */
+.paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.paginacion button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.paginacion button:hover {
+    background-color: #357ab8;
+}
+
+.paginacion button:disabled {
+    background-color: #ddd;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.paginacion span {
+    font-size: 1em;
+    color: #333;
+}
+
+/* Mensajes de error */
+p {
+    font-size: 1em;
+    color: #666;
+    text-align: center;
+}
+
+p[style="color: red;"] {
+    color: #e74c3c;
+    font-weight: bold;
+}

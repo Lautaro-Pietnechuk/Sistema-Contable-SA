@@ -1,0 +1,41 @@
+nav {
+    width: 200px;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    background-color: #2c3e50; /* Color de fondo oscuro */
+    color: #ecf0f1; /* Texto claro */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+nav a {
+    color: #ecf0f1;
+    text-decoration: none;
+    font-size: 16px;
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+    background-color: #34495e; /* Color de fondo al hacer hover */
+}
+
+nav button {
+    margin-top: auto; /* Empuja el botón hacia abajo */
+    background-color: #e74c3c;
+    color: #ecf0f1;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+nav button:hover {
+    background-color: #c0392b; /* Color del botón al hacer hover */
+}

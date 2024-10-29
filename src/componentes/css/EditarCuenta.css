@@ -1,0 +1,89 @@
+/* Estilos generales para el componente */
+.editar-cuenta {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f7f9fb; /* Fondo claro */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    color: #34495e;
+}
+
+/* Título */
+.editar-cuenta h2 {
+    text-align: center;
+    font-size: 1.6rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Estilo del formulario */
+.editar-cuenta form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Etiquetas */
+.editar-cuenta label {
+    font-weight: bold;
+    color: #34495e;
+    font-size: 0.9rem;
+}
+
+/* Select y input */
+.editar-cuenta select,
+.editar-cuenta input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.9rem;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #fff;
+    color: #34495e;
+    transition: border-color 0.3s;
+}
+
+.editar-cuenta select:focus,
+.editar-cuenta input[type="text"]:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* Botón de actualización */
+.editar-cuenta button {
+    padding: 10px;
+    font-size: 1rem;
+    color: #ffffff;
+    background-color: #3498db;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.editar-cuenta button:hover {
+    background-color: #2980b9;
+}
+
+.editar-cuenta button:active {
+    transform: scale(0.98);
+}
+
+/* Mensajes de éxito y error */
+.mensaje-success {
+    color: #2ecc71; /* Verde para éxito */
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.mensaje-error {
+    color: #e74c3c; /* Rojo para error */
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+}
