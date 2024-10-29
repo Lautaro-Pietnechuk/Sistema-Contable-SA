@@ -98,4 +98,9 @@ public class CuentaServicio {
         cuenta.setNombre(nuevoNombre); // Asumiendo que 'nombre' es el atributo de la cuenta
         cuentaRepositorio.save(cuenta);
     }
+
+
+    public List<Cuenta> obtenerCuentasSinPadre() {
+        return cuentaRepositorio.findByCuentaPadreIsNull();
+    }
 }

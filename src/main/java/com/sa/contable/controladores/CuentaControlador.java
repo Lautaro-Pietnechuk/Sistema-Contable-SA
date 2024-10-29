@@ -1,6 +1,9 @@
 package com.sa.contable.controladores;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,7 +55,45 @@ public class CuentaControlador {
         return cuentas.stream().map(this::convertirACuentaDTO).collect(Collectors.toList());
     }
 
-    @PostMapping("/crear")
+    @GetMapping("/arbol")
+public ResponseEntity<List<Map<String, Object>>> listarCuentasEnArbol() {
+    // Obtener todas las cuentas principales (sin cuenta padre)
+    List<Cuenta> cuentasPrincipales = cuentaServicio.obtenerCuentasSinPadre();
+
+    // Crear una lista para representar el árbol de cuentas
+    List<Map<String, Object>> arbol = new ArrayList<>();
+
+    // Llamar al método recursivo para construir el árbol
+    for (Cuenta cuenta : cuentasPrincipales) {
+        arbol.add(convertirCuentaEnMapa(cuenta)); // Convertir cada cuenta en un mapa
+    }
+
+    return ResponseEntity.ok(arbol);
+}
+
+// Método recursivo para convertir una cuenta en un mapa anidado
+private Map<String, Object> convertirCuentaEnMapa(Cuenta cuenta) {
+    Map<String, Object> cuentaMap = new HashMap<>();
+    cuentaMap.put("nombre", cuenta.getNombre());
+    cuentaMap.put("codigo", cuenta.getCodigo());
+
+    // Convertir las cuentas hijas si existen
+    if (cuenta.getHijas() != null && !cuenta.getHijas().isEmpty()) {
+        List<Map<String, Object>> subCuentas = new ArrayList<>();
+        for (Cuenta hija : cuenta.getHijas()) {
+            subCuentas.add(convertirCuentaEnMapa(hija)); // Recursivamente convertir las hijas
+        }
+        cuentaMap.put("subCuentas", subCuentas);
+    } else {
+        cuentaMap.put("subCuentas", new ArrayList<>()); // subCuentas vacías si no hay hijas
+    }
+
+    return cuentaMap;
+}
+
+
+
+@PostMapping("/crear")
 public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
     // Verificar permisos de administrador
     ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
@@ -67,9 +108,12 @@ public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
         // Crear la cuenta
         cuentaServicio.crearCuenta(cuenta);
         return ResponseEntity.ok("Cuenta creada con éxito");
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body("Error al crear la cuenta: " + e.getMessage());
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("Error al crear la cuenta: " + e.getMessage());
+            .body("Error inesperado: " + e.getMessage());
     }
 }
 
@@ -82,39 +126,56 @@ private void asignarCuentaPadre(Cuenta cuenta) {
 
     // Verificar si el código es de una cuenta principal (como 100, 200, 300, etc.)
     if (codigoStr.length() == 3 && codigoStr.endsWith("00")) {
-        // Estas cuentas no deben tener cuenta padre, así que finaliza el método aquí.
         System.out.println("Código de la cuenta: " + codigo + " es una cuenta principal sin cuenta padre.");
-        return;
+        return; // No tiene padre, salir del método
     }
 
-    // Determinar el código de la cuenta padre basado en los últimos dígitos
+    // Determinar el código de la cuenta padre
     if (codigoStr.length() == 3) {
-        // Para códigos de longitud 3
-        if (codigoStr.charAt(2) == '0') {
-            // Si el último dígito es 0, el código padre es el primer dígito seguido de 00
-            codigoPadre = Long.parseLong(codigoStr.charAt(0) + "00"); // Ej: 110 -> 100
+        if (codigoStr.charAt(0) == '1' && codigoStr.charAt(1) == '1') {
+            // Código como 110 -> Padre: 100
+            codigoPadre = 100L; // Asignar como padre a 100
+        } else if (codigoStr.charAt(0) == '1' && codigoStr.charAt(1) == '2') {
+            // Código como 120 -> Padre: 110
+            codigoPadre = 110L; // Asignar como padre a 110
         } else {
-            // Si el último dígito no es 0, cambiar el último dígito a 0
-            codigoPadre = Long.parseLong(codigoStr.substring(0, 2) + "0"); // Ej: 111 -> 110
+            // Otras cuentas pueden tener una lógica diferente
+            codigoPadre = Long.parseLong(codigoStr.substring(0, 2) + "0"); // Ejemplo genérico
         }
     } else if (codigoStr.length() == 2) {
-        // Si tiene longitud 2, establecer el padre al primer dígito seguido de 00
-        codigoPadre = Long.parseLong(codigoStr.charAt(0) + "00"); // Ej: 110 -> 100
+        // Código como 11 -> Padre: 100
+        codigoPadre = Long.parseLong(codigoStr.charAt(0) + "00");
     }
 
-    // Imprimir el código padre para verificación
+    // Imprimir para verificar el código padre
     System.out.println("Código de la cuenta: " + codigo + ", Código padre asignado: " + codigoPadre);
 
-    // Si se determinó un código padre, buscarlo en la base de datos
+    // Buscar la cuenta padre en la base de datos si el código es válido
     if (codigoPadre != null) {
+        System.out.println("Buscando cuenta padre con código: " + codigoPadre);
         Optional<Cuenta> cuentaPadreOpt = cuentaServicio.obtenerCuentaPorCodigo(codigoPadre);
         if (cuentaPadreOpt.isPresent()) {
-            cuenta.setCuentaPadre(cuentaPadreOpt.get()); // Asignar la cuenta padre
+            Cuenta cuentaPadre = cuentaPadreOpt.get();
+
+            // Asignar la cuenta padre a la nueva cuenta
+            cuenta.setCuentaPadre(cuentaPadre);
+
+            // Agregar la nueva cuenta a la lista de hijas de la cuenta padre
+            cuentaPadre.agregarHija(cuenta);
+
+            // Guardar la cuenta padre para que persistan los cambios
+            cuentaServicio.crearCuenta(cuentaPadre); // Asegúrate de que esto sea necesario
+
+            System.out.println("Se ha asignado correctamente la cuenta hija " + codigo 
+                    + " a la cuenta padre " + codigoPadre);
         } else {
             throw new RuntimeException("La cuenta padre con código " + codigoPadre + " no existe.");
         }
     }
 }
+
+
+
 
 
 
@@ -180,11 +241,11 @@ private void asignarCuentaPadre(Cuenta cuenta) {
         dto.setSaldoActual(cuenta.getSaldoActual());
         
         // Convertir las subcuentas a DTO
-        if (cuenta.getSubCuentas() != null) {
-            List<CuentaDTO> subCuentasDTO = cuenta.getSubCuentas().stream()
+        if (cuenta.getHijas() != null) {
+            List<CuentaDTO> hijasDTO = cuenta.getHijas().stream()
                 .map(this::convertirACuentaDTO)
                 .collect(Collectors.toList());
-            dto.setSubCuentas(subCuentasDTO);
+            dto.sethijas(hijasDTO);
         }
         
         return dto;
@@ -217,21 +278,21 @@ private void asignarCuentaPadre(Cuenta cuenta) {
 
 
     @GetMapping("/{codigo}/saldo")
-    public ResponseEntity<SaldoDTO> obtenerSaldo(@PathVariable Long codigo) {
-        // Buscar la cuenta por su código
-        Optional<Cuenta> cuenta = cuentaServicio.obtenerCuentaPorCodigo(codigo);
-        
-        // Verificar si la cuenta existe
-        if (cuenta == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Retornar 404 si no se encuentra la cuenta
-        }
-        
-        // Crear la respuesta con el saldo actual
-        SaldoDTO saldoDTO = new SaldoDTO(cuenta.get().getCodigo(), cuenta.get().getSaldoActual());
-        saldoDTO.setSaldo(cuenta.get().getSaldoActual());
-        
-        return ResponseEntity.ok(saldoDTO); // Retornar 200 OK con el saldo
+public ResponseEntity<SaldoDTO> obtenerSaldo(@PathVariable Long codigo) {
+    // Buscar la cuenta por su código
+    Optional<Cuenta> cuenta = cuentaServicio.obtenerCuentaPorCodigo(codigo);
+    
+    // Verificar si la cuenta existe
+    if (!cuenta.isPresent()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Retornar 404 si no se encuentra la cuenta
     }
+    
+    // Crear la respuesta con el saldo actual
+    SaldoDTO saldoDTO = new SaldoDTO(cuenta.get().getCodigo(), cuenta.get().getSaldoActual());
+    
+    return ResponseEntity.ok(saldoDTO); // Retornar 200 OK con el saldo
+}
+
 
     @PutMapping("/editarNombre/{codigo}")
 public ResponseEntity<String> editarNombreCuenta(@PathVariable Long codigo, @RequestBody String nuevoNombre) {

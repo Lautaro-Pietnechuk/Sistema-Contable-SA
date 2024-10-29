@@ -11,17 +11,17 @@ public class CuentaDTO {
     private String tipo;
     private Boolean recibeSaldo; 
     private BigDecimal saldoActual; // Cambiado a BigDecimal
-    private List<CuentaDTO> subCuentas;
+    private List<CuentaDTO> hijas;
     
     // Constructor
-    public CuentaDTO(Long id, String nombre, Long codigo, String tipo, Boolean recibeSaldo, BigDecimal saldoActual, List<CuentaDTO> subCuentas) {
+    public CuentaDTO(Long id, String nombre, Long codigo, String tipo, Boolean recibeSaldo, BigDecimal saldoActual, List<CuentaDTO> hijas) {
         this.id = id;
         this.nombre = nombre;
         this.codigo = codigo;
         this.tipo = tipo;
         this.recibeSaldo = recibeSaldo;
         this.saldoActual = saldoActual;
-        this.subCuentas = subCuentas;
+        this.hijas = hijas;
     }
 
     public CuentaDTO() {
@@ -76,12 +76,12 @@ public class CuentaDTO {
         this.nombre = nombre;
     }
 
-    public List<CuentaDTO> getSubCuentas() {
-        return subCuentas;
+    public List<CuentaDTO> gethijas() {
+        return hijas;
     }
 
-    public void setSubCuentas(List<CuentaDTO> subCuentas) {
-        this.subCuentas = subCuentas;
+    public void sethijas(List<CuentaDTO> hijas) {
+        this.hijas = hijas;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class CuentaDTO {
                 ", tipo='" + tipo + '\'' +
                 ", recibeSaldo=" + recibeSaldo +
                 ", saldoActual=" + saldoActual +
-                ", subCuentas=" + subCuentas +
+                ", hijas=" + hijas +
                 '}';
     }
 }

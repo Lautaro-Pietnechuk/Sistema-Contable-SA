@@ -28,7 +28,7 @@ public class Cuenta {
     private Cuenta cuentaPadre;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "cuentaPadre")
-    private Set<Cuenta> subCuentas = new HashSet<>();
+    private Set<Cuenta> Hijas = new HashSet<>();
 
     @Column(nullable = false)
     private String tipo;
@@ -102,22 +102,22 @@ public class Cuenta {
         this.cuentaPadre = cuentaPadre;
     }
 
-    public Set<Cuenta> getSubCuentas() {
-        return subCuentas;
+    public Set<Cuenta> getHijas() {
+        return Hijas;
     }
 
-    public void setSubCuentas(Set<Cuenta> subCuentas) {
-        this.subCuentas = subCuentas;
+    public void setHijas(Set<Cuenta> subCuentas) {
+        this.Hijas = subCuentas;
     }
 
     // Métodos para agregar y eliminar subcuentas
-    public void agregarSubCuenta(Cuenta subCuenta) {
-        subCuentas.add(subCuenta);
-        subCuenta.setCuentaPadre(this);
+    public void agregarHija(Cuenta hija) {
+        Hijas.add(hija);
+        hija.setCuentaPadre(this);
     }
 
-    public void eliminarSubCuenta(Cuenta subCuenta) {
-        subCuentas.remove(subCuenta);
-        subCuenta.setCuentaPadre(null);
+    public void eliminarHija(Cuenta hija) {
+        Hijas.remove(hija);
+        hija.setCuentaPadre(null);
     }
 }

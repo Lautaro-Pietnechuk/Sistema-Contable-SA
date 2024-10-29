@@ -17,4 +17,7 @@ public interface CuentaRepositorio extends JpaRepository<Cuenta, Long> {
 
     Cuenta findByCodigo(Long codigo);
 
+    List<Cuenta> findByCuentaPadreIsNull();
+    
+
 }
