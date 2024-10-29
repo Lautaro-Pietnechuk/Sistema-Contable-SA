@@ -10,7 +10,6 @@ import EliminarCuenta from './EliminarCuenta';
 import EditarCuenta from './EditarCuenta';
 import Asientos from './Asientos';
 import CrearAsiento from './CrearAsiento';
-import AsignarRol from './AsignarRol';
 import EliminarUsuario from './EliminarUsuario';
 import NotFound from './NotFound';
 import LibroMayor from './LibroMayor';  // Importa el componente
@@ -44,7 +43,6 @@ const Nav = () => {
                         <NavLink to="/cuentas/eliminar">Eliminar Cuentas</NavLink>
                         <NavLink to="/cuentas/editarNombre">Editar Cuentas</NavLink>
                         <NavLink to="/libro-mayor">Libro Mayor</NavLink> {/* Agrega el enlace */}
-                        <NavLink to="/asignar-rol">Asignar Rol</NavLink>
                         <NavLink to="/usuarios/eliminar">Eliminar Usuario</NavLink>
                         <button onClick={logout} style={{ marginTop: '10px' }}>Cerrar Sesión</button>
                     </>
@@ -62,7 +60,6 @@ const Nav = () => {
                     <Route path="/asientos" element={<PrivateRoute><Asientos /></PrivateRoute>} />
                     <Route path="/asientos/agregar" element={<PrivateRoute><CrearAsiento /></PrivateRoute>} />
                     <Route path="/libro-mayor" element={<PrivateRoute><LibroMayor /></PrivateRoute>} /> {/* Agrega la ruta */}
-                    <Route path="/asignar-rol" element={<PrivateRoute><AsignarRol /></PrivateRoute>} />
                     <Route path="/usuarios/eliminar" element={<PrivateRoute><EliminarUsuario /></PrivateRoute>} />
                     <Route path="*" element={<NotFound />} />
                     <Route path="/" element={<Navigate to="/login" />} />

@@ -83,4 +83,8 @@ public class UsuarioServicio {
     public Optional<Usuario> obtenerUsuarioPorId(Long id) {
         return usuarioRepositorio.findById(id);
     }
+
+    public String obtenerNombreUsuarioPorId(Long id) {
+        return usuarioRepositorio.findById(id).map(Usuario::getNombreUsuario).orElse(null);
+    }
 }

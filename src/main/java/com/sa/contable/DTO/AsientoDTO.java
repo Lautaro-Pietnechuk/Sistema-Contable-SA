@@ -6,9 +6,10 @@ import java.util.List;
 public class AsientoDTO {
     private LocalDate fecha;
     private String descripcion;
-    private Long idUsuario;
+    private String nombreUsuario;
     private List<CuentaAsientoDTO> movimientos;
     private Long id;
+    
 
 
     // Getters y Setters
@@ -44,12 +45,12 @@ public class AsientoDTO {
         this.movimientos = movimientos;
     }
 
-    public Long getIdUsuario() {
-        return idUsuario;
+    public String getNombreUsuario() {
+        return nombreUsuario;
     }
 
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
 }
  

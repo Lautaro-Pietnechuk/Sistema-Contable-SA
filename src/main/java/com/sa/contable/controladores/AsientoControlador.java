@@ -3,7 +3,11 @@ package com.sa.contable.controladores;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +15,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sa.contable.configuracion.JwtUtil;
 import com.sa.contable.dto.AsientoDTO;
@@ -49,6 +60,7 @@ public class AsientoControlador {
 
     @Autowired
     private UsuarioServicio usuarioServicio;
+
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -178,7 +190,7 @@ public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody
         dto.setId(asiento.getId());
         dto.setFecha(asiento.getFecha());
         dto.setDescripcion(asiento.getDescripcion());
-        dto.setIdUsuario(asiento.getId_usuario());
+        dto.setNombreUsuario(usuarioServicio.obtenerNombreUsuarioPorId(asiento.getId_usuario()));
 
         List<CuentaAsientoDTO> movimientos = asiento.getCuentasAsientos().stream()
                 .map(this::convertirCuentaAsientoADTO)

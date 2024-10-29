@@ -8,9 +8,9 @@ const CrearAsiento = () => {
   const [mensajeError, setMensajeError] = useState("");
   const [mensajeExito, setMensajeExito] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [transacciones, setTransacciones] = useState([{ cuenta: "", tipo: "debe", monto: 0 }]);
+  const [transacciones, setTransacciones] = useState([{ cuenta: "", tipo: "debe", monto: "" }]);
   const [cuentas, setCuentas] = useState([]);
-  const [fechaActual, setFechaActual] = useState(""); // Nuevo estado para la fecha
+  const [fechaActual, setFechaActual] = useState("");
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -30,7 +30,7 @@ const CrearAsiento = () => {
 
       setUsuario({ id: decoded.id, nombre: decoded.sub, rol: decoded.roles });
       cargarCuentas(storedToken);
-      setFechaActual(obtenerFechaActual()); // Establecer la fecha actual aquí
+      setFechaActual(obtenerFechaActual());
     } catch (error) {
       console.error("Error al decodificar el token:", error);
       setMensajeError("Error al decodificar el token.");
@@ -52,7 +52,7 @@ const CrearAsiento = () => {
   };
 
   const handleAddTransaccion = () => {
-    setTransacciones([...transacciones, { cuenta: "", tipo: "debe", monto: 0 }]);
+    setTransacciones([...transacciones, { cuenta: "", tipo: "debe", monto: "" }]);
   };
 
   const handleRemoveTransaccion = (index) => {
@@ -62,19 +62,19 @@ const CrearAsiento = () => {
 
   const handleTransaccionChange = (index, field, value) => {
     const nuevasTransacciones = [...transacciones];
-    nuevasTransacciones[index][field] = value;
+    nuevasTransacciones[index][field] = field === "monto" ? value || "" : value;
     setTransacciones(nuevasTransacciones);
   };
 
   const obtenerFechaActual = () => {
     const fecha = new Date();
-    return new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000).toISOString().split("T")[0]; // YYYY-MM-DD
+    return new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000).toISOString().split("T")[0];
   };
 
   const sumarUnDia = (fecha) => {
     const nuevaFecha = new Date(fecha);
-    nuevaFecha.setDate(nuevaFecha.getDate() + 1); // Sumar un día
-    return nuevaFecha.toISOString().split("T")[0]; // Retorna la fecha en formato YYYY-MM-DD
+    nuevaFecha.setDate(nuevaFecha.getDate() + 1);
+    return nuevaFecha.toISOString().split("T")[0];
   };
 
   const handleSubmit = async (e) => {
@@ -83,8 +83,8 @@ const CrearAsiento = () => {
 
     const movimientos = transacciones.map((transaccion) => ({
       cuentaCodigo: transaccion.cuenta,
-      debe: transaccion.tipo === "debe" ? transaccion.monto : 0,
-      haber: transaccion.tipo === "haber" ? transaccion.monto : 0,
+      debe: transaccion.tipo === "debe" ? parseFloat(transaccion.monto) || 0 : 0,
+      haber: transaccion.tipo === "haber" ? parseFloat(transaccion.monto) || 0 : 0,
     }));
 
     if (movimientos.length < 2) {
@@ -100,12 +100,10 @@ const CrearAsiento = () => {
         {
           descripcion,
           movimientos,
-          fecha: sumarUnDia(fechaActual), // Suma un día a la fecha antes de enviarla
+          fecha: sumarUnDia(fechaActual),
         },
         {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
+          headers: { Authorization: `Bearer ${storedToken}` },
         }
       );
 
@@ -113,7 +111,7 @@ const CrearAsiento = () => {
       if (response.status === 200) {
         setMensajeExito("Asiento registrado con éxito.");
         setDescripcion("");
-        setTransacciones([{ cuenta: "", tipo: "debe", monto: 0 }]);
+        setTransacciones([{ cuenta: "", tipo: "debe", monto: "" }]);
         setMensajeError("");
       }
     } catch (error) {
@@ -186,7 +184,7 @@ const CrearAsiento = () => {
                   <input
                     type="number"
                     value={transaccion.monto}
-                    onChange={(e) => handleTransaccionChange(index, "monto", parseFloat(e.target.value))}
+                    onChange={(e) => handleTransaccionChange(index, "monto", e.target.value)}
                     placeholder="Monto"
                     min="0"
                     required
@@ -205,8 +203,8 @@ const CrearAsiento = () => {
             ))}
           </tbody>
         </table>
-        
-        <div className="boton-container"> {/* Contenedor para los botones */}
+
+        <div className="boton-container">
           <button className="crear-asiento-boton" type="button" onClick={handleAddTransaccion}>
             Agregar Transacción
           </button>

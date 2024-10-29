@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../css/LibroMayor.css';
 
 const LibroMayor = () => {
-    const [codigoCuenta, setCodigoCuenta] = useState('112');
+    const [codigoCuenta, setCodigoCuenta] = useState(''); // Cambiado a una cadena vacía
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
     const [libroMayor, setLibroMayor] = useState([]);
@@ -69,6 +69,7 @@ const LibroMayor = () => {
                         name="codigoCuenta"
                         value={codigoCuenta}
                         onChange={(e) => setCodigoCuenta(e.target.value)}
+                        placeholder="Código" // Agregado placeholder
                         required
                     />
                 </div>

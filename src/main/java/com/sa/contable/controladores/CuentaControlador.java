@@ -131,20 +131,16 @@ private void asignarCuentaPadre(Cuenta cuenta) {
         return; // No tiene padre, salir del método
     }
 
-    // Determinar el código de la cuenta padre
+    // Determinar el código de la cuenta padre para los rangos 100, 200, 300, 400, 500
     if (codigoStr.length() == 3) {
-        if (codigoStr.charAt(0) == '1' && codigoStr.charAt(1) == '0' && codigoStr.charAt(2) == '0') {
-            // Código como 100 -> Sin padre
-            codigoPadre = null; // No tiene padre
-        } else if (codigoStr.charAt(0) == '1' && codigoStr.charAt(1) == '2' && codigoStr.charAt(2) == '0') {
-            // Código como 120 -> Padre: 100
-            codigoPadre = 100L; // Asignar como padre a 100
-        } else if (codigoStr.charAt(0) == '1' && codigoStr.charAt(1) == '1' && codigoStr.charAt(2) == '0') {
-            // Código como 110 -> Padre: 100
-            codigoPadre = 100L; // Asignar como padre a 100
+        if (codigoStr.endsWith("00")) {
+            codigoPadre = null; // Las cuentas principales (100, 200, 300, 400, 500) no tienen padre
+        } else if (codigoStr.charAt(1) == '0') {
+            // Códigos como 110, 120, 130, etc.
+            codigoPadre = Long.parseLong(codigoStr.charAt(0) + "00"); // Ej. 110 -> 100, 220 -> 200, etc.
         } else {
-            // Lógica genérica para otras cuentas
-            codigoPadre = Long.parseLong(codigoStr.substring(0, 2) + "0");
+            // Códigos como 111, 125, 211, 225, etc.
+            codigoPadre = Long.parseLong(codigoStr.substring(0, 2) + "0"); // Ej. 111 -> 110, 125 -> 120, etc.
         }
     } else if (codigoStr.length() == 2) {
         // Código como 11 -> Padre: 100
@@ -178,6 +174,9 @@ private void asignarCuentaPadre(Cuenta cuenta) {
         }
     }
 }
+
+
+
 
 
 

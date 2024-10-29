@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 const CrearCuenta = () => {
     const [nombre, setNombre] = useState('');
     const [tipo, setTipo] = useState('');
-    const [recibeSaldo, setRecibeSaldo] = useState(false);
     const [codigo, setCodigo] = useState('');
     const [token, setToken] = useState('');
     const [mensajeExito, setMensajeExito] = useState(''); // Estado para el mensaje de éxito
@@ -48,7 +47,7 @@ const CrearCuenta = () => {
             return;
         }
 
-        const nuevaCuenta = { nombre, tipo, codigo, recibeSaldo };
+        const nuevaCuenta = { nombre, tipo, codigo };
 
         try {
             await axios.post('http://localhost:8080/api/cuentas/crear', nuevaCuenta, {
@@ -61,7 +60,6 @@ const CrearCuenta = () => {
             setNombre('');
             setTipo('');
             setCodigo('');
-            setRecibeSaldo(false);
         } catch (error) {
             if (error.response) {
                 console.error('Error del servidor:', error.response.data);
@@ -112,7 +110,6 @@ const CrearCuenta = () => {
     const handleCodigoChange = (e) => {
         const newCodigo = e.target.value;
         setCodigo(newCodigo);
-        setRecibeSaldo(newCodigo.length >= 3 && newCodigo.slice(-1) !== '0');
     };
 
     return (
@@ -143,30 +140,16 @@ const CrearCuenta = () => {
                         <option value="Egreso">Egreso</option>
                     </select>
                 </div>
-                <div className="codigo-recibe-saldo">
-
-                    <div className="form-group">
-                        <label htmlFor="codigo">Código:</label>
-                        <input
-                            type="text"
-                            id="codigo"
-                            value={codigo}
-                            onChange={handleCodigoChange}
-                            required
-                            className="input-text"
-                        />
-                    </div>
-                    <div className= "check-container">
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={recibeSaldo}
-                                readOnly
-                                className="blocked-checkbox"
-                            />
-                            ¿Recibe Saldo?
-                        </label>
-                    </div>
+                <div className="form-group">
+                    <label htmlFor="codigo">Código:</label>
+                    <input
+                        type="text"
+                        id="codigo"
+                        value={codigo}
+                        onChange={handleCodigoChange}
+                        required
+                        className="input-text"
+                    />
                 </div>
                 <button type="submit" className="crear-cuenta-boton">Agregar Cuenta</button>
             </form>
