@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.sa.contable.entidades.Asiento;
 
+
 @Repository
 public interface AsientoRepositorio extends JpaRepository<Asiento, Long> {
 

@@ -9,6 +9,7 @@ C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\cont
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\CorsTestController.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\CuentaAsientoControlador.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\CuentaControlador.java
+C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\LibroMayorControlador.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\PublicController.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\RolControlador.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\controladores\UsuarioControlador.java
@@ -16,6 +17,7 @@ C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\cont
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\AsientoDTO.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\CuentaAsientoDTO.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\CuentaDTO.java
+C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\LibroMayorDTO.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\SaldoDTO.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\UsuarioDTO.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\entidades\Asiento.java
@@ -35,5 +37,6 @@ C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\cont
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\AsientoServicio.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\CuentaAsientoServicio.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\CuentaServicio.java
+C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\LibroMayorServicio.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\RolServicio.java
 C:\Users\Notebook\Documents\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\servicios\UsuarioServicio.java
