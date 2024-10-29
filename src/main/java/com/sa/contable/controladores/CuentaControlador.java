@@ -93,6 +93,7 @@ private Map<String, Object> convertirCuentaEnMapa(Cuenta cuenta) {
 
 
 
+
 @PostMapping("/crear")
 public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
     // Verificar permisos de administrador
@@ -105,7 +106,7 @@ public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
         // Asignar la cuenta padre automáticamente basado en el código
         asignarCuentaPadre(cuenta);
 
-        // Crear la cuenta
+        // Crear la nueva cuenta
         cuentaServicio.crearCuenta(cuenta);
         return ResponseEntity.ok("Cuenta creada con éxito");
     } catch (RuntimeException e) {
@@ -124,7 +125,7 @@ private void asignarCuentaPadre(Cuenta cuenta) {
 
     String codigoStr = String.valueOf(codigo); // Convertir el código a String
 
-    // Verificar si el código es de una cuenta principal (como 100, 200, 300, etc.)
+    // Verificar si el código es de una cuenta principal
     if (codigoStr.length() == 3 && codigoStr.endsWith("00")) {
         System.out.println("Código de la cuenta: " + codigo + " es una cuenta principal sin cuenta padre.");
         return; // No tiene padre, salir del método
@@ -132,15 +133,18 @@ private void asignarCuentaPadre(Cuenta cuenta) {
 
     // Determinar el código de la cuenta padre
     if (codigoStr.length() == 3) {
-        if (codigoStr.charAt(0) == '1' && codigoStr.charAt(1) == '1') {
+        if (codigoStr.charAt(0) == '1' && codigoStr.charAt(1) == '0' && codigoStr.charAt(2) == '0') {
+            // Código como 100 -> Sin padre
+            codigoPadre = null; // No tiene padre
+        } else if (codigoStr.charAt(0) == '1' && codigoStr.charAt(1) == '2' && codigoStr.charAt(2) == '0') {
+            // Código como 120 -> Padre: 100
+            codigoPadre = 100L; // Asignar como padre a 100
+        } else if (codigoStr.charAt(0) == '1' && codigoStr.charAt(1) == '1' && codigoStr.charAt(2) == '0') {
             // Código como 110 -> Padre: 100
             codigoPadre = 100L; // Asignar como padre a 100
-        } else if (codigoStr.charAt(0) == '1' && codigoStr.charAt(1) == '2') {
-            // Código como 120 -> Padre: 110
-            codigoPadre = 110L; // Asignar como padre a 110
         } else {
-            // Otras cuentas pueden tener una lógica diferente
-            codigoPadre = Long.parseLong(codigoStr.substring(0, 2) + "0"); // Ejemplo genérico
+            // Lógica genérica para otras cuentas
+            codigoPadre = Long.parseLong(codigoStr.substring(0, 2) + "0");
         }
     } else if (codigoStr.length() == 2) {
         // Código como 11 -> Padre: 100
@@ -163,16 +167,20 @@ private void asignarCuentaPadre(Cuenta cuenta) {
             // Agregar la nueva cuenta a la lista de hijas de la cuenta padre
             cuentaPadre.agregarHija(cuenta);
 
-            // Guardar la cuenta padre para que persistan los cambios
-            cuentaServicio.crearCuenta(cuentaPadre); // Asegúrate de que esto sea necesario
+            // Establecer recibeSaldo de la cuenta padre como false
+            cuentaPadre.setRecibeSaldo(false);
 
+            // Aquí no es necesario guardar la cuenta padre de nuevo
             System.out.println("Se ha asignado correctamente la cuenta hija " + codigo 
-                    + " a la cuenta padre " + codigoPadre);
+                    + " a la cuenta padre " + codigoPadre + ". El estado recibeSaldo de la cuenta padre es ahora false.");
         } else {
             throw new RuntimeException("La cuenta padre con código " + codigoPadre + " no existe.");
         }
     }
 }
+
+
+
 
 
 

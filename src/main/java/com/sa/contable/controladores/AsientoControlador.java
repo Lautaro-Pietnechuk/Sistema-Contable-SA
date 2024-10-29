@@ -3,12 +3,7 @@ package com.sa.contable.controladores;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.sa.contable.configuracion.JwtUtil;
 import com.sa.contable.dto.AsientoDTO;
@@ -31,10 +19,11 @@ import com.sa.contable.dto.CuentaAsientoDTO;
 import com.sa.contable.entidades.Asiento;
 import com.sa.contable.entidades.Cuenta;
 import com.sa.contable.entidades.CuentaAsiento;
-import com.sa.contable.response.AsientosResponse;
+import com.sa.contable.entidades.Usuario;
 import com.sa.contable.servicios.AsientoServicio;
 import com.sa.contable.servicios.CuentaAsientoServicio;
 import com.sa.contable.servicios.CuentaServicio;
+import com.sa.contable.servicios.UsuarioServicio;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -58,53 +47,54 @@ public class AsientoControlador {
     @Autowired
     private CuentaAsientoServicio cuentaAsientoServicio;
 
+    @Autowired
+    private UsuarioServicio usuarioServicio;
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // Crear un nuevo asiento contable
     @PostMapping("/crear/{idUsuario}")
-    public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody AsientoDTO asientoDTO) {
-        if (idUsuario == null) {
-            return ResponseEntity.badRequest().body("El ID del usuario no puede ser nulo.");
-        }
+public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody AsientoDTO asientoDTO) {
+    if (idUsuario == null) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", "El ID del usuario no puede ser nulo."));
+    }
 
-        if (asientoDTO.getMovimientos() == null || asientoDTO.getMovimientos().size() < 2) {
-            return ResponseEntity.badRequest().body("El asiento debe contener al menos dos movimientos.");
-        }
+    if (asientoDTO.getMovimientos() == null || asientoDTO.getMovimientos().isEmpty()) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", "El asiento debe contener al menos un movimiento."));
+    }
 
-        Set<Long> cuentasUnicas = asientoDTO.getMovimientos().stream()
-                .map(CuentaAsientoDTO::getCuentaCodigo)
-                .collect(Collectors.toSet());
+    if (asientoDTO.getFecha() == null) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", "La fecha no puede ser nula."));
+    }
 
-        if (cuentasUnicas.size() < 2) {
-            return ResponseEntity.badRequest().body("Los movimientos deben involucrar al menos dos cuentas diferentes.");
-        }
+    try {
+        // Validar que el usuario exista
+        Usuario usuario = usuarioServicio.obtenerUsuarioPorId(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
 
-        BigDecimal totalDebe = asientoDTO.getMovimientos().stream()
-                .map(CuentaAsientoDTO::getDebe)
+        Asiento nuevoAsiento = asientoServicio.crearAsiento(asientoDTO, idUsuario);
+
+        return ResponseEntity.ok(nuevoAsiento);
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("mensaje", "Error interno: " + e.getMessage()));
+    }
+}
+
+
+
+
+
+
+    // Calcular total de debe o haber
+    private BigDecimal calcularTotal(AsientoDTO asientoDTO, boolean esDebe) {
+        return asientoDTO.getMovimientos().stream()
+                .map(mov -> esDebe ? mov.getDebe() : mov.getHaber())
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal totalHaber = asientoDTO.getMovimientos().stream()
-                .map(CuentaAsientoDTO::getHaber)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        if (totalDebe.compareTo(totalHaber) != 0) {
-            String mensaje = String.format("El saldo no cierra: El total del debe (%s) no coincide con el total del haber (%s).", totalDebe, totalHaber);
-            return ResponseEntity.badRequest().body(Map.of("mensaje", mensaje));
-        }
-
-        try {
-            Asiento nuevoAsiento = asientoServicio.crearAsiento(asientoDTO, idUsuario);
-            procesarMovimientos(asientoDTO, nuevoAsiento);
-            return ResponseEntity.ok(nuevoAsiento);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("mensaje", "Error interno del servidor: " + e.getMessage()));
-        }
     }
 
     // Procesar los movimientos y actualizar saldos
@@ -114,24 +104,28 @@ public class AsientoControlador {
             if (cuenta == null) {
                 throw new IllegalArgumentException("La cuenta con código " + movimientoDTO.getCuentaCodigo() + " no existe.");
             }
-
+    
+            // Crear un nuevo movimiento y asignarle el asiento
             CuentaAsiento nuevoMovimiento = new CuentaAsiento();
             nuevoMovimiento.setCuenta(cuenta);
-            nuevoMovimiento.setAsiento(nuevoAsiento);
+            nuevoMovimiento.setAsiento(nuevoAsiento);  // Asignar el asiento
             nuevoMovimiento.setDebe(movimientoDTO.getDebe());
             nuevoMovimiento.setHaber(movimientoDTO.getHaber());
-
+    
+            // Calcular el saldo
             BigDecimal saldoActual = Optional.ofNullable(cuenta.getSaldoActual()).orElse(BigDecimal.ZERO);
             BigDecimal nuevoSaldo = calcularNuevoSaldo(cuenta, saldoActual, movimientoDTO);
-
             nuevoMovimiento.setSaldo(nuevoSaldo);
-
+    
+            // Guardar el movimiento
             cuentaAsientoServicio.crearMovimiento(nuevoMovimiento);
-
+    
+            // Actualizar el saldo de la cuenta
             cuenta.setSaldoActual(nuevoSaldo);
             cuentaServicio.actualizarCuenta(cuenta.getCodigo(), cuenta);
         }
     }
+    
 
     // Calcular el nuevo saldo según el tipo de cuenta
     private BigDecimal calcularNuevoSaldo(Cuenta cuenta, BigDecimal saldoActual, CuentaAsientoDTO movimientoDTO) {
@@ -151,58 +145,58 @@ public class AsientoControlador {
         }
     }
 
-    // Listar asientos entre dos fechas
+    // Listar asientos entre dos fechas con paginación
     @GetMapping("/listar")
     public ResponseEntity<Map<String, Object>> listarAsientos(
             @RequestParam(required = false) String fechaInicio,
             @RequestParam(required = false) String fechaFin,
             Pageable pageable) {
-    
+
         LocalDate fin = (fechaFin == null || fechaFin.isBlank())
                 ? LocalDate.now()
                 : LocalDate.parse(fechaFin.trim(), FORMATTER);
-    
+
         LocalDate inicio = (fechaInicio == null || fechaInicio.isBlank())
                 ? fin.minusDays(30)
                 : LocalDate.parse(fechaInicio.trim(), FORMATTER);
-    
+
         Page<Asiento> pageAsientos = asientoServicio.listarAsientos(inicio, fin, pageable);
-        System.out.println("Número de asientos obtenidos: " + pageAsientos.getTotalElements());
-    
         List<AsientoDTO> asientosDTO = pageAsientos.getContent().stream()
-            .map(asiento -> {
-                AsientoDTO dto = new AsientoDTO();
-                dto.setId(asiento.getId());
-                dto.setFecha(asiento.getFecha());
-                dto.setDescripcion(asiento.getDescripcion());
-                dto.setIdUsuario(asiento.getId_usuario());
-                List<CuentaAsientoDTO> movimientos = asiento.getCuentasAsientos().stream()
-                        .map(cuentaAsiento -> {
-                            CuentaAsientoDTO cuentaDTO = new CuentaAsientoDTO();
-                            cuentaDTO.setCuentaNombre(cuentaAsiento.getCuenta().getNombre());
-                            cuentaDTO.setCuentaCodigo(cuentaAsiento.getCuenta().getCodigo());
-                            cuentaDTO.setDebe(cuentaAsiento.getDebe());
-                            cuentaDTO.setHaber(cuentaAsiento.getHaber());
-                            cuentaDTO.setAsientoId(asiento.getId());
-                            cuentaDTO.setSaldo(cuentaAsiento.getSaldo());
-                            return cuentaDTO;
-                        })
-                        .collect(Collectors.toList());
-                dto.setMovimientos(movimientos);
-                return dto;
-            })
-            .collect(Collectors.toList());
-    
+                .map(this::convertirAsientoADTO)
+                .collect(Collectors.toList());
+
         Map<String, Object> response = new HashMap<>();
         response.put("asientos", asientosDTO);
         response.put("totalElementos", pageAsientos.getTotalElements());
-        
+
         return ResponseEntity.ok(response);
     }
-    
 
+    // Convertir Asiento a AsientoDTO
+    private AsientoDTO convertirAsientoADTO(Asiento asiento) {
+        AsientoDTO dto = new AsientoDTO();
+        dto.setId(asiento.getId());
+        dto.setFecha(asiento.getFecha());
+        dto.setDescripcion(asiento.getDescripcion());
+        dto.setIdUsuario(asiento.getId_usuario());
 
-    
+        List<CuentaAsientoDTO> movimientos = asiento.getCuentasAsientos().stream()
+                .map(this::convertirCuentaAsientoADTO)
+                .collect(Collectors.toList());
+        dto.setMovimientos(movimientos);
 
+        return dto;
+    }
 
+    // Convertir CuentaAsiento a CuentaAsientoDTO
+    private CuentaAsientoDTO convertirCuentaAsientoADTO(CuentaAsiento cuentaAsiento) {
+        CuentaAsientoDTO dto = new CuentaAsientoDTO();
+        dto.setCuentaNombre(cuentaAsiento.getCuenta().getNombre());
+        dto.setCuentaCodigo(cuentaAsiento.getCuenta().getCodigo());
+        dto.setDebe(cuentaAsiento.getDebe());
+        dto.setHaber(cuentaAsiento.getHaber());
+        dto.setAsientoId(cuentaAsiento.getAsiento().getId());
+        dto.setSaldo(cuentaAsiento.getSaldo());
+        return dto;
+    }
 }

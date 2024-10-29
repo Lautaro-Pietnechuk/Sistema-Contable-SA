@@ -80,11 +80,15 @@ const CrearAsiento = () => {
     e.preventDefault();
     const storedToken = localStorage.getItem("token");
 
-    const movimientos = transacciones.map((transaccion) => ({
-      cuentaCodigo: transaccion.cuenta,
-      debe: transaccion.tipo === "debe" ? transaccion.monto : 0,
-      haber: transaccion.tipo === "haber" ? transaccion.monto : 0,
-    }));
+    const movimientos = transacciones.map((transaccion) => {
+      const saldo = transaccion.monto; // Puedes establecer el saldo igual al monto
+      return {
+        cuentaCodigo: transaccion.cuenta,
+        debe: transaccion.tipo === "debe" ? transaccion.monto : 0,
+        haber: transaccion.tipo === "haber" ? transaccion.monto : 0,
+        saldo: saldo, // Añade el saldo aquí
+      };
+    });
 
     if (movimientos.length < 2) {
       setMensajeError("El asiento debe contener al menos dos movimientos.");
