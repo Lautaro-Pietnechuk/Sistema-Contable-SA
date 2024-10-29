@@ -70,4 +70,10 @@ public class Asiento {
     public void setCuentasAsientos(Set<CuentaAsiento> cuentasAsientos) {
         this.cuentasAsientos = cuentasAsientos;
     }
+
+    public void agregarMovimiento(CuentaAsiento movimiento) {
+        cuentasAsientos.add(movimiento);
+        movimiento.setAsiento(this); // Asegura que el movimiento conozca su asiento
+    }
+    
 }

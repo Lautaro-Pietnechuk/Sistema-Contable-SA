@@ -16,9 +16,16 @@ const Asientos = () => {
         const hoy = new Date();
         const hace30Dias = new Date();
         hace30Dias.setDate(hoy.getDate() - 30);
-        setFechaInicio(hace30Dias.toISOString().split('T')[0]);
-        setFechaFin(hoy.toISOString().split('T')[0]);
+        setFechaInicio(hace30Dias.toISOString().split('T')[0]); // Fecha de inicio: hace 30 días
+
+        // Incrementar la fecha de fin en 1 día
+        hoy.setDate(hoy.getDate() + 1); // Aumentar la fecha actual en 1 día
+        setFechaFin(hoy.toISOString().split('T')[0]); // Fecha de fin: mañana
     }, []);
+
+    useEffect(() => {
+        console.log('Fechas iniciales:', { fechaInicio, fechaFin }); // Verificar fechas iniciales
+    }, [fechaInicio, fechaFin]);
 
     useEffect(() => {
         const fetchAsientos = async () => {
@@ -28,8 +35,26 @@ const Asientos = () => {
                 setCargando(false);
                 return;
             }
+
+            // Verificar si las fechas son válidas
+            if (!fechaInicio || !fechaFin) {
+                console.log('Fechas de búsqueda son inválidas.');
+                setError('Por favor, establezca las fechas antes de buscar.');
+                setCargando(false);
+                return;
+            }
+
+            // Convertir las fechas a objetos Date para comparar
+            const fechaInicioDate = new Date(fechaInicio);
+            const fechaFinDate = new Date(fechaFin);
+            if (fechaInicioDate > fechaFinDate) {
+                setError('La fecha de inicio no puede ser posterior a la fecha de fin.');
+                setCargando(false);
+                return;
+            }
+
+            console.log('Fechas de búsqueda:', { fechaInicio, fechaFin, paginaActual }); // Fechas antes de la llamada
             try {
-                console.log('Fechas de búsqueda:', { fechaInicio, fechaFin, paginaActual });
                 const response = await axios.get('http://localhost:8080/api/asientos/listar', {
                     params: {
                         fechaInicio,
@@ -61,12 +86,17 @@ const Asientos = () => {
                 setCargando(false);
             }
         };
-        fetchAsientos();
+
+        // Verificar si las fechas son válidas antes de llamar a fetchAsientos
+        if (fechaInicio && fechaFin) {
+            fetchAsientos();
+        }
     }, [fechaInicio, fechaFin, paginaActual]);
 
     const handleFechaInicioChange = (e) => {
         const nuevaFechaInicio = e.target.value;
         setFechaInicio(nuevaFechaInicio);
+        console.log('Nueva fecha de inicio:', nuevaFechaInicio); // Verificar el cambio
         if (nuevaFechaInicio > fechaFin) setFechaFin(nuevaFechaInicio);
     };
 
@@ -82,13 +112,13 @@ const Asientos = () => {
 
     const cambiarPagina = (nuevaPagina) => {
         if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
-            console.log('Cambiando a la página:', nuevaPagina);
+            console.log('Cambiando a la página:', nuevaPagina); // Log para cambio de página
             setPaginaActual(nuevaPagina);
         }
     };
 
     useEffect(() => {
-        console.log('Asientos actuales:', asientos);
+        console.log('Asientos actuales:', asientos); // Verificar asientos actuales
     }, [asientos]);
 
     if (cargando) {

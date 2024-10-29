@@ -79,4 +79,8 @@ public class UsuarioServicio {
     public List<Usuario> obtenerTodosLosUsuarios() {
         return usuarioRepositorio.findAll();
     }
+
+    public Optional<Usuario> obtenerUsuarioPorId(Long id) {
+        return usuarioRepositorio.findById(id);
+    }
 }

@@ -43,6 +43,15 @@ public class Cuenta {
     private Set<CuentaAsiento> cuentasAsientos = new HashSet<>(); // Inicialización
 
     // Constructores
+
+    public Cuenta(Long codigo, String nombre, Boolean recibeSaldo, String tipo, BigDecimal saldoActual) {
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.tipo = tipo;
+        this.recibeSaldo = recibeSaldo;
+        this.saldoActual = saldoActual;
+    }
+    
     public Cuenta() {}
 
     // Getters y Setters
