@@ -5,19 +5,24 @@ nav {
     color: #ecf0f1; /* Texto claro */
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-start; /* Alinear enlaces a la izquierda */
     padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Sombra suave a la derecha */
+    position: fixed; /* Fijar la navegación en la pantalla */
+    top: 0; /* Alinear al principio de la página */
+    left: 0; /* Alinear a la izquierda */
+    z-index: 1000; /* Asegurar que esté por encima de otros elementos */
 }
 
 nav a {
-    color: #ecf0f1;
-    text-decoration: none;
-    font-size: 16px;
-    margin: 10px 0;
-    padding: 10px;
-    width: 100%;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    color: #ecf0f1; /* Color del texto */
+    text-decoration: none; /* Sin subrayado */
+    font-size: 16px; /* Tamaño de fuente */
+    margin: 10px 0; /* Espaciado entre enlaces */
+    padding: 10px; /* Espaciado interno */
+    width: 100%; /* Ancho completo */
+    border-radius: 4px; /* Bordes redondeados */
+    transition: background-color 0.3s ease; /* Transición suave para hover */
 }
 
 nav a:hover {
@@ -25,15 +30,15 @@ nav a:hover {
 }
 
 nav button {
-    margin-top: auto; /* Empuja el botón hacia abajo */
-    background-color: #e74c3c;
-    color: #ecf0f1;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    margin-top: auto; /* Empujar el botón hacia abajo */
+    background-color: #e74c3c; /* Color de fondo del botón */
+    color: #ecf0f1; /* Texto claro en el botón */
+    border: none; /* Sin borde */
+    padding: 10px 20px; /* Espaciado interno del botón */
+    border-radius: 4px; /* Bordes redondeados */
+    font-size: 16px; /* Tamaño de fuente */
+    cursor: pointer; /* Cambiar el cursor al pasar el mouse */
+    transition: background-color 0.3s ease; /* Transición suave para hover */
 }
 
 nav button:hover {

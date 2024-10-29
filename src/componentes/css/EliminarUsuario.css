@@ -2,12 +2,11 @@
 .eliminar-usuario-container {
     display: flex; /* Usar flexbox para centrar el contenido */
     flex-direction: column; /* Disposición en columna */
+    justify-content: flex-start; /* Colocar el contenido en la parte superior */
     align-items: center; /* Centrar horizontalmente */
-    justify-content: flex-start; /* Alinear al inicio (parte superior) */
-    height: auto; /* Ajustar altura automáticamente */
-    min-height: 100vh; /* Asegurar que ocupe al menos la altura completa de la ventana */
+    padding-top: 20px; /* Espacio superior para separación */
     background-color: rgba(236, 240, 241, 0.8); /* Fondo gris claro con opacidad */
-    padding: 20px; /* Espaciado interno */
+    height: 100vh; /* Altura completa de la ventana */
 }
 
 /* Estilo para el encabezado */

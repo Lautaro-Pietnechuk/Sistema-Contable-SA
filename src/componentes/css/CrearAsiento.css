@@ -12,9 +12,9 @@
 /* Contenedor del modal */
 .crear-asiento-modal {
     position: fixed; /* Mantener el modal fijo */
-    top: 50%; /* Centrar verticalmente */
+    top: 20px; /* Colocar el modal a 20px de la parte superior */
     left: 50%; /* Centrar horizontalmente */
-    transform: translate(-50%, -50%); /* Ajustar el centrado */
+    transform: translateX(-50%); /* Ajustar el centrado horizontal */
     background-color: #ffffff; /* Fondo blanco del modal */
     padding: 20px; /* Espacio interno */
     border-radius: 12px; /* Bordes redondeados */
@@ -27,7 +27,6 @@
     display: flex; /* Disposición flexible */
     flex-direction: column; /* Disposición en columna */
     align-items: center; /* Centrar horizontalmente */
-    justify-content: center; /* Centrar verticalmente */
 }
 
 /* Tabla */

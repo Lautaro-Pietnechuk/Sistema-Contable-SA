@@ -10,6 +10,7 @@ import EliminarCuenta from './EliminarCuenta';
 import EditarCuenta from './EditarCuenta';
 import Asientos from './Asientos';
 import CrearAsiento from './CrearAsiento';
+//import AsignarRol from './AsignarRol';
 import EliminarUsuario from './EliminarUsuario';
 import NotFound from './NotFound';
 import LibroMayor from './LibroMayor';  // Importa el componente
@@ -21,8 +22,8 @@ const Nav = () => {
 
     // Efecto para redirigir al login cuando se cierre la sesión
     useEffect(() => {
-        if (!isAuthenticated) {
-            navigate('/login'); // Redirige al login si no está autenticado
+        if (!isAuthenticated && window.location.pathname !== '/register') {
+            navigate('/login'); // Redirige al login si no está autenticado y no está en la página de registro
         }
     }, [isAuthenticated, navigate]);
 

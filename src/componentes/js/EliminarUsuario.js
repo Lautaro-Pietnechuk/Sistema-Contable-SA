@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import '../css/EliminarUsuario.css'
 
 const EliminarUsuario = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -64,7 +65,7 @@ const EliminarUsuario = () => {
     };
 
     return (
-        <div>
+        <div className="eliminar-usuario-container">
             <h2>Eliminar Usuario</h2>
             {mensajeExito && <p className="mensaje-exito">{mensajeExito}</p>}
             {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
@@ -88,7 +89,7 @@ const EliminarUsuario = () => {
                 <button type="submit">Eliminar Usuario</button>
             </form>
         </div>
-    );
+    );    
 };
 
 export default EliminarUsuario;

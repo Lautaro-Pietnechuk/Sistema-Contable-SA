@@ -3,11 +3,7 @@ import axios from 'axios';
 import '../css/LibroMayor.css';
 
 const LibroMayor = () => {
-<<<<<<< Updated upstream
-    const [codigoCuenta, setCodigoCuenta] = useState(''); // Cambiado a una cadena vacía
-=======
     const [codigoCuenta, setCodigoCuenta] = useState('');
->>>>>>> Stashed changes
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
     const [libroMayor, setLibroMayor] = useState([]);
@@ -84,11 +80,7 @@ const LibroMayor = () => {
                         name="codigoCuenta"
                         value={codigoCuenta}
                         onChange={(e) => setCodigoCuenta(e.target.value)}
-<<<<<<< Updated upstream
-                        placeholder="Código" // Agregado placeholder
-=======
                         placeholder='Código'
->>>>>>> Stashed changes
                         required
                     />
                 </div>
