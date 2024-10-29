@@ -31,7 +31,6 @@ import com.sa.contable.dto.CuentaAsientoDTO;
 import com.sa.contable.entidades.Asiento;
 import com.sa.contable.entidades.Cuenta;
 import com.sa.contable.entidades.CuentaAsiento;
-import com.sa.contable.response.AsientosResponse;
 import com.sa.contable.servicios.AsientoServicio;
 import com.sa.contable.servicios.CuentaAsientoServicio;
 import com.sa.contable.servicios.CuentaServicio;
@@ -151,12 +150,66 @@ public class AsientoControlador {
         }
     }
 
-    // Listar asientos entre dos fechas
-    @GetMapping("/listar")
-    public ResponseEntity<Map<String, Object>> listarAsientos(
+    // Listar asientos entre dos fechas (Libro Diario)
+    @GetMapping("/libro-diario")
+    public ResponseEntity<Map<String, Object>> libroDiario(
             @RequestParam(required = false) String fechaInicio,
             @RequestParam(required = false) String fechaFin,
             Pageable pageable) {
+
+        LocalDate fin = (fechaFin == null || fechaFin.isBlank())
+                ? LocalDate.now()
+                : LocalDate.parse(fechaFin.trim(), FORMATTER);
+
+        LocalDate inicio = (fechaInicio == null || fechaInicio.isBlank())
+                ? fin.minusDays(30)
+                : LocalDate.parse(fechaInicio.trim(), FORMATTER);
+
+        Page<Asiento> pageAsientos = asientoServicio.listarAsientos(inicio, fin, pageable);
+        System.out.println("Número de asientos obtenidos: " + pageAsientos.getTotalElements());
+
+        List<AsientoDTO> asientosDTO = pageAsientos.getContent().stream()
+                .map(asiento -> {
+                    AsientoDTO dto = new AsientoDTO();
+                    dto.setId(asiento.getId());
+                    dto.setFecha(asiento.getFecha());
+                    dto.setDescripcion(asiento.getDescripcion());
+                    dto.setIdUsuario(asiento.getId_usuario());
+                    List<CuentaAsientoDTO> movimientos = asiento.getCuentasAsientos().stream()
+                            .map(cuentaAsiento -> {
+                                CuentaAsientoDTO cuentaDTO = new CuentaAsientoDTO();
+                                cuentaDTO.setCuentaNombre(cuentaAsiento.getCuenta().getNombre());
+                                cuentaDTO.setCuentaCodigo(cuentaAsiento.getCuenta().getCodigo());
+                                cuentaDTO.setDebe(cuentaAsiento.getDebe());
+                                cuentaDTO.setHaber(cuentaAsiento.getHaber());
+                                cuentaDTO.setAsientoId(asiento.getId());
+                                cuentaDTO.setSaldo(cuentaAsiento.getSaldo());
+                                return cuentaDTO;
+                            })
+                            .collect(Collectors.toList());
+                    dto.setMovimientos(movimientos);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("asientos", asientosDTO);
+        response.put("totalElementos", pageAsientos.getTotalElements());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/libro-mayor")
+    public ResponseEntity<Map<String, Object>> libroMayor(
+            @RequestParam(required = false) String fechaInicio,
+            @RequestParam(required = false) String fechaFin,
+            @RequestParam(required = true) Long cuentaCodigo, // Sigue siendo obligatorio
+            Pageable pageable) {
+    
+        // Validación de la cuentaCodigo, asegurando que no sea nulo.
+        if (cuentaCodigo == null) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "El código de cuenta es obligatorio."));
+        }
     
         LocalDate fin = (fechaFin == null || fechaFin.isBlank())
                 ? LocalDate.now()
@@ -166,43 +219,57 @@ public class AsientoControlador {
                 ? fin.minusDays(30)
                 : LocalDate.parse(fechaInicio.trim(), FORMATTER);
     
-        Page<Asiento> pageAsientos = asientoServicio.listarAsientos(inicio, fin, pageable);
-        System.out.println("Número de asientos obtenidos: " + pageAsientos.getTotalElements());
+        // Llamar al servicio para listar los asientos por cuenta
+        Page<Asiento> pageAsientos = asientoServicio.listarAsientosPorCuenta(inicio, fin, cuentaCodigo, pageable);
     
         List<AsientoDTO> asientosDTO = pageAsientos.getContent().stream()
-            .map(asiento -> {
-                AsientoDTO dto = new AsientoDTO();
-                dto.setId(asiento.getId());
-                dto.setFecha(asiento.getFecha());
-                dto.setDescripcion(asiento.getDescripcion());
-                dto.setIdUsuario(asiento.getId_usuario());
-                List<CuentaAsientoDTO> movimientos = asiento.getCuentasAsientos().stream()
-                        .map(cuentaAsiento -> {
-                            CuentaAsientoDTO cuentaDTO = new CuentaAsientoDTO();
-                            cuentaDTO.setCuentaNombre(cuentaAsiento.getCuenta().getNombre());
-                            cuentaDTO.setCuentaCodigo(cuentaAsiento.getCuenta().getCodigo());
-                            cuentaDTO.setDebe(cuentaAsiento.getDebe());
-                            cuentaDTO.setHaber(cuentaAsiento.getHaber());
-                            cuentaDTO.setAsientoId(asiento.getId());
-                            cuentaDTO.setSaldo(cuentaAsiento.getSaldo());
-                            return cuentaDTO;
-                        })
-                        .collect(Collectors.toList());
-                dto.setMovimientos(movimientos);
-                return dto;
-            })
-            .collect(Collectors.toList());
+                .map(asiento -> {
+                    AsientoDTO dto = new AsientoDTO();
+                    dto.setId(asiento.getId());
+                    dto.setFecha(asiento.getFecha());
+                    dto.setDescripcion(asiento.getDescripcion());
+                    dto.setIdUsuario(asiento.getId_usuario());
+                    
+                    // Filtrar los movimientos para mostrar solo los de la cuenta seleccionada
+                    List<CuentaAsientoDTO> movimientos = asiento.getCuentasAsientos().stream()
+                            .filter(cuentaAsiento -> cuentaAsiento.getCuenta().getCodigo().equals(cuentaCodigo)) // Filtrar por cuentaCodigo
+                            .map(cuentaAsiento -> {
+                                CuentaAsientoDTO cuentaDTO = new CuentaAsientoDTO();
+                                cuentaDTO.setCuentaNombre(cuentaAsiento.getCuenta().getNombre());
+                                cuentaDTO.setCuentaCodigo(cuentaAsiento.getCuenta().getCodigo());
+                                cuentaDTO.setDebe(cuentaAsiento.getDebe());
+                                cuentaDTO.setHaber(cuentaAsiento.getHaber());
+                                cuentaDTO.setAsientoId(asiento.getId());
+                                cuentaDTO.setSaldo(cuentaAsiento.getSaldo());
+                                return cuentaDTO;
+                            })
+                            .collect(Collectors.toList());
+                    
+                    dto.setMovimientos(movimientos);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     
         Map<String, Object> response = new HashMap<>();
         response.put("asientos", asientosDTO);
         response.put("totalElementos", pageAsientos.getTotalElements());
-        
+    
         return ResponseEntity.ok(response);
     }
-    
+   // Listar todos los asientos
+@GetMapping("/todos")
+public ResponseEntity<List<AsientoDTO>> listarAsientos(Pageable pageable) {
+    LocalDate inicio = LocalDate.of(2000, 1, 1); // Cambia esta fecha según lo necesites
+    LocalDate fin = LocalDate.now();
+    Page<Asiento> pageAsientos = asientoServicio.listarAsientos(inicio, fin, pageable); // Llama al método correctamente
 
-
-    
-
-
+    List<AsientoDTO> asientosDTO = pageAsientos.getContent().stream().map(asiento -> {
+        AsientoDTO dto = new AsientoDTO();
+        dto.setId(asiento.getId());
+        dto.setFecha(asiento.getFecha());
+        dto.setDescripcion(asiento.getDescripcion());
+        return dto;
+    }).collect(Collectors.toList());
+    return ResponseEntity.ok(asientosDTO);
+}
 }

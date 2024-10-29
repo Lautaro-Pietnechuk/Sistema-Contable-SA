@@ -15,13 +15,19 @@ import com.sa.contable.entidades.Asiento;
 @Repository
 public interface AsientoRepositorio extends JpaRepository<Asiento, Long> {
 
+    // Método para obtener todos los asientos entre fechas (sin paginación)
     @Query("SELECT a FROM Asiento a LEFT JOIN FETCH a.cuentasAsientos WHERE a.fecha BETWEEN :fechaInicio AND :fechaFin")
     List<Asiento> findAllBetweenDates(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
     
-    // Método existente
+    // Método existente para obtener todos los asientos sin cuentas
     @Query("SELECT a FROM Asiento a")
     List<Asiento> findAllWithoutCuentasAsientos();
 
+    // Método para obtener asientos entre fechas con paginación
     @Query("SELECT a FROM Asiento a WHERE a.fecha BETWEEN :inicio AND :fin")
-    Page<Asiento> findAllBetweenDates(@Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin, Pageable pageable);
+    Page<Asiento> findAllBetweenDatesPaged(@Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin, Pageable pageable);
+    
+    // Método para obtener asientos entre fechas y con una cuenta específica, con paginación
+    @Query("SELECT a FROM Asiento a JOIN a.cuentasAsientos ca WHERE ca.cuenta.codigo = :cuentaCodigo AND a.fecha BETWEEN :inicio AND :fin")
+    Page<Asiento> findAllByCuentaAndDates(@Param("cuentaCodigo") Long cuentaCodigo, @Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin, Pageable pageable);    
 }
