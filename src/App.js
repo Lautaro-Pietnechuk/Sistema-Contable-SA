@@ -13,6 +13,7 @@ import AsignarRol from './componentes/js/AsignarRol';
 import EliminarUsuario from './componentes/js/EliminarUsuario'; // Importa el componente EliminarUsuario
 import PrivateRoute from './componentes/js/PrivateRoute';
 import NotFound from './componentes/js/NotFound';
+import LibroMayor from './componentes/js/LibroMayor'; // Importa el componente LibroMayor   
 
 
 const App = () => {
@@ -63,6 +64,11 @@ const App = () => {
                             <EliminarUsuario />
                         </PrivateRoute>
                     } />
+                    <Route path="/libro-mayor" element={ // Ruta para Eliminar Usuario
+                        <PrivateRoute> 
+                            <LibroMayor />
+                        </PrivateRoute>
+                    } />
                     <Route path="*" element={<NotFound />} />
                     <Route path="/" element={<Navigate to="/login" />} /> {/* Redirigir al login si no está autenticado */}
                 </Routes>
@@ -91,6 +97,7 @@ const Navigation = () => {
                         <NavLink to="/cuentas/editarNombre">Editar Cuentas</NavLink> &nbsp;
                         <NavLink to="/asignar-rol">Asignar Rol</NavLink> &nbsp;
                         <NavLink to="/usuarios/eliminar">Eliminar Usuario</NavLink> &nbsp; {/* Enlace para Eliminar Usuario */}
+                        <NavLink to="/libro-mayor">Libro Mayor</NavLink> &nbsp; {/* Enlace para Libro Mayor */}
                     </>
                 )}
             </div>
