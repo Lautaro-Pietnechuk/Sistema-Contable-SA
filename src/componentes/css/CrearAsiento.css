@@ -1,93 +1,56 @@
+/* Fondo gris para la página */
+.fondo-gris {
+    position: fixed; /* Fijar el fondo */
+    top: 0; /* Alinear a la parte superior */
+    left: 0; /* Alinear a la izquierda */
+    width: 100%; /* Ancho completo */
+    height: 100%; /* Altura completa */
+    background-color: rgba(236, 240, 241, 0.8); /* Color gris claro con opacidad */
+    z-index: 500; /* Detrás del modal */
+}
+
 /* Contenedor del modal */
 .crear-asiento-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow: hidden;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
+    position: fixed; /* Mantener el modal fijo */
+    top: 50%; /* Centrar verticalmente */
+    left: 50%; /* Centrar horizontalmente */
+    transform: translate(-50%, -50%); /* Ajustar el centrado */
+    background-color: #ffffff; /* Fondo blanco del modal */
+    padding: 20px; /* Espacio interno */
+    border-radius: 12px; /* Bordes redondeados */
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2); /* Sombra */
+    width: 95%; /* Ancho mayor para más espacio */
+    max-width: 800px; /* Ancho máximo del modal */
+    max-height: 90vh; /* Altura máxima */
+    overflow-y: auto; /* Desplazamiento vertical si es necesario */
+    z-index: 1000; /* Por encima del fondo gris */
+    display: flex; /* Disposición flexible */
+    flex-direction: column; /* Disposición en columna */
+    align-items: center; /* Centrar horizontalmente */
+    justify-content: center; /* Centrar verticalmente */
 }
 
-/* Encabezado */
-.crear-asiento-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.crear-asiento-title {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #34495e;
-    text-align: center;
-    margin: 0 0 15px 0;
-}
-
-.crear-asiento-descripcion,
-.crear-asiento-tabla th,
-.crear-asiento-tabla td {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #bdc3c7;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-/* Ajuste de la tabla sin margen adicional */
+/* Tabla */
 .crear-asiento-tabla {
-    width: 100%;
-    border-collapse: collapse;
-    padding-right: 15px; /* Aumentado para agregar un poco más de espacio a la derecha */
+    width: 100%; /* Tabla ocupa el 100% */
+    border-collapse: collapse; /* Eliminar espacio entre celdas */
+    margin: 20px 0; /* Espacio alrededor de la tabla */
 }
 
+/* Encabezados y celdas de la tabla */
 .crear-asiento-tabla th,
 .crear-asiento-tabla td {
-    padding: 10px; /* Espaciado interno ajustado */
-    text-align: left;
+    padding: 12px; /* Espacio interno */
+    border: 1px solid #bdc3c7; /* Borde de las celdas */
+    text-align: left; /* Alineación a la izquierda */
 }
 
-/* Botones */
-.boton-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
+/* Espaciado entre botones */
+.boton-container .crear-asiento-boton:last-child {
+    margin-left: 15px; /* Añadir margen a la izquierda del botón de "Registrar Asiento" */
 }
 
-.crear-asiento-boton {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    background-color: #3498db;
-    color: #fff;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s, transform 0.3s;
-}
-
-.crear-asiento-boton:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
-}
-
-.crear-asiento-boton.eliminar {
-    background-color: #e74c3c;
-}
-
-.crear-asiento-boton.eliminar:hover {
-    background-color: #c0392b;
-}
-
-/* Responsividad para pantallas pequeñas */
+/* Responsividad para móviles */
 @media (max-width: 600px) {
     .crear-asiento-modal {
         width: 95%;
@@ -102,11 +65,4 @@
         padding: 8px 16px;
         font-size: 0.9rem;
     }
-}
-
-/* Contenedor de formulario */
-.contenedor-formulario {
-    flex-grow: 1;
-    overflow-y: auto;
-    margin-bottom: 20px;
 }

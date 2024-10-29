@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import '../css/Cuentas.css'
+import '../css/Cuentas.css';
 
 const Cuentas = () => {
     const [cuentas, setCuentas] = useState([]);
@@ -18,7 +18,6 @@ const Cuentas = () => {
             });
 
             console.log('Respuesta de la API:', respuesta.data);
-            // Ordenar las cuentas de menor a mayor por código
             const cuentasOrdenadas = ordenarCuentas(respuesta.data);
             setCuentas(cuentasOrdenadas);
             setError('');
@@ -46,7 +45,10 @@ const Cuentas = () => {
 
     const CuentaItem = ({ cuenta }) => (
         <li>
-            {cuenta.nombre} (Código: {cuenta.codigo})
+            <div className="cuenta-item">
+                <span>{cuenta.nombre}</span>
+                <span>(Código: {cuenta.codigo})</span>
+            </div>
             {cuenta.subCuentas && cuenta.subCuentas.length > 0 && (
                 <ul>
                     {cuenta.subCuentas.map((subCuenta) => (
@@ -58,7 +60,7 @@ const Cuentas = () => {
     );
 
     return (
-        <div>
+        <div className="container">
             <h2>Lista de Cuentas</h2>
             {loading ? (
                 <p>Cargando...</p>

@@ -67,33 +67,37 @@ const EliminarCuenta = () => {
     };
 
     return (
-        <div>
+        <div className="container">
             <h2>Eliminar Cuenta</h2>
             {mensajeExito && <p className="mensaje-exito">{mensajeExito}</p>}
             {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
-
-            {/* Formulario para eliminar cuentas */}
-            <form onSubmit={manejarEnvioCuenta}>
-                <div>
-                    <label htmlFor="cuenta">Seleccionar cuenta a eliminar:</label>
-                    <select
-                        id="cuenta"
-                        value={cuentaSeleccionada}
-                        onChange={(e) => setCuentaSeleccionada(e.target.value)}
-                        required
-                    >
-                        <option value="">Seleccionar cuenta</option>
-                        {cuentas.map((cuenta) => (
-                            <option key={cuenta.id} value={cuenta.id}>
-                                {cuenta.nombre} - {cuenta.codigo}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <button type="submit">Eliminar Cuenta</button>
-            </form>
+    
+            {/* Recuadro para el formulario */}
+            <div className="recuadro">
+                {/* Formulario para eliminar cuentas */}
+                <form onSubmit={manejarEnvioCuenta}>
+                    <div>
+                        <label htmlFor="cuenta">Seleccionar cuenta a eliminar:</label>
+                        <select
+                            id="cuenta"
+                            value={cuentaSeleccionada}
+                            onChange={(e) => setCuentaSeleccionada(e.target.value)}
+                            required
+                        >
+                            <option value="">Seleccionar cuenta</option>
+                            {cuentas.map((cuenta) => (
+                                <option key={cuenta.id} value={cuenta.id}>
+                                    {cuenta.nombre} - {cuenta.codigo}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <button type="submit">Eliminar Cuenta</button>
+                </form>
+            </div>
         </div>
     );
+    
 };
 
 export default EliminarCuenta;

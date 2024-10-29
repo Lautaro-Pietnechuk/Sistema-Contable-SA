@@ -3,12 +3,17 @@ import axios from 'axios';
 import '../css/LibroMayor.css';
 
 const LibroMayor = () => {
+<<<<<<< Updated upstream
     const [codigoCuenta, setCodigoCuenta] = useState(''); // Cambiado a una cadena vacía
+=======
+    const [codigoCuenta, setCodigoCuenta] = useState('');
+>>>>>>> Stashed changes
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
     const [libroMayor, setLibroMayor] = useState([]);
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState('');
+    const [saldoFinal, setSaldoFinal] = useState(0);
 
     useEffect(() => {
         const hoy = new Date();
@@ -40,6 +45,16 @@ const LibroMayor = () => {
 
             console.log('Respuesta del libro mayor:', response.data);
             setLibroMayor(response.data);
+
+            // Calcular el saldo acumulado y final
+            let saldoAcumulado = 0; // Inicializar el saldo acumulado
+            response.data.forEach((movimiento) => {
+                saldoAcumulado += (movimiento.debe || 0) - (movimiento.haber || 0);
+                movimiento.saldo = saldoAcumulado; // Asignar el saldo acumulado a cada movimiento
+            });
+
+            // Guardar el saldo final
+            setSaldoFinal(saldoAcumulado);
             setError('');
         } catch (error) {
             console.error('Error al obtener el libro mayor:', error.response ? error.response.data : error.message);
@@ -69,7 +84,11 @@ const LibroMayor = () => {
                         name="codigoCuenta"
                         value={codigoCuenta}
                         onChange={(e) => setCodigoCuenta(e.target.value)}
+<<<<<<< Updated upstream
                         placeholder="Código" // Agregado placeholder
+=======
+                        placeholder='Código'
+>>>>>>> Stashed changes
                         required
                     />
                 </div>
@@ -103,6 +122,8 @@ const LibroMayor = () => {
                         <tr>
                             <th>Fecha</th>
                             <th>Descripción</th>
+                            <th>Debe</th>
+                            <th>Haber</th>
                             <th>Saldo</th>
                         </tr>
                     </thead>
@@ -111,9 +132,15 @@ const LibroMayor = () => {
                             <tr key={index}>
                                 <td>{new Date(movimiento.fecha).toLocaleDateString()}</td>
                                 <td>{movimiento.descripcion}</td>
-                                <td>{movimiento.saldo}</td>
+                                <td>{movimiento.debe?.toFixed(2) || '0.00'}</td>
+                                <td>{movimiento.haber?.toFixed(2) || '0.00'}</td>
+                                <td>{movimiento.saldo?.toFixed(2) || '0.00'}</td> {/* Mostrar el saldo acumulado */}
                             </tr>
                         ))}
+                        <tr>
+                            <td colSpan={2}><strong>Saldo Final</strong></td>
+                            <td colSpan={3}><strong>{saldoFinal.toFixed(2)}</strong></td> {/* Mostrar el saldo final */}
+                        </tr>
                     </tbody>
                 </table>
             )}
