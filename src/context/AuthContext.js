@@ -9,6 +9,10 @@ export const AuthProvider = ({ children }) => {
 
     // Verificar el estado de autenticación al cargar la app
     useEffect(() => {
+        // Al refrescar, siempre cerrar sesión
+        logout();
+
+        // Opción: Si quieres conservar la sesión hasta que el token caduque
         const token = localStorage.getItem('token');
         const storedRoles = localStorage.getItem('roles');
         const storedUserId = localStorage.getItem('userId');
