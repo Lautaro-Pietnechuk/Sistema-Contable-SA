@@ -99,10 +99,15 @@ public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
     // Verificar permisos de administrador
     ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
     if (permisoResponse != null) {
-        return permisoResponse; // Retornar si no tiene permisos
+        return permisoResponse;
     }
 
     try {
+        // Asignar un valor predeterminado a recibeSaldo si es nulo
+        if (cuenta.getRecibeSaldo() == null) {
+            cuenta.setRecibeSaldo(true); // o false, según tu lógica
+        }
+
         // Asignar la cuenta padre automáticamente basado en el código
         asignarCuentaPadre(cuenta);
 
@@ -117,6 +122,7 @@ public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
             .body("Error inesperado: " + e.getMessage());
     }
 }
+
 
 // Método para asignar automáticamente la cuenta padre basado en el código
 private void asignarCuentaPadre(Cuenta cuenta) {

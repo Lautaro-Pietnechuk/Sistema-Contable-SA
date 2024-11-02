@@ -66,35 +66,45 @@ public class AsientoControlador {
 
     // Crear un nuevo asiento contable
     @PostMapping("/crear/{idUsuario}")
-public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody AsientoDTO asientoDTO) {
-    if (idUsuario == null) {
-        return ResponseEntity.badRequest().body(Map.of("mensaje", "El ID del usuario no puede ser nulo."));
+    public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody AsientoDTO asientoDTO) {
+        if (idUsuario == null) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "El ID del usuario no puede ser nulo."));
+        }
+    
+        if (asientoDTO.getMovimientos() == null || asientoDTO.getMovimientos().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "El asiento debe contener al menos un movimiento."));
+        }
+    
+        if (asientoDTO.getFecha() == null) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "La fecha no puede ser nula."));
+        }
+    
+        // Calcular el total del debe y el haber
+        BigDecimal totalDebe = calcularTotal(asientoDTO, true);
+        BigDecimal totalHaber = calcularTotal(asientoDTO, false);
+    
+        // Verificar que el debe sea igual al haber
+        if (totalDebe.compareTo(totalHaber) != 0) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "El total del debe debe ser igual al total del haber."));
+        }
+    
+        try {
+            // Validar que el usuario exista
+            Usuario usuario = usuarioServicio.obtenerUsuarioPorId(idUsuario)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
+    
+            Asiento nuevoAsiento = asientoServicio.crearAsiento(asientoDTO, idUsuario);
+    
+            return ResponseEntity.ok(nuevoAsiento);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("mensaje", "Error interno: " + e.getMessage()));
+        }
     }
-
-    if (asientoDTO.getMovimientos() == null || asientoDTO.getMovimientos().isEmpty()) {
-        return ResponseEntity.badRequest().body(Map.of("mensaje", "El asiento debe contener al menos un movimiento."));
-    }
-
-    if (asientoDTO.getFecha() == null) {
-        return ResponseEntity.badRequest().body(Map.of("mensaje", "La fecha no puede ser nula."));
-    }
-
-    try {
-        // Validar que el usuario exista
-        Usuario usuario = usuarioServicio.obtenerUsuarioPorId(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
-
-        Asiento nuevoAsiento = asientoServicio.crearAsiento(asientoDTO, idUsuario);
-
-        return ResponseEntity.ok(nuevoAsiento);
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("mensaje", "Error interno: " + e.getMessage()));
-    }
-}
+    
 
 
 

@@ -100,7 +100,7 @@ const CrearAsiento = () => {
         {
           descripcion,
           movimientos,
-          fecha: sumarUnDia(fechaActual),
+          fecha: sumarUnDia(sumarUnDia(fechaActual)),
         },
         {
           headers: { Authorization: `Bearer ${storedToken}` },

@@ -1,6 +1,5 @@
 com\sa\contable\repositorios\CuentaRepositorio.class
 com\sa\contable\dto\CuentaDTO.class
-com\sa\contable\no-en-uso\AsignarRol.js
 com\sa\contable\servicios\AsientoServicio.class
 com\sa\contable\controladores\AsientoControlador.class
 com\sa\contable\servicios\CuentaServicio.class
@@ -17,7 +16,6 @@ com\sa\contable\dto\SaldoDTO.class
 com\sa\contable\controladores\UsuarioControlador.class
 com\sa\contable\entidades\CuentaAsiento.class
 com\sa\contable\configuracion\SecurityConfig.class
-com\sa\contable\no-en-uso\CrearPermiso.js
 com\sa\contable\controladores\LibroMayorControlador.class
 com\sa\contable\controladores\RolControlador.class
 com\sa\contable\dto\LibroMayorDTO.class
