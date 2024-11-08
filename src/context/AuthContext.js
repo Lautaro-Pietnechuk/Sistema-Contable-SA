@@ -6,8 +6,6 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [role, setRole] = useState(''); // Cambio a un único rol
     const [userId, setUserId] = useState(null);
-    const [token, setToken] = useState('');
-
     useEffect(() => {
         logout();  // Opcional: cerrar sesión al refrescar
 

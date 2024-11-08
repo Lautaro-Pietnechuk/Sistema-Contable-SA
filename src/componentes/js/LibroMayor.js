@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../css/LibroMayor.css';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 const LibroMayor = () => {
     const [codigoCuenta, setCodigoCuenta] = useState('');
@@ -60,6 +62,30 @@ const LibroMayor = () => {
         }
     };
 
+    const generarPDF = () => {
+        const doc = new jsPDF();
+        
+        const rows = libroMayor.map((movimiento) => [
+            new Date(movimiento.fecha).toLocaleDateString(),
+            movimiento.descripcion,
+            movimiento.debe?.toFixed(2) || '0.00',
+            movimiento.haber?.toFixed(2) || '0.00',
+            movimiento.saldo?.toFixed(2) || '0.00',
+        ]);
+
+        // Crear tabla en el PDF
+        doc.autoTable({
+            head: [['Fecha', 'Descripción', 'Debe', 'Haber', 'Saldo']],
+            body: rows,
+        });
+
+        // Agregar saldo final
+        doc.text(`Saldo Final: ${saldoFinal.toFixed(2)}`, 14, doc.lastAutoTable.finalY + 10);
+
+        // Guardar PDF
+        doc.save('libro_mayor.pdf');
+    };
+
     if (cargando) {
         return <p>Cargando...</p>;
     }
@@ -109,32 +135,35 @@ const LibroMayor = () => {
                 <button type="submit">Obtener Libro Mayor</button>
             </form>
             {libroMayor.length > 0 && (
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Descripción</th>
-                            <th>Debe</th>
-                            <th>Haber</th>
-                            <th>Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {libroMayor.map((movimiento, index) => (
-                            <tr key={index}>
-                                <td>{new Date(movimiento.fecha).toLocaleDateString()}</td>
-                                <td>{movimiento.descripcion}</td>
-                                <td>{movimiento.debe?.toFixed(2) || '0.00'}</td>
-                                <td>{movimiento.haber?.toFixed(2) || '0.00'}</td>
-                                <td>{movimiento.saldo?.toFixed(2) || '0.00'}</td> {/* Mostrar el saldo acumulado */}
+                <div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Debe</th>
+                                <th>Haber</th>
+                                <th>Saldo</th>
                             </tr>
-                        ))}
-                        <tr>
-                            <td colSpan={2}><strong>Saldo Final</strong></td>
-                            <td colSpan={3}><strong>{saldoFinal.toFixed(2)}</strong></td> {/* Mostrar el saldo final */}
-                        </tr>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {libroMayor.map((movimiento, index) => (
+                                <tr key={index}>
+                                    <td>{new Date(movimiento.fecha).toLocaleDateString()}</td>
+                                    <td>{movimiento.descripcion}</td>
+                                    <td>{movimiento.debe?.toFixed(2) || '0.00'}</td>
+                                    <td>{movimiento.haber?.toFixed(2) || '0.00'}</td>
+                                    <td>{movimiento.saldo?.toFixed(2) || '0.00'}</td> {/* Mostrar el saldo acumulado */}
+                                </tr>
+                            ))}
+                            <tr>
+                                <td colSpan={2}><strong>Saldo Final</strong></td>
+                                <td colSpan={3}><strong>{saldoFinal.toFixed(2)}</strong></td> {/* Mostrar el saldo final */}
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button onClick={generarPDF}>Descargar PDF</button>
+                </div>
             )}
         </div>
     );

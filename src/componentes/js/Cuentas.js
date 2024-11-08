@@ -7,6 +7,17 @@ const Cuentas = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
+    // Definimos ordenarCuentas dentro de useCallback
+    const ordenarCuentas = useCallback((cuentas) => {
+        return cuentas
+            .slice() // Crear una copia para evitar modificar el estado original
+            .sort((a, b) => a.codigo - b.codigo) // Ordenar por código
+            .map(cuenta => ({
+                ...cuenta,
+                subCuentas: cuenta.subCuentas ? ordenarCuentas(cuenta.subCuentas) : [] // Ordenar subcuentas recursivamente
+            }));
+    }, []); // Lista vacía para que la función no dependa de nada
+
     const obtenerCuentas = useCallback(async () => {
         setLoading(true);
         try {
@@ -27,21 +38,11 @@ const Cuentas = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [ordenarCuentas]); // `obtenerCuentas` depende de `ordenarCuentas`
 
     useEffect(() => {
         obtenerCuentas();
-    }, [obtenerCuentas]);
-
-    const ordenarCuentas = (cuentas) => {
-        return cuentas
-            .slice() // Crear una copia para evitar modificar el estado original
-            .sort((a, b) => a.codigo - b.codigo) // Ordenar por código
-            .map(cuenta => ({
-                ...cuenta,
-                subCuentas: cuenta.subCuentas ? ordenarCuentas(cuenta.subCuentas) : [] // Ordenar subcuentas recursivamente
-            }));
-    };
+    }, [obtenerCuentas]); // Se ejecuta cuando `obtenerCuentas` cambia
 
     const CuentaItem = ({ cuenta }) => (
         <li>
