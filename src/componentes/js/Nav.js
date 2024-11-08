@@ -10,22 +10,22 @@ import EliminarCuenta from './EliminarCuenta';
 import EditarCuenta from './EditarCuenta';
 import Asientos from './Asientos';
 import CrearAsiento from './CrearAsiento';
-//import AsignarRol from './AsignarRol';
 import EliminarUsuario from './EliminarUsuario';
 import NotFound from './NotFound';
-import LibroMayor from './LibroMayor';  // Importa el componente
+import LibroMayor from './LibroMayor';
 import '../css/Nav.css';
 
 const Nav = () => {
-    const { isAuthenticated, logout } = useContext(AuthContext);
+    const { isAuthenticated, role, logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    // Efecto para redirigir al login cuando se cierre la sesión
+    // Verifica el rol al cargar el componente
     useEffect(() => {
+        console.log("Rol desde AuthContext:", role); // Verifica el rol
         if (!isAuthenticated && window.location.pathname !== '/register') {
-            navigate('/login'); // Redirige al login si no está autenticado y no está en la página de registro
+            navigate('/login');
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate, role]);
 
     return (
         <div style={{ display: 'flex' }}>
@@ -40,11 +40,15 @@ const Nav = () => {
                         <NavLink to="/cuentas">Cuentas</NavLink>
                         <NavLink to="/asientos">Libro Diario</NavLink>
                         <NavLink to="/asientos/agregar">Agregar Asiento</NavLink>
-                        <NavLink to="/cuentas/agregar">Agregar Cuentas</NavLink>
-                        <NavLink to="/cuentas/eliminar">Eliminar Cuentas</NavLink>
-                        <NavLink to="/cuentas/editarNombre">Editar Cuentas</NavLink>
-                        <NavLink to="/libro-mayor">Libro Mayor</NavLink> {/* Agrega el enlace */}
-                        <NavLink to="/usuarios/eliminar">Eliminar Usuario</NavLink>
+                        {role[0] === 'ROLE_ADMINISTRADOR' && (
+                            <>
+                                <NavLink to="/cuentas/agregar">Agregar Cuentas</NavLink> {/* Mostrar solo para admin */}
+                                <NavLink to="/cuentas/eliminar">Eliminar Cuentas</NavLink>
+                                <NavLink to="/cuentas/editarNombre">Editar Cuentas</NavLink>
+                                <NavLink to="/usuarios/eliminar">Eliminar Usuario</NavLink>
+                            </>
+                        )}
+                        <NavLink to="/libro-mayor">Libro Mayor</NavLink>
                         <button onClick={logout} style={{ marginTop: '10px' }}>Cerrar Sesión</button>
                     </>
                 )}
@@ -60,7 +64,7 @@ const Nav = () => {
                     <Route path="/cuentas/editarNombre" element={<PrivateRoute><EditarCuenta /></PrivateRoute>} />
                     <Route path="/asientos" element={<PrivateRoute><Asientos /></PrivateRoute>} />
                     <Route path="/asientos/agregar" element={<PrivateRoute><CrearAsiento /></PrivateRoute>} />
-                    <Route path="/libro-mayor" element={<PrivateRoute><LibroMayor /></PrivateRoute>} /> {/* Agrega la ruta */}
+                    <Route path="/libro-mayor" element={<PrivateRoute><LibroMayor /></PrivateRoute>} />
                     <Route path="/usuarios/eliminar" element={<PrivateRoute><EliminarUsuario /></PrivateRoute>} />
                     <Route path="*" element={<NotFound />} />
                     <Route path="/" element={<Navigate to="/login" />} />

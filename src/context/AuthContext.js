@@ -4,29 +4,21 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [roles, setRoles] = useState([]);
+    const [role, setRole] = useState(''); // Cambio a un único rol
     const [userId, setUserId] = useState(null);
+    const [token, setToken] = useState('');
 
-    // Verificar el estado de autenticación al cargar la app
     useEffect(() => {
-        // Al refrescar, siempre cerrar sesión
-        logout();
+        logout();  // Opcional: cerrar sesión al refrescar
 
-        // Opción: Si quieres conservar la sesión hasta que el token caduque
         const token = localStorage.getItem('token');
-        const storedRoles = localStorage.getItem('roles');
+        const storedRole = localStorage.getItem('role');  // Cambiado a `role`
         const storedUserId = localStorage.getItem('userId');
 
         if (token) {
             setIsAuthenticated(true);
-            if (storedRoles) {
-                try {
-                    const parsedRoles = JSON.parse(storedRoles);
-                    setRoles(parsedRoles);
-                } catch (error) {
-                    console.error("Error parsing roles:", error);
-                    setRoles([]);
-                }
+            if (storedRole) {
+                setRole(storedRole);  // Establecer rol único
             }
             if (storedUserId) {
                 setUserId(storedUserId);
@@ -34,28 +26,27 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    // Función para manejar el login
-    const login = (token, userRoles, id) => {
+    const login = (token, userRole, id) => {
+        console.log("Roles recibidos en login:", userRole); // Log para verificar los roles
         localStorage.setItem('token', token);
-        localStorage.setItem('roles', JSON.stringify(userRoles));
+        localStorage.setItem('role', userRole);  // Guardar rol como string
         localStorage.setItem('userId', id);
         setIsAuthenticated(true);
-        setRoles(userRoles);
+        setRole(userRole);  // Guardar rol único
         setUserId(id);
     };
 
-    // Función para manejar el logout
     const logout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('roles');
+        localStorage.removeItem('role');
         localStorage.removeItem('userId');
         setIsAuthenticated(false);
-        setRoles([]);
+        setRole('');  // Limpiar rol
         setUserId(null);
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, roles, userId, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, role, userId, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
