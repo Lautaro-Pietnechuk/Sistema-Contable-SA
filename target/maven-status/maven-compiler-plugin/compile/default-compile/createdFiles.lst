@@ -3,6 +3,7 @@ com\sa\contable\dto\CuentaDTO.class
 com\sa\contable\servicios\AsientoServicio.class
 com\sa\contable\controladores\AsientoControlador.class
 com\sa\contable\servicios\CuentaServicio.class
+com\sa\contable\noenuso\CuentaInitializer.class
 com\sa\contable\servicios\CuentaAsientoServicio.class
 com\sa\contable\controladores\CuentaAsientoControlador.class
 com\sa\contable\dto\AsientoDTO.class

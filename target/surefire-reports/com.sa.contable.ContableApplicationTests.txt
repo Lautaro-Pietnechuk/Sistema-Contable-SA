@@ -1,9 +1,9 @@
 -------------------------------------------------------------------------------
 Test set: com.sa.contable.ContableApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 6.269 s <<< FAILURE! -- in com.sa.contable.ContableApplicationTests
-com.sa.contable.ContableApplicationTests.contextLoads -- Time elapsed: 0.011 s <<< ERROR!
-java.lang.IllegalStateException: Failed to load ApplicationContext for [WebMergedContextConfiguration@74c58f64 testClass = com.sa.contable.ContableApplicationTests, locations = [], classes = [com.sa.contable.ContableApplication], contextInitializerClasses = [], activeProfiles = [], propertySourceDescriptors = [], propertySourceProperties = ["org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true"], contextCustomizers = [org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@6f36c2f0, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@3b35a229, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer@3b6d844d, org.springframework.boot.test.web.reactor.netty.DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory$DisableReactorResourceFactoryGlobalResourcesContextCustomizerCustomizer@e3b3b2f, org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabilityContextCustomizer@1f, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizer@34129c78, org.springframework.boot.test.context.SpringBootTestAnnotation@8d5f40f9], resourceBasePath = "src/main/webapp", contextLoader = org.springframework.boot.test.context.SpringBootContextLoader, parent = null]
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 6.566 s <<< FAILURE! -- in com.sa.contable.ContableApplicationTests
+com.sa.contable.ContableApplicationTests.contextLoads -- Time elapsed: 0.017 s <<< ERROR!
+java.lang.IllegalStateException: Failed to load ApplicationContext for [WebMergedContextConfiguration@634cd45c testClass = com.sa.contable.ContableApplicationTests, locations = [], classes = [com.sa.contable.ContableApplication], contextInitializerClasses = [], activeProfiles = [], propertySourceDescriptors = [], propertySourceProperties = ["org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true"], contextCustomizers = [org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@2d29b4ee, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@1224144a, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer@2235eaab, org.springframework.boot.test.web.reactor.netty.DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory$DisableReactorResourceFactoryGlobalResourcesContextCustomizerCustomizer@18f8cd79, org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabilityContextCustomizer@1f, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizer@62656be4, org.springframework.boot.test.context.SpringBootTestAnnotation@cf32a2d8], resourceBasePath = "src/main/webapp", contextLoader = org.springframework.boot.test.context.SpringBootContextLoader, parent = null]
 	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:180)
 	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:130)
 	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:191)
@@ -22,7 +22,7 @@ java.lang.IllegalStateException: Failed to load ApplicationContext for [WebMerge
 	at java.base/java.util.Optional.orElseGet(Optional.java:364)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'asientoControlador': Unsatisfied dependency expressed through field 'asientoServicio': Error creating bean with name 'asientoServicio': Unsatisfied dependency expressed through field 'asientoRepositorio': Error creating bean with name 'asientoRepositorio' defined in com.sa.contable.repositorios.AsientoRepositorio defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Could not create query for public abstract java.util.List com.sa.contable.repositorios.AsientoRepositorio.findAllBetweenDatesWithCuentas(java.sql.Date,java.sql.Date); Reason: Validation failed for query for method public abstract java.util.List com.sa.contable.repositorios.AsientoRepositorio.findAllBetweenDatesWithCuentas(java.sql.Date,java.sql.Date)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'asientoControlador': Unsatisfied dependency expressed through field 'asientoServicio': Error creating bean with name 'asientoServicio': Unsatisfied dependency expressed through field 'cuentaRepositorio': Error creating bean with name 'cuentaRepositorio' defined in com.sa.contable.repositorios.CuentaRepositorio defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Could not create query for public abstract java.util.List com.sa.contable.repositorios.CuentaRepositorio.findByCuentaPadreId(java.lang.Long); Reason: Failed to create query for method public abstract java.util.List com.sa.contable.repositorios.CuentaRepositorio.findByCuentaPadreId(java.lang.Long); No property 'id' found for type 'Cuenta'; Traversed path: Cuenta.cuentaPadre
 	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:788)
 	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768)
 	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:145)
@@ -50,7 +50,7 @@ Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Err
 	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:225)
 	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:152)
 	... 17 more
-Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'asientoServicio': Unsatisfied dependency expressed through field 'asientoRepositorio': Error creating bean with name 'asientoRepositorio' defined in com.sa.contable.repositorios.AsientoRepositorio defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Could not create query for public abstract java.util.List com.sa.contable.repositorios.AsientoRepositorio.findAllBetweenDatesWithCuentas(java.sql.Date,java.sql.Date); Reason: Validation failed for query for method public abstract java.util.List com.sa.contable.repositorios.AsientoRepositorio.findAllBetweenDatesWithCuentas(java.sql.Date,java.sql.Date)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'asientoServicio': Unsatisfied dependency expressed through field 'cuentaRepositorio': Error creating bean with name 'cuentaRepositorio' defined in com.sa.contable.repositorios.CuentaRepositorio defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Could not create query for public abstract java.util.List com.sa.contable.repositorios.CuentaRepositorio.findByCuentaPadreId(java.lang.Long); Reason: Failed to create query for method public abstract java.util.List com.sa.contable.repositorios.CuentaRepositorio.findByCuentaPadreId(java.lang.Long); No property 'id' found for type 'Cuenta'; Traversed path: Cuenta.cuentaPadre
 	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:788)
 	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768)
 	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:145)
@@ -67,7 +67,7 @@ Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Err
 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
 	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785)
 	... 42 more
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'asientoRepositorio' defined in com.sa.contable.repositorios.AsientoRepositorio defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Could not create query for public abstract java.util.List com.sa.contable.repositorios.AsientoRepositorio.findAllBetweenDatesWithCuentas(java.sql.Date,java.sql.Date); Reason: Validation failed for query for method public abstract java.util.List com.sa.contable.repositorios.AsientoRepositorio.findAllBetweenDatesWithCuentas(java.sql.Date,java.sql.Date)
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'cuentaRepositorio' defined in com.sa.contable.repositorios.CuentaRepositorio defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Could not create query for public abstract java.util.List com.sa.contable.repositorios.CuentaRepositorio.findByCuentaPadreId(java.lang.Long); Reason: Failed to create query for method public abstract java.util.List com.sa.contable.repositorios.CuentaRepositorio.findByCuentaPadreId(java.lang.Long); No property 'id' found for type 'Cuenta'; Traversed path: Cuenta.cuentaPadre
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1806)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
@@ -80,7 +80,7 @@ Caused by: org.springframework.beans.factory.BeanCreationException: Error creati
 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
 	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785)
 	... 56 more
-Caused by: org.springframework.data.repository.query.QueryCreationException: Could not create query for public abstract java.util.List com.sa.contable.repositorios.AsientoRepositorio.findAllBetweenDatesWithCuentas(java.sql.Date,java.sql.Date); Reason: Validation failed for query for method public abstract java.util.List com.sa.contable.repositorios.AsientoRepositorio.findAllBetweenDatesWithCuentas(java.sql.Date,java.sql.Date)
+Caused by: org.springframework.data.repository.query.QueryCreationException: Could not create query for public abstract java.util.List com.sa.contable.repositorios.CuentaRepositorio.findByCuentaPadreId(java.lang.Long); Reason: Failed to create query for method public abstract java.util.List com.sa.contable.repositorios.CuentaRepositorio.findByCuentaPadreId(java.lang.Long); No property 'id' found for type 'Cuenta'; Traversed path: Cuenta.cuentaPadre
 	at org.springframework.data.repository.query.QueryCreationException.create(QueryCreationException.java:101)
 	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.lookupQuery(QueryExecutorMethodInterceptor.java:119)
 	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.mapMethodsToQuery(QueryExecutorMethodInterceptor.java:103)
@@ -96,61 +96,46 @@ Caused by: org.springframework.data.repository.query.QueryCreationException: Cou
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1853)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1802)
 	... 66 more
-Caused by: java.lang.IllegalArgumentException: Validation failed for query for method public abstract java.util.List com.sa.contable.repositorios.AsientoRepositorio.findAllBetweenDatesWithCuentas(java.sql.Date,java.sql.Date)
-	at org.springframework.data.jpa.repository.query.SimpleJpaQuery.validateQuery(SimpleJpaQuery.java:100)
-	at org.springframework.data.jpa.repository.query.SimpleJpaQuery.<init>(SimpleJpaQuery.java:70)
-	at org.springframework.data.jpa.repository.query.JpaQueryFactory.fromMethodWithQueryString(JpaQueryFactory.java:60)
-	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$DeclaredQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:170)
-	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$CreateIfNotFoundQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:252)
+Caused by: java.lang.IllegalArgumentException: Failed to create query for method public abstract java.util.List com.sa.contable.repositorios.CuentaRepositorio.findByCuentaPadreId(java.lang.Long); No property 'id' found for type 'Cuenta'; Traversed path: Cuenta.cuentaPadre
+	at org.springframework.data.jpa.repository.query.PartTreeJpaQuery.<init>(PartTreeJpaQuery.java:107)
+	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$CreateQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:124)
+	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$CreateIfNotFoundQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:258)
 	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$AbstractQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:95)
 	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.lookupQuery(QueryExecutorMethodInterceptor.java:115)
 	... 78 more
-Caused by: java.lang.IllegalArgumentException: org.hibernate.query.sqm.UnknownPathException: Could not resolve attribute 'cuentaAsientos' of 'com.sa.contable.entidades.Asiento' [SELECT a FROM Asiento a LEFT JOIN FETCH a.cuentaAsientos ca LEFT JOIN FETCH ca.cuenta WHERE a.fecha BETWEEN :fechaInicio AND :fechaFin]
-	at org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:143)
-	at org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:167)
-	at org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:173)
-	at org.hibernate.internal.AbstractSharedSessionContract.createQuery(AbstractSharedSessionContract.java:860)
-	at org.hibernate.internal.AbstractSharedSessionContract.createQuery(AbstractSharedSessionContract.java:765)
-	at org.hibernate.internal.AbstractSharedSessionContract.createQuery(AbstractSharedSessionContract.java:140)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.springframework.orm.jpa.ExtendedEntityManagerCreator$ExtendedEntityManagerInvocationHandler.invoke(ExtendedEntityManagerCreator.java:364)
-	at jdk.proxy2/jdk.proxy2.$Proxy149.createQuery(Unknown Source)
-	at org.springframework.data.jpa.repository.query.SimpleJpaQuery.validateQuery(SimpleJpaQuery.java:94)
-	... 84 more
-Caused by: org.hibernate.query.sqm.UnknownPathException: Could not resolve attribute 'cuentaAsientos' of 'com.sa.contable.entidades.Asiento' [SELECT a FROM Asiento a LEFT JOIN FETCH a.cuentaAsientos ca LEFT JOIN FETCH ca.cuenta WHERE a.fecha BETWEEN :fechaInicio AND :fechaFin]
-	at org.hibernate.query.hql.internal.StandardHqlTranslator.translate(StandardHqlTranslator.java:88)
-	at org.hibernate.query.internal.QueryInterpretationCacheStandardImpl.createHqlInterpretation(QueryInterpretationCacheStandardImpl.java:145)
-	at org.hibernate.query.internal.QueryInterpretationCacheStandardImpl.resolveHqlInterpretation(QueryInterpretationCacheStandardImpl.java:132)
-	at org.hibernate.internal.AbstractSharedSessionContract.interpretHql(AbstractSharedSessionContract.java:802)
-	at org.hibernate.internal.AbstractSharedSessionContract.createQuery(AbstractSharedSessionContract.java:852)
-	... 90 more
-Caused by: org.hibernate.query.sqm.PathElementException: Could not resolve attribute 'cuentaAsientos' of 'com.sa.contable.entidades.Asiento'
-	at org.hibernate.query.sqm.SqmPathSource.getSubPathSource(SqmPathSource.java:95)
-	at org.hibernate.query.hql.internal.QualifiedJoinPathConsumer.createJoin(QualifiedJoinPathConsumer.java:192)
-	at org.hibernate.query.hql.internal.QualifiedJoinPathConsumer$AttributeJoinDelegate.consumeIdentifier(QualifiedJoinPathConsumer.java:270)
-	at org.hibernate.query.hql.internal.QualifiedJoinPathConsumer.consumeIdentifier(QualifiedJoinPathConsumer.java:106)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSimplePath(SemanticQueryBuilder.java:5269)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitIndexedPathAccessFragment(SemanticQueryBuilder.java:5218)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitGeneralPathFragment(SemanticQueryBuilder.java:5193)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitGeneralPathFragment(SemanticQueryBuilder.java:275)
-	at org.hibernate.grammars.hql.HqlParser$GeneralPathFragmentContext.accept(HqlParser.java:4719)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitPath(SemanticQueryBuilder.java:5184)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitPath(SemanticQueryBuilder.java:275)
-	at org.hibernate.grammars.hql.HqlParser$PathContext.accept(HqlParser.java:4514)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.getJoin(SemanticQueryBuilder.java:2275)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.consumeJoin(SemanticQueryBuilder.java:2219)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitEntityWithJoins(SemanticQueryBuilder.java:2032)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitFromClause(SemanticQueryBuilder.java:2011)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitQuery(SemanticQueryBuilder.java:1243)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitQuerySpecExpression(SemanticQueryBuilder.java:1035)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitQuerySpecExpression(SemanticQueryBuilder.java:275)
-	at org.hibernate.grammars.hql.HqlParser$QuerySpecExpressionContext.accept(HqlParser.java:2132)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSimpleQueryGroup(SemanticQueryBuilder.java:1020)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSimpleQueryGroup(SemanticQueryBuilder.java:275)
-	at org.hibernate.grammars.hql.HqlParser$SimpleQueryGroupContext.accept(HqlParser.java:2003)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitSelectStatement(SemanticQueryBuilder.java:490)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.visitStatement(SemanticQueryBuilder.java:449)
-	at org.hibernate.query.hql.internal.SemanticQueryBuilder.buildSemanticModel(SemanticQueryBuilder.java:322)
-	at org.hibernate.query.hql.internal.StandardHqlTranslator.translate(StandardHqlTranslator.java:71)
-	... 94 more
+Caused by: org.springframework.data.mapping.PropertyReferenceException: No property 'id' found for type 'Cuenta'; Traversed path: Cuenta.cuentaPadre
+	at org.springframework.data.mapping.PropertyPath.<init>(PropertyPath.java:94)
+	at org.springframework.data.mapping.PropertyPath.create(PropertyPath.java:455)
+	at org.springframework.data.mapping.PropertyPath.create(PropertyPath.java:431)
+	at org.springframework.data.mapping.PropertyPath.create(PropertyPath.java:465)
+	at org.springframework.data.mapping.PropertyPath.create(PropertyPath.java:488)
+	at org.springframework.data.mapping.PropertyPath.create(PropertyPath.java:431)
+	at org.springframework.data.mapping.PropertyPath.lambda$from$0(PropertyPath.java:384)
+	at java.base/java.util.concurrent.ConcurrentMap.computeIfAbsent(ConcurrentMap.java:330)
+	at org.springframework.data.mapping.PropertyPath.from(PropertyPath.java:366)
+	at org.springframework.data.mapping.PropertyPath.from(PropertyPath.java:344)
+	at org.springframework.data.repository.query.parser.Part.<init>(Part.java:81)
+	at org.springframework.data.repository.query.parser.PartTree$OrPart.lambda$new$0(PartTree.java:259)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1024)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)
+	at org.springframework.data.repository.query.parser.PartTree$OrPart.<init>(PartTree.java:260)
+	at org.springframework.data.repository.query.parser.PartTree$Predicate.lambda$new$0(PartTree.java:389)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1024)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)
+	at org.springframework.data.repository.query.parser.PartTree$Predicate.<init>(PartTree.java:390)
+	at org.springframework.data.repository.query.parser.PartTree.<init>(PartTree.java:103)
+	at org.springframework.data.jpa.repository.query.PartTreeJpaQuery.<init>(PartTreeJpaQuery.java:101)
+	... 82 more
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../css/EliminarCuenta.css'
+import '../css/EliminarCuenta.css';
 
 const EliminarCuenta = () => {
     const [cuentas, setCuentas] = useState([]);
@@ -53,9 +53,16 @@ const EliminarCuenta = () => {
             setTimeout(() => setMensajeExito(''), 3000); // Mensaje desaparecerá después de 3 segundos
         } catch (error) {
             if (error.response) {
-                console.error('Error del servidor:', error.response.data);
+                console.error('Error del servidor:', error.response);
                 if (error.response.status === 403) {
-                    setMensajeError(error.response.data.includes('No se puede eliminar la cuenta') ? 'No se puede eliminar la cuenta porque ha sido utilizada en un asiento.' : 'Necesitas permisos de administrador para poder eliminar una cuenta.');
+                    const mensajeBackend = error.response.data;
+                    if (mensajeBackend.includes('No se puede eliminar la cuenta porque tiene cuentas hijas')) {
+                        setMensajeError('No se puede eliminar la cuenta porque tiene cuentas hijas asociadas.');
+                    } else if (mensajeBackend.includes('No se puede eliminar la cuenta porque ha sido utilizada en un asiento')) {
+                        setMensajeError('No se puede eliminar la cuenta porque ha sido utilizada en un asiento.');
+                    } else {
+                        setMensajeError('Necesitas permisos de administrador para poder eliminar una cuenta.');
+                    }
                 } else {
                     setMensajeError(`Error: ${error.response.data.error || error.response.data.message}`);
                 }
@@ -86,7 +93,7 @@ const EliminarCuenta = () => {
                         >
                             <option value="">Seleccionar cuenta</option>
                             {cuentas.map((cuenta) => (
-                                <option key={cuenta.id} value={cuenta.id}>
+                                <option key={cuenta.codigo} value={cuenta.codigo}> {/* Usar codigo aquí */}
                                     {cuenta.nombre} - {cuenta.codigo}
                                 </option>
                             ))}
@@ -97,7 +104,6 @@ const EliminarCuenta = () => {
             </div>
         </div>
     );
-    
 };
 
 export default EliminarCuenta;

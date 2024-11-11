@@ -27,6 +27,7 @@ import com.sa.contable.dto.CuentaDTO;
 import com.sa.contable.dto.SaldoDTO;
 import com.sa.contable.entidades.Cuenta;
 import com.sa.contable.repositorios.CuentaAsientoRepositorio;
+import com.sa.contable.repositorios.CuentaRepositorio;
 import com.sa.contable.servicios.CuentaServicio;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,6 +49,9 @@ public class CuentaControlador {
 
     @Autowired
     private HttpServletRequest request;
+
+    @Autowired
+    private CuentaRepositorio cuentaRepositorio;
 
     @GetMapping
     public List<CuentaDTO> listarCuentas() { 
@@ -103,6 +107,12 @@ public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
     }
 
     try {
+        // Validar que el código tenga 3 dígitos
+        if (String.valueOf(cuenta.getCodigo()).length() != 3) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("El código de la cuenta debe tener exactamente 3 dígitos.");
+        }
+
         // Asignar un valor predeterminado a recibeSaldo si es nulo
         if (cuenta.getRecibeSaldo() == null) {
             cuenta.setRecibeSaldo(true); // o false, según tu lógica
@@ -124,33 +134,28 @@ public ResponseEntity<String> crearCuenta(@RequestBody Cuenta cuenta) {
 }
 
 
+
 // Método para asignar automáticamente la cuenta padre basado en el código
 private void asignarCuentaPadre(Cuenta cuenta) {
     long codigo = cuenta.getCodigo();
-    Long codigoPadre = null;
+    String codigoStr = String.valueOf(codigo);
 
-    String codigoStr = String.valueOf(codigo); // Convertir el código a String
-
-    // Verificar si el código es de una cuenta principal
-    if (codigoStr.length() == 3 && codigoStr.endsWith("00")) {
-        System.out.println("Código de la cuenta: " + codigo + " es una cuenta principal sin cuenta padre.");
-        return; // No tiene padre, salir del método
+    // Verificar que el código tenga exactamente 3 dígitos
+    if (codigoStr.length() != 3) {
+        throw new IllegalArgumentException("El código de la cuenta debe tener exactamente 3 dígitos.");
     }
 
-    // Determinar el código de la cuenta padre para los rangos 100, 200, 300, 400, 500
-    if (codigoStr.length() == 3) {
-        if (codigoStr.endsWith("00")) {
-            codigoPadre = null; // Las cuentas principales (100, 200, 300, 400, 500) no tienen padre
-        } else if (codigoStr.charAt(1) == '0') {
-            // Códigos como 110, 120, 130, etc.
-            codigoPadre = Long.parseLong(codigoStr.charAt(0) + "00"); // Ej. 110 -> 100, 220 -> 200, etc.
+    // Determinar el código de la cuenta padre
+    Long codigoPadre = null;
+
+    if (!codigoStr.endsWith("00")) { // No es una cuenta principal
+        if (codigoStr.charAt(2) != '0') {
+            // Caso: Código de tercer nivel, como 152 -> Padre será 150
+            codigoPadre = Long.parseLong(codigoStr.substring(0, 2) + "0");
         } else {
-            // Códigos como 111, 125, 211, 225, etc.
-            codigoPadre = Long.parseLong(codigoStr.substring(0, 2) + "0"); // Ej. 111 -> 110, 125 -> 120, etc.
+            // Caso: Código de segundo nivel, como 150 -> Padre será 100
+            codigoPadre = Long.parseLong(codigoStr.charAt(0) + "00");
         }
-    } else if (codigoStr.length() == 2) {
-        // Código como 11 -> Padre: 100
-        codigoPadre = Long.parseLong(codigoStr.charAt(0) + "00");
     }
 
     // Imprimir para verificar el código padre
@@ -170,49 +175,79 @@ private void asignarCuentaPadre(Cuenta cuenta) {
             cuentaPadre.agregarHija(cuenta);
 
             // Establecer recibeSaldo de la cuenta padre como false
+            System.out.println("llegue hasta aqui");
             cuentaPadre.setRecibeSaldo(false);
+            cuentaServicio.actualizarCuenta(cuentaPadre.getCodigo(), cuentaPadre);
 
-            // Aquí no es necesario guardar la cuenta padre de nuevo
             System.out.println("Se ha asignado correctamente la cuenta hija " + codigo 
                     + " a la cuenta padre " + codigoPadre + ". El estado recibeSaldo de la cuenta padre es ahora false.");
         } else {
             throw new RuntimeException("La cuenta padre con código " + codigoPadre + " no existe.");
         }
+    } else {
+        System.out.println("La cuenta " + codigo + " es una cuenta principal y no tiene cuenta padre.");
     }
-}
+}   
 
 
+    public boolean tieneCuentasHijas(Long codigo) {
+        List<Cuenta> cuentasHijas = cuentaRepositorio.findByCuentaPadre_Codigo(codigo); // Asumiendo que el repositorio tiene un método para obtener las cuentas hijas
+        return !cuentasHijas.isEmpty(); // Si la lista de cuentas hijas no está vacía, significa que tiene cuentas hijas
+    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarCuenta(@PathVariable Long id) {
+    @DeleteMapping("/{codigo}")
+    public ResponseEntity<String> eliminarCuenta(@PathVariable Long codigo) {
         // Verificar si el usuario tiene permisos de administrador
         ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
         if (permisoResponse != null) {
             return permisoResponse; // Si hay un error de permisos, retornar la respuesta
         }
 
+        // Verificar si la cuenta tiene cuentas hijas
+        if (tieneCuentasHijas(codigo)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("No se puede eliminar la cuenta porque tiene cuentas hijas.");
+        }
+
         // Verificar si la cuenta ha sido utilizada en algún asiento
-        if (haSidoUtilizadaEnAsiento(id)) {
+        if (haSidoUtilizadaEnAsiento(codigo)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("No se puede eliminar la cuenta porque ha sido utilizada en un asiento.");
         }
 
-        // Si no ha sido utilizada, proceder a eliminarla
-        cuentaServicio.eliminarCuenta(id);
+        // Obtener la cuenta que se va a eliminar
+        Optional<Cuenta> cuentaAEliminarOpt = cuentaServicio.obtenerCuentaPorCodigo(codigo);
+        
+        // Verificar si la cuenta está presente
+        if (!cuentaAEliminarOpt.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cuenta no encontrada.");
+        }
+
+        Cuenta cuentaAEliminar = cuentaAEliminarOpt.get(); // Obtener la cuenta del Optional
+
+        // Verificar si la cuenta tiene padre
+        Cuenta cuentaPadre = cuentaAEliminar.getCuentaPadre();
+        if (cuentaPadre != null) {
+            // Verificar si el padre aún tiene otras hijas
+            boolean tieneOtrasHijas = cuentaPadre.getHijas().stream()
+                    .anyMatch(cuenta -> !cuenta.getCodigo().equals(codigo)); // Usar codigo, no id
+
+            // Si el padre no tiene más hijas, actualizar el recibeSaldo a true
+            if (!tieneOtrasHijas) {
+                cuentaPadre.setRecibeSaldo(true);
+                cuentaServicio.actualizarCuenta(cuentaPadre.getCodigo(), cuentaPadre);
+            }
+        }
+
+        // Si no ha sido utilizada y no tiene hijas, proceder a eliminarla
+        cuentaServicio.eliminarCuenta(codigo);
         return ResponseEntity.ok("Cuenta eliminada con éxito.");
     }
+
+
+
+
 
     public boolean haSidoUtilizadaEnAsiento(Long cuentaId) {
         // Utiliza el repositorio inyectado para verificar la existencia

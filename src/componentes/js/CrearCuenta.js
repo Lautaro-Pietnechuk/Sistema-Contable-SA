@@ -24,7 +24,13 @@ const CrearCuenta = () => {
 
     const manejarEnvio = async (e) => {
         e.preventDefault();
-
+    
+        // Validar que el código tenga exactamente 3 dígitos
+        if (codigo.length !== 3) {
+            setMensajeError('El código de la cuenta debe tener exactamente 3 dígitos.');
+            return;
+        }
+    
         // Validar el código según el tipo de cuenta
         if (tipo === 'Activo' && !codigo.startsWith('1')) {
             setMensajeError('El código para una cuenta de tipo Activo debe comenzar con 1.');
@@ -46,9 +52,9 @@ const CrearCuenta = () => {
             setMensajeError('El código para una cuenta de tipo Egreso debe comenzar con 5.');
             return;
         }
-
+    
         const nuevaCuenta = { nombre, tipo, codigo };
-
+    
         try {
             await axios.post('http://localhost:8080/api/cuentas/crear', nuevaCuenta, {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -82,6 +88,7 @@ const CrearCuenta = () => {
             }
         }
     };
+    
     
     const modificarCodigo = (tipoSeleccionado) => {
         switch (tipoSeleccionado) {
