@@ -16,20 +16,24 @@ const LibroMayor = () => {
     useEffect(() => {
         const hoy = new Date();
         const hace30Dias = new Date();
+        const mañana = new Date(hoy);
         hace30Dias.setDate(hoy.getDate() - 30);
+        mañana.setDate(hoy.getDate() + 1); // Ajusta la fecha fin a un día más
+
         setFechaInicio(hace30Dias.toISOString().split('T')[0]);
-        setFechaFin(hoy.toISOString().split('T')[0]);
+        setFechaFin(mañana.toISOString().split('T')[0]); // Establece fecha fin en un día más
     }, []);
 
     const obtenerLibroMayor = async (e) => {
         e.preventDefault();
+        console.log('Cargando libro mayor...');
         const storedToken = localStorage.getItem('token');
-
+    
         if (!storedToken) {
             setError('No se encontró el token. Por favor, inicie sesión.');
             return;
         }
-
+    
         setCargando(true);
         try {
             const response = await axios.get('http://localhost:8080/api/libroMayor', {
@@ -40,18 +44,38 @@ const LibroMayor = () => {
                 },
                 headers: { Authorization: `Bearer ${storedToken}` }
             });
-
+    
             console.log('Respuesta del libro mayor:', response.data);
             setLibroMayor(response.data);
-
-            // Calcular el saldo acumulado y final
-            let saldoAcumulado = 0; // Inicializar el saldo acumulado
+    
+            let saldoAcumulado = 0;
             response.data.forEach((movimiento) => {
-                saldoAcumulado += (movimiento.debe || 0) - (movimiento.haber || 0);
-                movimiento.saldo = saldoAcumulado; // Asignar el saldo acumulado a cada movimiento
+                const { debe, haber, tipoCuenta } = movimiento;
+                console.log('Tipo cuenta:', tipoCuenta);
+    
+                if (tipoCuenta) {
+                    let nuevoSaldo = saldoAcumulado;
+                    switch (tipoCuenta.toLowerCase()) {
+                        case "activo":
+                        case "egreso":
+                            nuevoSaldo = saldoAcumulado + (debe || 0) - (haber || 0);
+                            break;
+                        case "pasivo":
+                        case "patrimonio":
+                        case "ingreso":
+                            nuevoSaldo = saldoAcumulado - (debe || 0) + (haber || 0);
+                            break;
+                        default:
+                            console.error('Tipo de cuenta desconocido:', tipoCuenta);
+                    }
+                    saldoAcumulado = nuevoSaldo;
+                } else {
+                    console.error('tipoCuenta es undefined para el movimiento:', movimiento);
+                }
+    
+                movimiento.saldo = saldoAcumulado;
             });
-
-            // Guardar el saldo final
+    
             setSaldoFinal(saldoAcumulado);
             setError('');
         } catch (error) {
@@ -61,6 +85,7 @@ const LibroMayor = () => {
             setCargando(false);
         }
     };
+    
 
     const generarPDF = () => {
         const doc = new jsPDF();
@@ -73,16 +98,12 @@ const LibroMayor = () => {
             movimiento.saldo?.toFixed(2) || '0.00',
         ]);
 
-        // Crear tabla en el PDF
         doc.autoTable({
             head: [['Fecha', 'Descripción', 'Debe', 'Haber', 'Saldo']],
             body: rows,
         });
 
-        // Agregar saldo final
         doc.text(`Saldo Final: ${saldoFinal.toFixed(2)}`, 14, doc.lastAutoTable.finalY + 10);
-
-        // Guardar PDF
         doc.save('libro_mayor.pdf');
     };
 
@@ -153,12 +174,12 @@ const LibroMayor = () => {
                                     <td>{movimiento.descripcion}</td>
                                     <td>{movimiento.debe?.toFixed(2) || '0.00'}</td>
                                     <td>{movimiento.haber?.toFixed(2) || '0.00'}</td>
-                                    <td>{movimiento.saldo?.toFixed(2) || '0.00'}</td> {/* Mostrar el saldo acumulado */}
+                                    <td>{movimiento.saldo?.toFixed(2) || '0.00'}</td>
                                 </tr>
                             ))}
                             <tr>
                                 <td colSpan={2}><strong>Saldo Final</strong></td>
-                                <td colSpan={3}><strong>{saldoFinal.toFixed(2)}</strong></td> {/* Mostrar el saldo final */}
+                                <td colSpan={3}><strong>{saldoFinal.toFixed(2)}</strong></td>
                             </tr>
                         </tbody>
                     </table>

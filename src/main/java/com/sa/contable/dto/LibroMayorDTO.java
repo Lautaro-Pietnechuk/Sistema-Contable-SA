@@ -6,17 +6,19 @@ import java.time.LocalDate;
 public class LibroMayorDTO {
     private LocalDate fecha;
     private String descripcion;
-    private BigDecimal debe;  // Nueva propiedad para el debe
-    private BigDecimal haber;  // Nueva propiedad para el haber
+    private BigDecimal debe;
+    private BigDecimal haber;
     private BigDecimal saldo;
+    private String tipoCuenta;  // Nueva propiedad para tipoCuenta
 
     // Constructor actualizado
-    public LibroMayorDTO(LocalDate fecha, String descripcion, BigDecimal debe, BigDecimal haber, BigDecimal saldo) {
+    public LibroMayorDTO(LocalDate fecha, String descripcion, BigDecimal debe, BigDecimal haber, BigDecimal saldo, String tipoCuenta) {
         this.fecha = fecha;
         this.descripcion = descripcion;
-        this.debe = debe;        // Inicializa el debe
-        this.haber = haber;      // Inicializa el haber
+        this.debe = debe;
+        this.haber = haber;
         this.saldo = saldo;
+        this.tipoCuenta = tipoCuenta;  // Inicializa el tipoCuenta
     }
 
     // Getters y Setters
@@ -58,5 +60,13 @@ public class LibroMayorDTO {
 
     public void setSaldo(BigDecimal saldo) {
         this.saldo = saldo;
+    }
+
+    public String getTipoCuenta() {
+        return tipoCuenta;  // Método para obtener tipoCuenta
+    }
+
+    public void setTipoCuenta(String tipoCuenta) {
+        this.tipoCuenta = tipoCuenta;  // Método para establecer tipoCuenta
     }
 }

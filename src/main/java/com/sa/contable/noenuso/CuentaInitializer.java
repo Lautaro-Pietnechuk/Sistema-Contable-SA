@@ -1,4 +1,4 @@
-/* package com.sa.contable;
+package com.sa.contable.noenuso;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -155,4 +155,4 @@ public class CuentaInitializer {
     
     
 }
- */
+ 

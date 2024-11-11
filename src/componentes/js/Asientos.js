@@ -15,6 +15,7 @@ const Asientos = () => {
     const [totalPaginas, setTotalPaginas] = useState(0);
     const tamañoPorPagina = 5;
 
+    // Set fechas por defecto cuando el componente se monta
     useEffect(() => {
         const hoy = new Date();
         const hace30Dias = new Date();
@@ -25,6 +26,7 @@ const Asientos = () => {
         setFechaFin(hoy.toISOString().split('T')[0]);
     }, []);
 
+    // Llama a la API cada vez que cambian las fechas o la página
     useEffect(() => {
         const fetchAsientos = async () => {
             const storedToken = localStorage.getItem('token');
@@ -35,6 +37,9 @@ const Asientos = () => {
             }
 
             try {
+                setCargando(true); // Inicia el loading mientras se hace la consulta
+                setError(''); // Reseteamos el error cuando empezamos a cargar los datos
+
                 const response = await axios.get('http://localhost:8080/api/asientos/listar', {
                     params: {
                         fechaInicio,
@@ -50,25 +55,35 @@ const Asientos = () => {
                     setAsientos(asientosData);
                     setTotalPaginas(Math.ceil(totalElementos / tamañoPorPagina));
                 } else {
-                    setAsientos([]);
+                    setAsientos([]); // Asegura que el estado 'asientos' se vacíe si no hay datos
                     setError('No se encontraron asientos.');
                 }
             } catch (error) {
                 console.error('Error al cargar los asientos:', error);
                 setError(error.response?.data?.mensaje || 'Error al cargar los asientos.');
             } finally {
-                setCargando(false);
+                setCargando(false); // Detiene el loading
             }
         };
 
         if (fechaInicio && fechaFin) fetchAsientos();
-    }, [fechaInicio, fechaFin, paginaActual]);
+    }, [fechaInicio, fechaFin, paginaActual]); // Dependencias para actualizar cada vez que cambien
 
-    const handleFechaInicioChange = (e) => setFechaInicio(e.target.value);
-    const handleFechaFinChange = (e) => setFechaFin(e.target.value);
+    // Manejo de los cambios en las fechas
+    const handleFechaInicioChange = (e) => {
+        setFechaInicio(e.target.value);
+        setPaginaActual(1); // Resetear la página a la primera cuando cambian las fechas
+    };
+
+    const handleFechaFinChange = (e) => {
+        setFechaFin(e.target.value);
+        setPaginaActual(1); // Resetear la página a la primera cuando cambian las fechas
+    };
 
     const cambiarPagina = (nuevaPagina) => {
-        if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) setPaginaActual(nuevaPagina);
+        if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
+            setPaginaActual(nuevaPagina);
+        }
     };
 
     const generarPDF = () => {
@@ -100,9 +115,6 @@ const Asientos = () => {
         doc.save('asientos.pdf');
     };
 
-    if (cargando) return <p>Cargando...</p>;
-    if (error) return <p style={{ color: 'red' }}>{error}</p>;
-
     return (
         <div className="contenedor-asientos">
             <h2>Libro Diario</h2>
@@ -112,53 +124,68 @@ const Asientos = () => {
                 <label htmlFor="fechaFin">Hasta:</label>
                 <input type="date" id="fechaFin" value={fechaFin} onChange={handleFechaFinChange} />
             </div>
-            {asientos.length === 0 ? (
-                <p>No hay asientos disponibles para las fechas seleccionadas.</p>
-            ) : (
-                <div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Fecha</th>
-                                <th>Descripción</th>
-                                <th>Usuario</th>
-                                <th>Movimientos</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {asientos.map((asiento) => (
-                                <tr key={asiento.id}>
-                                    <td>{asiento.id}</td>
-                                    <td>{new Date(asiento.fecha).toLocaleDateString()}</td>
-                                    <td>{asiento.descripcion}</td>
-                                    <td>{asiento.nombreUsuario || 'Usuario desconocido'}</td>
-                                    <td>
-                                        {asiento.movimientos.length > 0 ? (
-                                            asiento.movimientos.map((movimiento, index) => (
-                                                <div key={index}>
-                                                    {movimiento.cuentaNombre ? (
-                                                        <span>
-                                                            {movimiento.cuentaNombre}: {movimiento.debe} (Debe), {movimiento.haber} (Haber)
-                                                        </span>
-                                                    ) : (
-                                                        <span>Cuenta no definida</span>
-                                                    )}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div>No hay movimientos disponibles.</div>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <button onClick={generarPDF} style={{ marginTop: '20px' }}>
-                        Descargar PDF
-                    </button>
+
+            {/* Muestra el error, pero el resto del contenido sigue visible */}
+            {error && (
+                <div style={{ color: 'red', marginBottom: '20px' }}>
+                    <p>{error}</p>
                 </div>
             )}
+
+            {cargando ? (
+                <p>Cargando...</p>
+            ) : (
+                <>
+                    {asientos.length === 0 ? (
+                        <p>No hay asientos disponibles para las fechas seleccionadas.</p>
+                    ) : (
+                        <div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Fecha</th>
+                                        <th>Descripción</th>
+                                        <th>Usuario</th>
+                                        <th>Movimientos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {asientos.map((asiento) => (
+                                        <tr key={asiento.id}>
+                                            <td>{asiento.id}</td>
+                                            <td>{new Date(asiento.fecha).toLocaleDateString()}</td>
+                                            <td>{asiento.descripcion}</td>
+                                            <td>{asiento.nombreUsuario || 'Usuario desconocido'}</td>
+                                            <td>
+                                                {asiento.movimientos.length > 0 ? (
+                                                    asiento.movimientos.map((movimiento, index) => (
+                                                        <div key={index}>
+                                                            {movimiento.cuentaNombre ? (
+                                                                <span>
+                                                                    {movimiento.cuentaNombre}: {movimiento.debe} (Debe), {movimiento.haber} (Haber)
+                                                                </span>
+                                                            ) : (
+                                                                <span>Cuenta no definida</span>
+                                                            )}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div>No hay movimientos disponibles.</div>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            <button onClick={generarPDF} style={{ marginTop: '20px' }}>
+                                Descargar PDF
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
+
             <div className="paginacion">
                 <button onClick={() => cambiarPagina(paginaActual - 1)} disabled={paginaActual === 1}>
                     Anterior

@@ -81,14 +81,25 @@ const CrearAsiento = () => {
     e.preventDefault();
     const storedToken = localStorage.getItem("token");
 
+    // Limpiar mensajes antes de cada intento de registro
+    setMensajeError("");
+    setMensajeExito("");
+
+    // Validamos que haya al menos dos transacciones
+    if (transacciones.length < 2) {
+      setMensajeError("El asiento debe contener al menos dos movimientos.");
+      return;
+    }
+
     const movimientos = transacciones.map((transaccion) => ({
       cuentaCodigo: transaccion.cuenta,
       debe: transaccion.tipo === "debe" ? parseFloat(transaccion.monto) || 0 : 0,
       haber: transaccion.tipo === "haber" ? parseFloat(transaccion.monto) || 0 : 0,
     }));
 
-    if (movimientos.length < 2) {
-      setMensajeError("El asiento debe contener al menos dos movimientos.");
+    // Validamos si hay movimientos vacíos o con montos incorrectos
+    if (movimientos.some(mov => !mov.cuentaCodigo || mov.debe <= 0 && mov.haber <= 0)) {
+      setMensajeError("Cada transacción debe tener una cuenta y un monto mayor a 0.");
       return;
     }
 
@@ -123,6 +134,7 @@ const CrearAsiento = () => {
       } else {
         setMensajeError("Error al registrar el asiento.");
       }
+      setMensajeExito(""); // Limpiar mensaje de éxito si ocurre un error
     }
   };
 

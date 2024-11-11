@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
+
 import com.sa.contable.dto.AsientoDTO;
 import com.sa.contable.dto.CuentaAsientoDTO;
 import com.sa.contable.entidades.Asiento;
@@ -44,84 +44,100 @@ public class AsientoServicio {
     @Autowired
     private CuentaRepositorio cuentaRepositorio;
 
+    @Autowired
+    private CuentaAsientoServicio cuentaAsientoServicio;
+
     @Transactional
-public Asiento crearAsiento(AsientoDTO asientoDTO, Long usuarioId) {
-    Usuario usuario = usuarioRepositorio.findById(usuarioId)
-            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    public Asiento crearAsiento(AsientoDTO asientoDTO, Long usuarioId) {
+        Usuario usuario = usuarioRepositorio.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-    Asiento asiento = new Asiento();
-
-    // Restar un día a la fecha
-    LocalDate fechaAjustada = asientoDTO.getFecha().minusDays(1);
-    asiento.setFecha(fechaAjustada);  // Usa la fecha ajustada aquí
-
-    asiento.setDescripcion(asientoDTO.getDescripcion());
-    asiento.setId_usuario(usuario.getId());
-
-    if (asientoDTO.getMovimientos().isEmpty()) {
-        throw new IllegalArgumentException("El asiento debe tener al menos un movimiento.");
-    }
-
-    // Guardar el asiento primero
-    Asiento asientoGuardado = asientoRepositorio.save(asiento);
-
-    // Lista para almacenar los movimientos
-    List<CuentaAsiento> movimientos = new ArrayList<>();
-
-    // Procesar cada movimiento
-    for (CuentaAsientoDTO movimientoDTO : asientoDTO.getMovimientos()) {
-        Cuenta cuenta = cuentaRepositorio.findByCodigo(movimientoDTO.getCuentaCodigo());
-        if (cuenta == null) {
-            throw new IllegalArgumentException("La cuenta con código " + movimientoDTO.getCuentaCodigo() + " no existe.");
+        if (asientoDTO.getFecha() == null) {
+            throw new IllegalArgumentException("La fecha del asiento no puede ser nula.");
         }
 
-        // Crear y guardar movimiento
-        CuentaAsiento nuevoMovimiento = new CuentaAsiento();
-        nuevoMovimiento.setCuenta(cuenta);
-        nuevoMovimiento.setAsiento(asientoGuardado);
-        nuevoMovimiento.setDebe(movimientoDTO.getDebe());
-        nuevoMovimiento.setHaber(movimientoDTO.getHaber());
+        Asiento asiento = new Asiento();
 
-        BigDecimal saldoActual = Optional.ofNullable(cuenta.getSaldoActual()).orElse(BigDecimal.ZERO);
-        BigDecimal nuevoSaldo = calcularNuevoSaldo(cuenta, saldoActual, movimientoDTO);
+        // Restar un día a la fecha
+        LocalDate fechaAjustada = asientoDTO.getFecha().minusDays(1);
+        asiento.setFecha(fechaAjustada);  // Usa la fecha ajustada aquí
 
-        nuevoMovimiento.setSaldo(nuevoSaldo);
-        cuentaAsientoRepositorio.save(nuevoMovimiento);
+        asiento.setDescripcion(asientoDTO.getDescripcion());
+        asiento.setId_usuario(usuario.getId());
 
-        // Agregar movimiento a la lista de movimientos del asiento
-        movimientos.add(nuevoMovimiento);
+        if (asientoDTO.getMovimientos().isEmpty()) {
+            throw new IllegalArgumentException("El asiento debe tener al menos un movimiento.");
+        }
 
-        // Actualizar el saldo de la cuenta
-        cuenta.setSaldoActual(nuevoSaldo);
-        cuentaRepositorio.save(cuenta);
+        // Guardar el asiento primero
+        Asiento asientoGuardado = asientoRepositorio.save(asiento);
+        logger.debug("Asiento creado con ID: {}", asientoGuardado.getId());
+
+        // Lista para almacenar los movimientos
+        List<CuentaAsiento> movimientos = new ArrayList<>();
+
+        // Procesar cada movimiento
+        for (CuentaAsientoDTO movimientoDTO : asientoDTO.getMovimientos()) {
+            if (movimientoDTO.getDebe() == null && movimientoDTO.getHaber() == null) {
+                throw new IllegalArgumentException("Debe y Haber no pueden ser ambos nulos para un movimiento.");
+            }
+
+            Cuenta cuenta = cuentaRepositorio.findByCodigo(movimientoDTO.getCuentaCodigo());
+            if (cuenta == null) {
+                throw new IllegalArgumentException("La cuenta con código " + movimientoDTO.getCuentaCodigo() + " no existe.");
+            }
+
+            if (cuenta.getTipo() == null) {
+                throw new IllegalArgumentException("El tipo de cuenta no puede ser nulo para la cuenta con código: " + movimientoDTO.getCuentaCodigo());
+            }
+
+            // Crear y guardar movimiento
+            CuentaAsiento nuevoMovimiento = new CuentaAsiento();
+            nuevoMovimiento.setCuenta(cuenta);
+            nuevoMovimiento.setAsiento(asientoGuardado);
+            nuevoMovimiento.setDebe(movimientoDTO.getDebe());
+            nuevoMovimiento.setHaber(movimientoDTO.getHaber());
+
+            BigDecimal saldoActual = Optional.ofNullable(cuenta.getSaldoActual()).orElse(BigDecimal.ZERO);
+            BigDecimal nuevoSaldo = calcularNuevoSaldo(cuenta, saldoActual, movimientoDTO);
+
+            nuevoMovimiento.setSaldo(nuevoSaldo);
+            
+
+            // Agregar movimiento a la lista de movimientos del asiento
+            movimientos.add(nuevoMovimiento);
+            cuentaAsientoServicio.crearMovimiento(nuevoMovimiento);
+
+            // Actualizar el saldo de la cuenta
+            cuenta.setSaldoActual(nuevoSaldo);
+            cuentaRepositorio.save(cuenta);
+
+            logger.debug("Movimiento creado en cuenta: {} con nuevo saldo: {}", cuenta.getCodigo(), nuevoSaldo);
+        }
+
+        // Asignar la lista de movimientos al asiento guardado, convirtiendo a Set
+        asientoGuardado.setCuentasAsientos(new HashSet<>(movimientos)); // Aquí convertimos a Set
+        asientoRepositorio.save(asientoGuardado); // Guardar de nuevo para actualizar las relaciones
+
+        return asientoGuardado;
     }
 
-    // Asignar la lista de movimientos al asiento guardado, convirtiendo a Set
-    asientoGuardado.setCuentasAsientos(new HashSet<>(movimientos)); // Aquí convertimos a Set
-    asientoRepositorio.save(asientoGuardado); // Guardar de nuevo para actualizar las relaciones
+    private BigDecimal calcularNuevoSaldo(Cuenta cuenta, BigDecimal saldoActual, CuentaAsientoDTO movimientoDTO) {
+        BigDecimal debe = Optional.ofNullable(movimientoDTO.getDebe()).orElse(BigDecimal.ZERO);
+        BigDecimal haber = Optional.ofNullable(movimientoDTO.getHaber()).orElse(BigDecimal.ZERO);
 
-    return asientoGuardado;
-}
-
-
-
-private BigDecimal calcularNuevoSaldo(Cuenta cuenta, BigDecimal saldoActual, CuentaAsientoDTO movimientoDTO) {
-    BigDecimal debe = Optional.ofNullable(movimientoDTO.getDebe()).orElse(BigDecimal.ZERO);
-    BigDecimal haber = Optional.ofNullable(movimientoDTO.getHaber()).orElse(BigDecimal.ZERO);
-
-    switch (cuenta.getTipo().toLowerCase()) {
-        case "activo":
-        case "egreso":
-            return saldoActual.add(debe).subtract(haber);
-        case "pasivo":
-        case "patrimonio":
-        case "ingreso":
-            return saldoActual.subtract(debe).add(haber);
-        default:
-            throw new IllegalArgumentException("Tipo de cuenta desconocido: " + cuenta.getTipo());
+        switch (cuenta.getTipo().toLowerCase()) {
+            case "activo":
+            case "egreso":
+                return saldoActual.add(debe).subtract(haber);
+            case "pasivo":
+            case "patrimonio":
+            case "ingreso":
+                return saldoActual.subtract(debe).add(haber);
+            default:
+                throw new IllegalArgumentException("Tipo de cuenta desconocido: " + cuenta.getTipo());
+        }
     }
-}
-
 
     // Método con Paginación para Listar Asientos
     public Page<Asiento> listarAsientos(LocalDate inicio, LocalDate fin, Pageable pageable) {

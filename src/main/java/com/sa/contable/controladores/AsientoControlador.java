@@ -65,45 +65,57 @@ public class AsientoControlador {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // Crear un nuevo asiento contable
-    @PostMapping("/crear/{idUsuario}")
-    public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody AsientoDTO asientoDTO) {
-        if (idUsuario == null) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", "El ID del usuario no puede ser nulo."));
-        }
-    
-        if (asientoDTO.getMovimientos() == null || asientoDTO.getMovimientos().isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", "El asiento debe contener al menos un movimiento."));
-        }
-    
-        if (asientoDTO.getFecha() == null) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", "La fecha no puede ser nula."));
-        }
-    
-        // Calcular el total del debe y el haber
-        BigDecimal totalDebe = calcularTotal(asientoDTO, true);
-        BigDecimal totalHaber = calcularTotal(asientoDTO, false);
-    
-        // Verificar que el debe sea igual al haber
-        if (totalDebe.compareTo(totalHaber) != 0) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", "El total del debe debe ser igual al total del haber."));
-        }
-    
-        try {
-            // Validar que el usuario exista
-            Usuario usuario = usuarioServicio.obtenerUsuarioPorId(idUsuario)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
-    
-            Asiento nuevoAsiento = asientoServicio.crearAsiento(asientoDTO, idUsuario);
-    
-            return ResponseEntity.ok(nuevoAsiento);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("mensaje", "Error interno: " + e.getMessage()));
+    // Crear un nuevo asiento contable
+// Crear un nuevo asiento contable
+// Crear un nuevo asiento contable
+@PostMapping("/crear/{idUsuario}")
+public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody AsientoDTO asientoDTO) {
+    if (idUsuario == null) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", "El ID del usuario no puede ser nulo."));
+    }
+
+    if (asientoDTO.getMovimientos() == null || asientoDTO.getMovimientos().isEmpty()) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", "El asiento debe contener al menos un movimiento."));
+    }
+
+    if (asientoDTO.getFecha() == null) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", "La fecha no puede ser nula."));
+    }
+
+    // Validar que los montos de los movimientos sean mayores a 0
+    for (CuentaAsientoDTO movimientoDTO : asientoDTO.getMovimientos()) {
+        if (movimientoDTO.getDebe().compareTo(BigDecimal.ZERO) <= 0 && movimientoDTO.getHaber().compareTo(BigDecimal.ZERO) <= 0) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "Cada movimiento debe tener un valor en debe o haber mayor a 0."));
         }
     }
+
+    // Calcular el total del debe y el haber
+    BigDecimal totalDebe = calcularTotal(asientoDTO, true);
+    BigDecimal totalHaber = calcularTotal(asientoDTO, false);
+
+    // Verificar que el debe sea igual al haber
+    if (totalDebe.compareTo(totalHaber) != 0) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", "El total del debe debe ser igual al total del haber."));
+    }
+
+    try {
+        // Validar que el usuario exista
+        Usuario usuario = usuarioServicio.obtenerUsuarioPorId(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
+
+        Asiento nuevoAsiento = asientoServicio.crearAsiento(asientoDTO, idUsuario);
+
+        return ResponseEntity.ok(nuevoAsiento);
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("mensaje", "Error interno: " + e.getMessage()));
+    }
+}
+
+
     
 
 
