@@ -26,6 +26,19 @@ const Asientos = () => {
         setFechaFin(hoy.toISOString().split('T')[0]);
     }, []);
 
+    // Función para restar un día a una fecha
+    const restarUnDia = (fecha) => {
+        const nuevaFecha = new Date(fecha);
+        nuevaFecha.setDate(nuevaFecha.getDate() - 1);
+        return nuevaFecha.toISOString().split('T')[0];
+    };
+
+    const sumarUnDia = (fecha) => {
+        const nuevaFecha = new Date(fecha);
+        nuevaFecha.setDate(nuevaFecha.getDate() + 1);
+        return nuevaFecha.toISOString().split('T')[0];
+    };
+
     // Llama a la API cada vez que cambian las fechas o la página
     useEffect(() => {
         const fetchAsientos = async () => {
@@ -37,13 +50,16 @@ const Asientos = () => {
             }
 
             try {
-                setCargando(true); // Inicia el loading mientras se hace la consulta
-                setError(''); // Reseteamos el error cuando empezamos a cargar los datos
+                setCargando(true);
+                setError('');
+
+                // Log de fechas que se envían al backend
+                console.log(`Enviando fechas al backend: Fecha Inicio = ${restarUnDia(fechaInicio)}, Fecha Fin = ${restarUnDia(fechaFin)}`);
 
                 const response = await axios.get('http://localhost:8080/api/asientos/listar', {
                     params: {
-                        fechaInicio,
-                        fechaFin,
+                        fechaInicio: sumarUnDia(fechaInicio),
+                        fechaFin: sumarUnDia(fechaFin),
                         page: paginaActual - 1,
                         size: tamañoPorPagina,
                     },
@@ -55,29 +71,29 @@ const Asientos = () => {
                     setAsientos(asientosData);
                     setTotalPaginas(Math.ceil(totalElementos / tamañoPorPagina));
                 } else {
-                    setAsientos([]); // Asegura que el estado 'asientos' se vacíe si no hay datos
+                    setAsientos([]);
                     setError('No se encontraron asientos.');
                 }
             } catch (error) {
                 console.error('Error al cargar los asientos:', error);
                 setError(error.response?.data?.mensaje || 'Error al cargar los asientos.');
             } finally {
-                setCargando(false); // Detiene el loading
+                setCargando(false);
             }
         };
 
         if (fechaInicio && fechaFin) fetchAsientos();
-    }, [fechaInicio, fechaFin, paginaActual]); // Dependencias para actualizar cada vez que cambien
+    }, [fechaInicio, fechaFin, paginaActual]);
 
     // Manejo de los cambios en las fechas
     const handleFechaInicioChange = (e) => {
         setFechaInicio(e.target.value);
-        setPaginaActual(1); // Resetear la página a la primera cuando cambian las fechas
+        setPaginaActual(1);
     };
 
     const handleFechaFinChange = (e) => {
         setFechaFin(e.target.value);
-        setPaginaActual(1); // Resetear la página a la primera cuando cambian las fechas
+        setPaginaActual(1);
     };
 
     const cambiarPagina = (nuevaPagina) => {
@@ -93,7 +109,7 @@ const Asientos = () => {
         doc.text('Libro Diario', 14, 20);
         doc.text(`Fecha: ${fechaInicio} - ${fechaFin}`, 14, 30);
 
-        let y = 40; // Y-Position para las filas
+        let y = 40;
         doc.autoTable({
             head: [['ID', 'Fecha', 'Descripción', 'Usuario', 'Movimientos']],
             body: asientos.map((asiento) => [
@@ -125,7 +141,6 @@ const Asientos = () => {
                 <input type="date" id="fechaFin" value={fechaFin} onChange={handleFechaFinChange} />
             </div>
 
-            {/* Muestra el error, pero el resto del contenido sigue visible */}
             {error && (
                 <div style={{ color: 'red', marginBottom: '20px' }}>
                     <p>{error}</p>
