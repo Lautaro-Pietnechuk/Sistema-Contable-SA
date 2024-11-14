@@ -54,20 +54,22 @@ public class CuentaControlador {
     private CuentaRepositorio cuentaRepositorio;
 
     @GetMapping
-    public List<CuentaDTO> listarCuentas() { 
-        List<Cuenta> cuentas = cuentaServicio.obtenerTodasLasCuentas();
-        return cuentas.stream().map(this::convertirACuentaDTO).collect(Collectors.toList());
-    }
+public List<CuentaDTO> listarCuentas() { 
+    List<Cuenta> cuentas = cuentaServicio.obtenerTodasLasCuentas()
+                        .stream()
+                        .filter(cuenta -> !cuenta.isEliminada()) // Filtrar cuentas no eliminadas
+                        .collect(Collectors.toList());
+    return cuentas.stream().map(this::convertirACuentaDTO).collect(Collectors.toList());
+}
 
-    @GetMapping("/arbol")
+@GetMapping("/arbol")
 public ResponseEntity<List<Map<String, Object>>> listarCuentasEnArbol() {
-    // Obtener todas las cuentas principales (sin cuenta padre)
-    List<Cuenta> cuentasPrincipales = cuentaServicio.obtenerCuentasSinPadre();
+    List<Cuenta> cuentasPrincipales = cuentaServicio.obtenerCuentasSinPadre()
+                        .stream()
+                        .filter(cuenta -> !cuenta.isEliminada()) // Filtrar cuentas no eliminadas
+                        .collect(Collectors.toList());
 
-    // Crear una lista para representar el árbol de cuentas
     List<Map<String, Object>> arbol = new ArrayList<>();
-
-    // Llamar al método recursivo para construir el árbol
     for (Cuenta cuenta : cuentasPrincipales) {
         arbol.add(convertirCuentaEnMapa(cuenta)); // Convertir cada cuenta en un mapa
     }
@@ -81,15 +83,14 @@ private Map<String, Object> convertirCuentaEnMapa(Cuenta cuenta) {
     cuentaMap.put("nombre", cuenta.getNombre());
     cuentaMap.put("codigo", cuenta.getCodigo());
 
-    // Convertir las cuentas hijas si existen
     if (cuenta.getHijas() != null && !cuenta.getHijas().isEmpty()) {
-        List<Map<String, Object>> subCuentas = new ArrayList<>();
-        for (Cuenta hija : cuenta.getHijas()) {
-            subCuentas.add(convertirCuentaEnMapa(hija)); // Recursivamente convertir las hijas
-        }
+        List<Map<String, Object>> subCuentas = cuenta.getHijas().stream()
+                                        .filter(hija -> !hija.isEliminada()) // Filtrar subcuentas no eliminadas
+                                        .map(this::convertirCuentaEnMapa)
+                                        .collect(Collectors.toList());
         cuentaMap.put("subCuentas", subCuentas);
     } else {
-        cuentaMap.put("subCuentas", new ArrayList<>()); // subCuentas vacías si no hay hijas
+        cuentaMap.put("subCuentas", new ArrayList<>());
     }
 
     return cuentaMap;
@@ -191,59 +192,66 @@ private void asignarCuentaPadre(Cuenta cuenta) {
 
 
     public boolean tieneCuentasHijas(Long codigo) {
-        List<Cuenta> cuentasHijas = cuentaRepositorio.findByCuentaPadre_Codigo(codigo); // Asumiendo que el repositorio tiene un método para obtener las cuentas hijas
+        List<Cuenta> cuentasHijas = cuentaRepositorio.findByCuentaPadre_CodigoAndEliminadaFalse(codigo); // Asumiendo que el repositorio tiene un método para obtener las cuentas hijas
         return !cuentasHijas.isEmpty(); // Si la lista de cuentas hijas no está vacía, significa que tiene cuentas hijas
     }
 
 
     @DeleteMapping("/{codigo}")
-    public ResponseEntity<String> eliminarCuenta(@PathVariable Long codigo) {
-        // Verificar si el usuario tiene permisos de administrador
-        ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
-        if (permisoResponse != null) {
-            return permisoResponse; // Si hay un error de permisos, retornar la respuesta
-        }
-
-        // Verificar si la cuenta tiene cuentas hijas
-        if (tieneCuentasHijas(codigo)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("No se puede eliminar la cuenta porque tiene cuentas hijas.");
-        }
-
-        // Verificar si la cuenta ha sido utilizada en algún asiento
-        if (haSidoUtilizadaEnAsiento(codigo)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("No se puede eliminar la cuenta porque ha sido utilizada en un asiento.");
-        }
-
-        // Obtener la cuenta que se va a eliminar
-        Optional<Cuenta> cuentaAEliminarOpt = cuentaServicio.obtenerCuentaPorCodigo(codigo);
-        
-        // Verificar si la cuenta está presente
-        if (!cuentaAEliminarOpt.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cuenta no encontrada.");
-        }
-
-        Cuenta cuentaAEliminar = cuentaAEliminarOpt.get(); // Obtener la cuenta del Optional
-
-        // Verificar si la cuenta tiene padre
-        Cuenta cuentaPadre = cuentaAEliminar.getCuentaPadre();
-        if (cuentaPadre != null) {
-            // Verificar si el padre aún tiene otras hijas
-            boolean tieneOtrasHijas = cuentaPadre.getHijas().stream()
-                    .anyMatch(cuenta -> !cuenta.getCodigo().equals(codigo)); // Usar codigo, no id
-
-            // Si el padre no tiene más hijas, actualizar el recibeSaldo a true
-            if (!tieneOtrasHijas) {
-                cuentaPadre.setRecibeSaldo(true);
-                cuentaServicio.actualizarCuenta(cuentaPadre.getCodigo(), cuentaPadre);
-            }
-        }
-
-        // Si no ha sido utilizada y no tiene hijas, proceder a eliminarla
-        cuentaServicio.eliminarCuenta(codigo);
-        return ResponseEntity.ok("Cuenta eliminada con éxito.");
+public ResponseEntity<String> eliminarCuenta(@PathVariable Long codigo) {
+    // Verificar si el usuario tiene permisos de administrador
+    ResponseEntity<String> permisoResponse = verificarPermisoAdministrador();
+    if (permisoResponse != null) {
+        return permisoResponse; // Si hay un error de permisos, retornar la respuesta
     }
+
+    // Verificar si la cuenta tiene cuentas hijas
+    if (tieneCuentasHijas(codigo)) {
+        System.out.println("La cuenta con código " + codigo + " tiene cuentas hijas, no se puede eliminar.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("No se puede eliminar la cuenta porque tiene cuentas hijas.");
+    }
+
+    // Verificar si la cuenta ha sido utilizada en algún asiento
+    if (haSidoUtilizadaEnAsiento(codigo)) {
+        System.out.println("La cuenta con código " + codigo + " ha sido utilizada en un asiento, no se puede eliminar.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("No se puede eliminar la cuenta porque ha sido utilizada en un asiento.");
+    }
+
+    // Obtener la cuenta que se va a marcar como eliminada
+    Optional<Cuenta> cuentaAEliminarOpt = cuentaServicio.obtenerCuentaPorCodigo(codigo);
+    if (!cuentaAEliminarOpt.isPresent()) {
+        System.out.println("La cuenta con código " + codigo + " no se encuentra.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cuenta no encontrada.");
+    }
+
+    Cuenta cuentaAEliminar = cuentaAEliminarOpt.get();
+    System.out.println("Cuenta con código " + codigo + " encontrada. Procediendo a eliminar.");
+
+    // Verificar si la cuenta tiene padre
+    Cuenta cuentaPadre = cuentaAEliminar.getCuentaPadre();
+    if (cuentaPadre != null) {
+        // Verificar si el padre aún tiene otras hijas
+        boolean tieneOtrasHijas = cuentaPadre.getHijas().stream()
+                .anyMatch(cuenta -> !cuenta.getCodigo().equals(codigo)); 
+
+        // Si el padre no tiene más hijas, actualizar el recibeSaldo a true
+        if (!tieneOtrasHijas) {
+            cuentaPadre.setRecibeSaldo(true);
+            cuentaServicio.actualizarCuenta(cuentaPadre.getCodigo(), cuentaPadre);
+            System.out.println("El padre de la cuenta con código " + codigo + " ahora tiene recibeSaldo a true.");
+        }
+    }
+
+    // Marcar la cuenta como eliminada en lugar de borrarla de la base de datos
+    cuentaAEliminar.setEliminada(true);
+    cuentaServicio.actualizarCuenta(codigo, cuentaAEliminar);
+    System.out.println("Cuenta con código " + codigo + " marcada como eliminada.");
+
+    return ResponseEntity.ok("Cuenta marcada como eliminada con éxito.");
+}
+
 
 
 
@@ -303,14 +311,24 @@ private void asignarCuentaPadre(Cuenta cuenta) {
         logger.info("Solicitud recibida para listar cuentas que reciben saldo.");
         try {
             List<Cuenta> cuentas = cuentaServicio.obtenerCuentasRecibeSaldo(); // Llama al servicio para obtener cuentas
-    
+        
             if (cuentas == null || cuentas.isEmpty()) {
                 logger.warn("No se encontraron cuentas que reciben saldo.");
                 return ResponseEntity.noContent().build();  // 204 No Content
             }
+            
+            // Filtrar cuentas eliminadas
+            List<Cuenta> cuentasNoEliminadas = cuentas.stream()
+                .filter(cuenta -> !cuenta.isEliminada())  // Verifica si la cuenta no está eliminada
+                .collect(Collectors.toList());
+            
+            if (cuentasNoEliminadas.isEmpty()) {
+                logger.warn("No se encontraron cuentas activas que reciben saldo.");
+                return ResponseEntity.noContent().build();  // 204 No Content
+            }
     
             // Convertir cuentas a DTO antes de devolver
-            List<CuentaDTO> cuentaDTOs = cuentas.stream()
+            List<CuentaDTO> cuentaDTOs = cuentasNoEliminadas.stream()
                 .map(this::convertirACuentaDTO) // Convierte a DTO
                 .collect(Collectors.toList());
     
@@ -321,24 +339,20 @@ private void asignarCuentaPadre(Cuenta cuenta) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();  // 500 Internal Server Error
         }
     }
+    
 
 
     @GetMapping("/{codigo}/saldo")
 public ResponseEntity<SaldoDTO> obtenerSaldo(@PathVariable Long codigo) {
-    // Buscar la cuenta por su código
     Optional<Cuenta> cuenta = cuentaServicio.obtenerCuentaPorCodigo(codigo);
-    
-    // Verificar si la cuenta existe
-    if (!cuenta.isPresent()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Retornar 404 si no se encuentra la cuenta
-    }
-    
-    // Crear la respuesta con el saldo actual
-    SaldoDTO saldoDTO = new SaldoDTO(cuenta.get().getCodigo(), cuenta.get().getSaldoActual());
-    
-    return ResponseEntity.ok(saldoDTO); // Retornar 200 OK con el saldo
-}
 
+    if (!cuenta.isPresent() || cuenta.get().isEliminada()) { // Verificar si está eliminada
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    SaldoDTO saldoDTO = new SaldoDTO(cuenta.get().getCodigo(), cuenta.get().getSaldoActual());
+    return ResponseEntity.ok(saldoDTO);
+}
 
     @PutMapping("/editarNombre/{codigo}")
 public ResponseEntity<String> editarNombreCuenta(@PathVariable Long codigo, @RequestBody String nuevoNombre) {

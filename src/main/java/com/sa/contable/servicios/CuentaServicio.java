@@ -56,6 +56,7 @@ public class CuentaServicio {
         cuentaExistente.setTipo(cuentaActualizada.getTipo());
         cuentaExistente.setRecibeSaldo(cuentaActualizada.getRecibeSaldo());
         cuentaExistente.setSaldoActual(cuentaActualizada.getSaldoActual());
+        cuentaExistente.setEliminada(cuentaActualizada.getEliminada());
         
         return cuentaRepositorio.save(cuentaExistente);
     }
@@ -71,7 +72,7 @@ public class CuentaServicio {
 
     @Transactional(readOnly = true)
     public List<Cuenta> obtenerCuentasPorPadre(Cuenta cuentaPadre) {
-        return cuentaRepositorio.findByCuentaPadre(cuentaPadre);
+        return cuentaRepositorio.findByCuentaPadreAndEliminadaFalse(cuentaPadre);
     }
 
     @Transactional(readOnly = true)
@@ -101,13 +102,13 @@ public class CuentaServicio {
 
 
     public List<Cuenta> obtenerCuentasSinPadre() {
-        return cuentaRepositorio.findByCuentaPadreIsNull();
+        return cuentaRepositorio.findByCuentaPadreIsNullAndEliminadaFalse();
     }
     
     public String buscarNombrePorCodigo(Long codigo) {
         try {
             logger.info("Buscando cuenta por código: {}", codigo);
-            Cuenta cuenta = cuentaRepositorio.findByCodigo(codigo);
+            Cuenta cuenta = cuentaRepositorio.findByCodigoAndEliminadaFalse(codigo);
             return cuenta.getNombre();
         } catch (Exception e) {
             logger.error("Error al buscar cuenta por código", e);

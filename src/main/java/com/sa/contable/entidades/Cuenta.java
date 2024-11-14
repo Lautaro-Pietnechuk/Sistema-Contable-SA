@@ -23,12 +23,16 @@ public class Cuenta {
     @Column(nullable = false)
     private String nombre;
 
+    @Column(nullable = false)
+    private Boolean eliminada = false;
+
     @ManyToOne // Relación con la cuenta padre
     @JoinColumn(name = "cuenta_padre_codigo") // Columna que referencia la cuenta padre por código
     private Cuenta cuentaPadre;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "cuentaPadre")
     private Set<Cuenta> Hijas = new HashSet<>();
+
 
     @Column(nullable = false)
     private String tipo;
@@ -130,4 +134,15 @@ public class Cuenta {
         hija.setCuentaPadre(null);
     }
 
+    public Boolean getEliminada() {
+        return eliminada;
+    }
+
+    public void setEliminada(Boolean eliminada) {
+        this.eliminada = eliminada;
+    }
+
+    public boolean isEliminada() {
+        return eliminada != null && eliminada;
+    }
 }

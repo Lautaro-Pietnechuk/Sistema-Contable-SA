@@ -82,7 +82,7 @@ public class AsientoServicio {
                 throw new IllegalArgumentException("Debe y Haber no pueden ser ambos nulos para un movimiento.");
             }
 
-            Cuenta cuenta = cuentaRepositorio.findByCodigo(movimientoDTO.getCuentaCodigo());
+            Cuenta cuenta = cuentaRepositorio.findByCodigoAndEliminadaFalse(movimientoDTO.getCuentaCodigo());
             if (cuenta == null) {
                 throw new IllegalArgumentException("La cuenta con código " + movimientoDTO.getCuentaCodigo() + " no existe.");
             }
