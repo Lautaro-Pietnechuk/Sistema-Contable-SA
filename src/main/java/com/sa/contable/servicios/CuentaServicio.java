@@ -103,4 +103,15 @@ public class CuentaServicio {
     public List<Cuenta> obtenerCuentasSinPadre() {
         return cuentaRepositorio.findByCuentaPadreIsNull();
     }
-}
+    
+    public String buscarNombrePorCodigo(Long codigo) {
+        try {
+            logger.info("Buscando cuenta por código: {}", codigo);
+            Cuenta cuenta = cuentaRepositorio.findByCodigo(codigo);
+            return cuenta.getNombre();
+        } catch (Exception e) {
+            logger.error("Error al buscar cuenta por código", e);
+            throw new RuntimeException("Error al buscar la cuenta");
+        }
+    }
+}    

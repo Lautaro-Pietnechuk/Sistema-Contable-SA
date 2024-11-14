@@ -12,21 +12,41 @@ const LibroMayor = () => {
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState('');
     const [saldoFinal, setSaldoFinal] = useState(0);
+    const [cuentas, setCuentas] = useState([]); // Estado para las cuentas
+    const [mensajeError, setMensajeError] = useState('');
 
     useEffect(() => {
         const hoy = new Date();
         const hace30Dias = new Date();
         const mañana = new Date(hoy);
         hace30Dias.setDate(hoy.getDate() - 30);
-        mañana.setDate(hoy.getDate() + 1); // Ajusta la fecha fin a un día más
+        mañana.setDate(hoy.getDate() + 1);
 
         setFechaInicio(hace30Dias.toISOString().split('T')[0]);
-        setFechaFin(mañana.toISOString().split('T')[0]); // Establece fecha fin en un día más
+        setFechaFin(mañana.toISOString().split('T')[0]);
+
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+            cargarCuentas(storedToken); // Cargar cuentas cuando se cargue el componente
+        }
     }, []);
+
+    const cargarCuentas = async (token) => {
+        try {
+            const respuesta = await axios.get("http://localhost:8080/api/cuentas/recibeSaldo", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const cuentasFiltradas = respuesta.data.filter((cuenta) => cuenta.recibeSaldo);
+            setCuentas(cuentasFiltradas);
+        } catch (error) {
+            console.error("Error al obtener cuentas:", error);
+            setMensajeError("Error al obtener cuentas.");
+        }
+    };
 
     const obtenerLibroMayor = async (e) => {
         e.preventDefault();
-        console.log('Cargando libro mayor...');
         const storedToken = localStorage.getItem('token');
     
         if (!storedToken) {
@@ -44,15 +64,11 @@ const LibroMayor = () => {
                 },
                 headers: { Authorization: `Bearer ${storedToken}` }
             });
-    
-            console.log('Respuesta del libro mayor:', response.data);
             setLibroMayor(response.data);
     
             let saldoAcumulado = 0;
             response.data.forEach((movimiento) => {
                 const { debe, haber, tipoCuenta } = movimiento;
-                console.log('Tipo cuenta:', tipoCuenta);
-    
                 if (tipoCuenta) {
                     let nuevoSaldo = saldoAcumulado;
                     switch (tipoCuenta.toLowerCase()) {
@@ -72,7 +88,6 @@ const LibroMayor = () => {
                 } else {
                     console.error('tipoCuenta es undefined para el movimiento:', movimiento);
                 }
-    
                 movimiento.saldo = saldoAcumulado;
             });
     
@@ -85,7 +100,6 @@ const LibroMayor = () => {
             setCargando(false);
         }
     };
-    
 
     const generarPDF = () => {
         const doc = new jsPDF();
@@ -107,30 +121,38 @@ const LibroMayor = () => {
         doc.save('libro_mayor.pdf');
     };
 
-    if (cargando) {
-        return <p>Cargando...</p>;
-    }
-
-    if (error) {
-        return <p style={{ color: 'red' }}>{error}</p>;
-    }
-
     return (
         <div className="libro-mayor">
             <h1>Libro Mayor</h1>
+
+            {/* Mostrar mensaje de carga si está cargando */}
+            {cargando && <p>Cargando...</p>}
+
+            {/* Mostrar mensaje de error si hay error */}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+
+            {/* Mostrar mensaje de error si hay error al obtener las cuentas */}
+            {mensajeError && <p style={{ color: 'red' }}>{mensajeError}</p>}
+
             <form onSubmit={obtenerLibroMayor}>
                 <div>
-                    <label htmlFor="codigoCuenta">Código de Cuenta:</label>
-                    <input
-                        type="text"
+                    <label htmlFor="codigoCuenta">Seleccionar Cuenta:</label>
+                    <select
                         id="codigoCuenta"
                         name="codigoCuenta"
                         value={codigoCuenta}
                         onChange={(e) => setCodigoCuenta(e.target.value)}
-                        placeholder='Código'
                         required
-                    />
+                    >
+                        <option value="">Seleccione una cuenta</option>
+                        {cuentas.map((cuenta) => (
+                            <option key={cuenta.codigo} value={cuenta.codigo}>
+                                {cuenta.nombre}
+                            </option>
+                        ))}
+                    </select>
                 </div>
+
                 <div>
                     <label htmlFor="fechaInicio">Fecha Inicio:</label>
                     <input
@@ -155,6 +177,7 @@ const LibroMayor = () => {
                 </div>
                 <button type="submit">Obtener Libro Mayor</button>
             </form>
+
             {libroMayor.length > 0 && (
                 <div>
                     <table>
@@ -177,13 +200,10 @@ const LibroMayor = () => {
                                     <td>{movimiento.saldo?.toFixed(2) || '0.00'}</td>
                                 </tr>
                             ))}
-                            <tr>
-                                <td colSpan={2}><strong>Saldo Final</strong></td>
-                                <td colSpan={3}><strong>{saldoFinal.toFixed(2)}</strong></td>
-                            </tr>
                         </tbody>
                     </table>
-                    <button onClick={generarPDF}>Descargar PDF</button>
+                    <p><strong>Saldo Final:</strong> {saldoFinal.toFixed(2)}</p>
+                    <button onClick={generarPDF}>Generar PDF</button>
                 </div>
             )}
         </div>

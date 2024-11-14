@@ -247,8 +247,6 @@ private void asignarCuentaPadre(Cuenta cuenta) {
 
 
 
-
-
     public boolean haSidoUtilizadaEnAsiento(Long cuentaId) {
         // Utiliza el repositorio inyectado para verificar la existencia
         return cuentaAsientoRepositorio.existsByCuentaCodigo(cuentaId);
@@ -356,7 +354,21 @@ public ResponseEntity<String> editarNombreCuenta(@PathVariable Long codigo, @Req
     }
 }
 
+@GetMapping("/nombre/{cuentaCodigo}")
+public String obtenerNombreCuenta(@PathVariable Long cuentaCodigo) {
+    logger.info("Recibida solicitud para obtener el nombre de la cuenta con el código: {}", cuentaCodigo);
 
+    try {
+        // Llama al servicio para obtener el nombre de la cuenta usando el código
+        String nombreCuenta = cuentaServicio.buscarNombrePorCodigo(cuentaCodigo);
+        logger.info("Nombre de la cuenta obtenido con éxito: {}", nombreCuenta);
+        return nombreCuenta;
+    } catch (Exception e) {
+        // Si ocurre un error, lo registramos
+        logger.error("Error al obtener el nombre de la cuenta con código: {}", cuentaCodigo, e);
+        throw new RuntimeException("Error al obtener el nombre de la cuenta", e);
+    }
+}
 
 
 
