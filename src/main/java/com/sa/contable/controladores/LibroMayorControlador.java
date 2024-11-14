@@ -22,16 +22,22 @@ public class LibroMayorControlador {
     private LibroMayorServicio libroMayorServicio;
 
     @GetMapping("/libroMayor")
-    public ResponseEntity<List<LibroMayorDTO>> obtenerLibroMayor(
-            @RequestParam String codigoCuenta,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
-        try {
-            List<LibroMayorDTO> libroMayor = libroMayorServicio.generarLibroMayor(codigoCuenta, fechaInicio, fechaFin);
-            return ResponseEntity.ok(libroMayor);
-        } catch (Exception e) {
-            // Manejo del error: devuelve una respuesta adecuada
-            return ResponseEntity.badRequest().body(null); // Cambia null por un objeto adecuado si es necesario
-        }
+public ResponseEntity<List<LibroMayorDTO>> obtenerLibroMayor(
+        @RequestParam String codigoCuenta,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+    try {
+        // Sumar un día a las fechas
+        LocalDate fechaInicioModificada = fechaInicio.plusDays(1);
+        LocalDate fechaFinModificada = fechaFin.plusDays(1);
+
+        // Generar el libro mayor con las fechas modificadas
+        List<LibroMayorDTO> libroMayor = libroMayorServicio.generarLibroMayor(codigoCuenta, fechaInicioModificada, fechaFinModificada);
+        return ResponseEntity.ok(libroMayor);
+    } catch (Exception e) {
+        // Manejo del error: devuelve una respuesta adecuada
+        return ResponseEntity.badRequest().body(null); // Cambia null por un objeto adecuado si es necesario
     }
+}
+
 }

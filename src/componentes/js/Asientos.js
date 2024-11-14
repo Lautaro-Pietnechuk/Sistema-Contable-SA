@@ -27,11 +27,6 @@ const Asientos = () => {
     }, []);
 
     // Función para restar un día a una fecha
-    const restarUnDia = (fecha) => {
-        const nuevaFecha = new Date(fecha);
-        nuevaFecha.setDate(nuevaFecha.getDate() - 1);
-        return nuevaFecha.toISOString().split('T')[0];
-    };
 
     const sumarUnDia = (fecha) => {
         const nuevaFecha = new Date(fecha);
@@ -54,7 +49,7 @@ const Asientos = () => {
                 setError('');
 
                 // Log de fechas que se envían al backend
-                console.log(`Enviando fechas al backend: Fecha Inicio = ${restarUnDia(fechaInicio)}, Fecha Fin = ${restarUnDia(fechaFin)}`);
+                console.log(`Enviando fechas al backend: Fecha Inicio = ${sumarUnDia(fechaInicio)}, Fecha Fin = ${sumarUnDia(fechaFin)}`);
 
                 const response = await axios.get('http://localhost:8080/api/asientos/listar', {
                     params: {

@@ -31,6 +31,12 @@ const LibroMayor = () => {
         }
     }, []);
 
+    const sumarUnDia = (fecha) => {
+        const nuevaFecha = new Date(fecha);
+        nuevaFecha.setDate(nuevaFecha.getDate() + 1);
+        return nuevaFecha.toISOString().split('T')[0];
+    };
+
     const cargarCuentas = async (token) => {
         try {
             const respuesta = await axios.get("http://localhost:8080/api/cuentas/recibeSaldo", {
