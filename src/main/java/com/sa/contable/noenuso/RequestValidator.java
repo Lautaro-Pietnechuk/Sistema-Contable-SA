@@ -1,4 +1,5 @@
-package com.sa.contable.configuracion;
+package com.sa.contable.noenuso;
+/* package com.sa.contable.configuracion;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -33,3 +34,4 @@ public class RequestValidator {
         }
     }
 }
+ */

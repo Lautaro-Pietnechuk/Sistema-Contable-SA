@@ -20,10 +20,8 @@ com\sa\contable\configuracion\SecurityConfig.class
 com\sa\contable\controladores\LibroMayorControlador.class
 com\sa\contable\controladores\RolControlador.class
 com\sa\contable\dto\LibroMayorDTO.class
-com\sa\contable\configuracion\JwtResponse.class
 com\sa\contable\controladores\PublicController.class
 com\sa\contable\entidades\Asiento.class
-com\sa\contable\configuracion\RequestValidator.class
 com\sa\contable\repositorios\RolRepositorio.class
 com\sa\contable\servicios\RolServicio.class
 com\sa\contable\servicios\LibroMayorServicio.class

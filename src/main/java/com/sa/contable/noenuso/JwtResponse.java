@@ -1,4 +1,5 @@
-package com.sa.contable.configuracion;
+package com.sa.contable.noenuso;
+/* package com.sa.contable.configuracion;
 
 import java.util.List;
 
@@ -58,3 +59,4 @@ public class JwtResponse {
         this.roles = roles;
     }
 }
+ */
