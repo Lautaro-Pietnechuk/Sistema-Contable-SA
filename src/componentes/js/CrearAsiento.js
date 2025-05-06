@@ -11,11 +11,11 @@ const CrearAsiento = () => {
   const [transacciones, setTransacciones] = useState([{ cuenta: "", tipo: "debe", monto: "" }]);
   const [cuentas, setCuentas] = useState([]);
   const [fechaActual, setFechaActual] = useState("");
+  const [saldoCuenta, setSaldoCuenta] = useState(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (!storedToken) {
-      setMensajeError("Sesión expirada o no iniciada. Por favor, inicie sesión.");
       return;
     }
 
@@ -43,7 +43,7 @@ const CrearAsiento = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const cuentasFiltradas = respuesta.data.filter((cuenta) => cuenta.recibeSaldo);
+      const cuentasFiltradas = respuesta.data.filter((cuenta) => cuenta.recibeSaldo && cuenta.saldoActual > 0);
       setCuentas(cuentasFiltradas);
     } catch (error) {
       console.error("Error al obtener cuentas:", error);
@@ -64,6 +64,13 @@ const CrearAsiento = () => {
     const nuevasTransacciones = [...transacciones];
     nuevasTransacciones[index][field] = field === "monto" ? value || "" : value;
     setTransacciones(nuevasTransacciones);
+
+    if (field === "cuenta") {
+      const cuentaSeleccionada = cuentas.find(cuenta => cuenta.codigo === value);
+      if (cuentaSeleccionada) {
+        console.log(`Saldo actual de la cuenta ${cuentaSeleccionada.codigo}: ${cuentaSeleccionada.saldoActual}`);
+      }
+    }
   };
 
   const obtenerFechaActual = () => {
@@ -98,7 +105,7 @@ const CrearAsiento = () => {
     }));
 
     // Validamos si hay movimientos vacíos o con montos incorrectos
-    if (movimientos.some(mov => !mov.cuentaCodigo || mov.debe <= 0 && mov.haber <= 0)) {
+    if (movimientos.some(mov => !mov.cuentaCodigo || (mov.debe <= 0 && mov.haber <= 0))) {
       setMensajeError("Cada transacción debe tener una cuenta y un monto mayor a 0.");
       return;
     }
@@ -124,6 +131,7 @@ const CrearAsiento = () => {
         setDescripcion("");
         setTransacciones([{ cuenta: "", tipo: "debe", monto: "" }]);
         setMensajeError("");
+        cargarCuentas(storedToken); // Llamar a la API nuevamente para cargar las cuentas
       }
     } catch (error) {
       console.error("Error al registrar el asiento:", error);
@@ -163,56 +171,67 @@ const CrearAsiento = () => {
               <th>Cuenta</th>
               <th>Tipo</th>
               <th>Monto</th>
+              <th>Saldo Actual</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {transacciones.map((transaccion, index) => (
-              <tr key={index}>
-                <td>
-                  <select
-                    value={transaccion.cuenta}
-                    onChange={(e) => handleTransaccionChange(index, "cuenta", e.target.value)}
-                    required
-                  >
-                    <option value="">Seleccione una cuenta</option>
-                    {cuentas.map((cuenta) => (
-                      <option key={cuenta.id} value={cuenta.codigo}>
-                        {cuenta.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <select
-                    value={transaccion.tipo}
-                    onChange={(e) => handleTransaccionChange(index, "tipo", e.target.value)}
-                  >
-                    <option value="debe">Debe</option>
-                    <option value="haber">Haber</option>
-                  </select>
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    value={transaccion.monto}
-                    onChange={(e) => handleTransaccionChange(index, "monto", e.target.value)}
-                    placeholder="Monto"
-                    min="0"
-                    required
-                  />
-                </td>
-                <td>
-                  <button
-                    className="crear-asiento-boton eliminar"
-                    type="button"
-                    onClick={() => handleRemoveTransaccion(index)}
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {transacciones.map((transaccion, index) => {
+              const cuentaSeleccionada = cuentas.find(cuenta => String(cuenta.codigo) === String(transaccion.cuenta));
+
+              console.log('Contenido del array cuentas:', cuentas);
+              console.log(`Valor de transaccion.cuenta: ${transaccion.cuenta}`);
+              console.log(cuentaSeleccionada ? `Cuenta encontrada: ${cuentaSeleccionada.codigo}` : "Cuenta no encontrada");
+              return (
+                <tr key={index}>
+                  <td>
+                    <select
+                      value={transaccion.cuenta}
+                      onChange={(e) => handleTransaccionChange(index, "cuenta", e.target.value)}
+                      required
+                    >
+                      <option value="">Seleccione una cuenta</option>
+                      {cuentas.map((cuenta) => (
+                        <option key={cuenta.id} value={cuenta.codigo}>
+                          {cuenta.codigo} - {cuenta.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      value={transaccion.tipo}
+                      onChange={(e) => handleTransaccionChange(index, "tipo", e.target.value)}
+                    >
+                      <option value="debe">Debe</option>
+                      <option value="haber">Haber</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input
+                      type="number" // Cambiar el tipo de cuadro de entrada a número para aceptar solo números
+                      value={transaccion.monto}
+                      onChange={(e) => handleTransaccionChange(index, "monto", e.target.value)}
+                      placeholder="Monto"
+                      required
+                      style={{ width: "80%" }} // Aumentar el ancho del cuadro de entrada
+                    />
+                  </td>
+                  <td>
+                    {cuentaSeleccionada ? cuentaSeleccionada.saldoActual.toFixed(2) : ""}
+                  </td>
+                  <td>
+                    <button
+                      className="crear-asiento-boton eliminar"
+                      type="button"
+                      onClick={() => handleRemoveTransaccion(index)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 

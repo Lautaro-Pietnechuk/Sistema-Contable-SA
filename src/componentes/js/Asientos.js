@@ -13,7 +13,7 @@ const Asientos = () => {
     const [fechaFin, setFechaFin] = useState('');
     const [paginaActual, setPaginaActual] = useState(1);
     const [totalPaginas, setTotalPaginas] = useState(0);
-    const tamañoPorPagina = 5;
+    const tamañoPorPagina = 6; // Cambiado de 5 a 10
 
     // Set fechas por defecto cuando el componente se monta
     useEffect(() => {

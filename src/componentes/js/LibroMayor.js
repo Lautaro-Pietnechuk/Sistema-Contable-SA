@@ -14,6 +14,7 @@ const LibroMayor = () => {
     const [saldoFinal, setSaldoFinal] = useState(0);
     const [cuentas, setCuentas] = useState([]); // Estado para las cuentas
     const [mensajeError, setMensajeError] = useState('');
+    const [totalHaber, setTotalHaber] = useState(0); // Nuevo estado para el total de haberes
 
     useEffect(() => {
         const hoy = new Date();
@@ -66,32 +67,16 @@ const LibroMayor = () => {
             });
             setLibroMayor(response.data);
     
-            let saldoAcumulado = 0;
-            response.data.forEach((movimiento) => {
-                const { debe, haber, tipoCuenta } = movimiento;
-                if (tipoCuenta) {
-                    let nuevoSaldo = saldoAcumulado;
-                    switch (tipoCuenta.toLowerCase()) {
-                        case "activo":
-                        case "egreso":
-                            nuevoSaldo = saldoAcumulado + (debe || 0) - (haber || 0);
-                            break;
-                        case "pasivo":
-                        case "patrimonio":
-                        case "ingreso":
-                            nuevoSaldo = saldoAcumulado - (debe || 0) + (haber || 0);
-                            break;
-                        default:
-                            console.error('Tipo de cuenta desconocido:', tipoCuenta);
-                    }
-                    saldoAcumulado = nuevoSaldo;
-                } else {
-                    console.error('tipoCuenta es undefined para el movimiento:', movimiento);
-                }
-                movimiento.saldo = saldoAcumulado;
+            // Calcular el total de haberes
+            const totalHaberCalculado = response.data.reduce((total, movimiento) => total + (movimiento.haber || 0), 0);
+            setTotalHaber(totalHaberCalculado);
+
+            // Obtener saldo final desde la API
+            const saldoResponse = await axios.get(`http://localhost:8080/api/cuentas/${codigoCuenta}/saldo`, {
+                headers: { Authorization: `Bearer ${storedToken}` }
             });
+            setSaldoFinal(saldoResponse.data.saldo);
     
-            setSaldoFinal(saldoAcumulado);
             setError('');
         } catch (error) {
             console.error('Error al obtener el libro mayor:', error.response ? error.response.data : error.message);
@@ -202,6 +187,7 @@ const LibroMayor = () => {
                             ))}
                         </tbody>
                     </table>
+                    <p><strong>Total Haber:</strong> {totalHaber.toFixed(2)}</p> {/* Mostrar Total Haber */}
                     <p><strong>Saldo Final:</strong> {saldoFinal.toFixed(2)}</p>
                     <button onClick={generarPDF}>Generar PDF</button>
                 </div>

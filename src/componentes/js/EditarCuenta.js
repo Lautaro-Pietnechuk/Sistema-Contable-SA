@@ -73,7 +73,7 @@ const EditarCuenta = () => {
                     <option value=""> Selecciona una cuenta </option>
                     {cuentas.map((cuenta) => (
                         <option key={cuenta.codigo} value={cuenta.codigo}>
-                            {cuenta.nombre}
+                            {cuenta.codigo} - {cuenta.nombre}
                         </option>
                     ))}
                 </select>

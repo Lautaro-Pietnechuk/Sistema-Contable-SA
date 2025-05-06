@@ -1,0 +1,8 @@
+.input-tamano {
+  width: calc(100% - 20px); /* Ajustar el ancho para que coincida con el contenedor */
+  padding: 10px;
+  margin: 5px 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

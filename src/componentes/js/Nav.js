@@ -13,6 +13,8 @@ import CrearAsiento from './CrearAsiento';
 import EliminarUsuario from './EliminarUsuario';
 import NotFound from './NotFound';
 import LibroMayor from './LibroMayor';
+import RegistrarVenta from './RegistrarVenta';
+import RegistrarCliente from './RegistrarCliente';
 import '../css/Nav.css';
 
 const Nav = () => {
@@ -49,6 +51,8 @@ const Nav = () => {
                             </>
                         )}
                         <NavLink to="/libro-mayor">Libro Mayor</NavLink>
+                        <NavLink to="/registrar-venta">Registrar Venta</NavLink>
+                        <NavLink to="/registrar-cliente">Registrar Cliente</NavLink>
                         <button onClick={logout} style={{ marginTop: '10px' }}>Cerrar Sesión</button>
                     </>
                 )}
@@ -66,6 +70,8 @@ const Nav = () => {
                     <Route path="/asientos/agregar" element={<PrivateRoute><CrearAsiento /></PrivateRoute>} />
                     <Route path="/libro-mayor" element={<PrivateRoute><LibroMayor /></PrivateRoute>} />
                     <Route path="/usuarios/eliminar" element={<PrivateRoute><EliminarUsuario /></PrivateRoute>} />
+                    <Route path="/registrar-venta" element={<PrivateRoute><RegistrarVenta /></PrivateRoute>} />
+                    <Route path="/registrar-cliente" element={<PrivateRoute><RegistrarCliente /></PrivateRoute>} />
                     <Route path="*" element={<NotFound />} />
                     <Route path="/" element={<Navigate to="/login" />} />
                 </Routes>
