@@ -233,8 +233,4 @@ public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody
         dto.setSaldo(cuentaAsiento.getSaldo());
         return dto;
     }
-
-    
 }
-
-
