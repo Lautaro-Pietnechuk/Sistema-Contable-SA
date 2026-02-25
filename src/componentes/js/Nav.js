@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import PrivateRoute from './PrivateRoute';
@@ -17,13 +17,42 @@ import RegistrarVenta from './RegistrarVenta';
 import RegistrarCliente from './RegistrarCliente';
 import '../css/Nav.css';
 
+// Componente auxiliar para los menús desplegables (Acordeón)
+const NavSection = ({ title, isOpen, toggle, children }) => (
+    <div style={{ marginBottom: '10px' }}>
+        <button 
+            onClick={toggle} 
+            style={{ 
+                width: '100%', textAlign: 'left', padding: '8px', 
+                background: 'transparent', border: '1px solid #ddd', 
+                cursor: 'pointer', fontWeight: 'bold', 
+                display: 'flex', justifyContent: 'space-between',
+                borderRadius: '4px'
+            }}
+        >
+            {title} <span>{isOpen ? '▾' : '▸'}</span>
+        </button>
+        {isOpen && (
+            <div style={{ marginLeft: '15px', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+                {children}
+            </div>
+        )}
+    </div>
+);
+
 const Nav = () => {
     const { isAuthenticated, role, logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    // Verifica el rol al cargar el componente
+    // Estados independientes para abrir/cerrar cada sección
+    const [openCuentas, setOpenCuentas] = useState(false);
+    const [openAsientos, setOpenAsientos] = useState(false);
+    const [openVentas, setOpenVentas] = useState(false);
+    const [openConfig, setOpenConfig] = useState(false);
+
+    const isAdmin = role && role[0] === 'ROLE_ADMINISTRADOR';
+
     useEffect(() => {
-        console.log("Rol desde AuthContext:", role); // Verifica el rol
         if (!isAuthenticated && window.location.pathname !== '/register') {
             navigate('/login');
         }
@@ -31,7 +60,7 @@ const Nav = () => {
 
     return (
         <div style={{ display: 'flex' }}>
-            <nav style={{ display: 'flex', flexDirection: 'column', padding: '10px', width: '200px' }}>
+            <nav style={{ display: 'flex', flexDirection: 'column', padding: '10px', width: '220px', borderRight: '1px solid #ccc' }}>
                 {!isAuthenticated ? (
                     <>
                         <NavLink to="/login">Login</NavLink>
@@ -39,25 +68,46 @@ const Nav = () => {
                     </>
                 ) : (
                     <>
-                        <NavLink to="/cuentas">Cuentas</NavLink>
-                        <NavLink to="/asientos">Libro Diario</NavLink>
-                        <NavLink to="/asientos/agregar">Agregar Asiento</NavLink>
-                        {role[0] === 'ROLE_ADMINISTRADOR' && (
-                            <>
-                                <NavLink to="/cuentas/agregar">Agregar Cuentas</NavLink> {/* Mostrar solo para admin */}
-                                <NavLink to="/cuentas/eliminar">Eliminar Cuentas</NavLink>
-                                <NavLink to="/cuentas/editarNombre">Editar Cuentas</NavLink>
+                        {/* Sección Cuentas */}
+                        <NavSection title="Cuentas" isOpen={openCuentas} toggle={() => setOpenCuentas(!openCuentas)}>
+                            <NavLink to="/cuentas">Cuentas</NavLink>
+                            {isAdmin && (
+                                <>
+                                    <NavLink to="/cuentas/agregar">Agregar Cuentas</NavLink>
+                                    <NavLink to="/cuentas/eliminar">Eliminar Cuentas</NavLink>
+                                    <NavLink to="/cuentas/editarNombre">Editar Cuentas</NavLink>
+                                </>
+                            )}
+                        </NavSection>
+
+                        {/* Sección Asientos */}
+                        <NavSection title="Asientos" isOpen={openAsientos} toggle={() => setOpenAsientos(!openAsientos)}>
+                            <NavLink to="/asientos/agregar">Agregar Asiento</NavLink>
+                            <NavLink to="/asientos">Libro Diario</NavLink>
+                            <NavLink to="/libro-mayor">Libro Mayor</NavLink>
+                        </NavSection>
+
+                        {/* Sección Ventas */}
+                        <NavSection title="Ventas" isOpen={openVentas} toggle={() => setOpenVentas(!openVentas)}>
+                            <NavLink to="/registrar-cliente">Registrar Cliente</NavLink>
+                            <NavLink to="/registrar-venta">Registrar Venta</NavLink>
+                        </NavSection>
+
+                        {/* Sección Configuración (Solo visible si hay opciones para el usuario) */}
+                        {isAdmin && (
+                            <NavSection title="Configuración" isOpen={openConfig} toggle={() => setOpenConfig(!openConfig)}>
                                 <NavLink to="/usuarios/eliminar">Eliminar Usuario</NavLink>
-                            </>
+                            </NavSection>
                         )}
-                        <NavLink to="/libro-mayor">Libro Mayor</NavLink>
-                        <NavLink to="/registrar-venta">Registrar Venta</NavLink>
-                        <NavLink to="/registrar-cliente">Registrar Cliente</NavLink>
-                        <button onClick={logout} style={{ marginTop: '10px' }}>Cerrar Sesión</button>
+
+                        <button onClick={logout} style={{ marginTop: '20px', padding: '8px', cursor: 'pointer' }}>
+                            Cerrar Sesión
+                        </button>
                     </>
                 )}
             </nav>
 
+            {/* Rutas */}
             <div style={{ flex: 1, padding: '20px' }}>
                 <Routes>
                     <Route path="/login" element={<Login />} />
