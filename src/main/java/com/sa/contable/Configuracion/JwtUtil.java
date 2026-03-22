@@ -69,7 +69,10 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
 
-        String rol = claims.get("rol", String.class);
+        // ✅ SOLUCIÓN APLICADA: Extraer como Object y convertir a String
+        Object rolObj = claims.get("rol");
+        String rol = rolObj != null ? String.valueOf(rolObj) : null;
+        
         logger.info("Rol obtenido del token: {}", rol);
         return rol;
     }
@@ -82,7 +85,10 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     
-        String id = claims.get("id", String.class);  // Obtener la ID del claims
+        // ✅ SOLUCIÓN APLICADA: Extraer como Object y convertir a String
+        Object idObj = claims.get("id");  
+        String id = idObj != null ? String.valueOf(idObj) : null;
+        
         logger.info("ID obtenida del token: {}", id);
         return id;
     }

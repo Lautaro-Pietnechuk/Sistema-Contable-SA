@@ -11,18 +11,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sa.contable.dto.ClienteDTO;
 import com.sa.contable.entidades.Cliente;
 import com.sa.contable.servicios.ClienteService;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/api/clientes")
 public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
 
     @GetMapping
-    public List<Cliente> listarTodos() {
+    public List<ClienteDTO> listarTodos() {
         return clienteService.obtenerTodos();
     }
 

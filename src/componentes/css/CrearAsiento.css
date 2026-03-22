@@ -44,6 +44,27 @@
     text-align: left; /* Alineación a la izquierda */
 }
 
+.acciones-celda {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.accion-boton {
+    height: 36px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.bloqueo-boton {
+    min-width: 36px;
+    padding: 0;
+    font-size: 18px;
+}
+
 /* Espaciado entre botones */
 .boton-container .crear-asiento-boton:last-child {
     margin-left: 15px; /* Añadir margen a la izquierda del botón de "Registrar Asiento" */

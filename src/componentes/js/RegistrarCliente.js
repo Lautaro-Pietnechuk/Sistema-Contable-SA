@@ -10,7 +10,7 @@ const RegistrarCliente = ({ show, handleClose, handleSave }) => {
   const [token, setToken] = useState('');
   const navigate = useNavigate();
   const [mensajeExito, setMensajeExito] = useState(''); 
-  const [mensajeError, setMensajeError] = useState('');  
+  const [mensajeError, setMensajeError] = useState('');   
 
     useEffect(() => {
         const storedToken = localStorage.getItem('token');

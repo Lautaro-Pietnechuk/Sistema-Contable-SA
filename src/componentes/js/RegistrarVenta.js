@@ -1,99 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from 'react-router-dom';
+import '../css/CrearAsiento.css'; 
+
+// 1. Función movida fuera del componente para evitar recreaciones en cada render
+const obtenerFechaActual = () => {
+    const fecha = new Date();
+    return new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+};
 
 const RegistrarVenta = () => {
+    const navigate = useNavigate();
+
+    // 2. Estado inicial limpio y sin dependencias cruzadas
     const [venta, setVenta] = useState({
-        fecha: new Date().toLocaleDateString(),
+        fecha: obtenerFechaActual(), 
         numeroVenta: '',
         cliente: '',
-        cantidad: 0,
-        total: 0,
+        observaciones: '' 
     });
+
     const [usuario, setUsuario] = useState(null);
     const [clientes, setClientes] = useState([]);
     const [productos, setProductos] = useState([]);
     const [subVentas, setSubVentas] = useState([
-        { producto: '', cantidad: 0, subtotal: 0, total: 0 }
+        { producto: '', cantidad: 0, subtotal: 0 } 
     ]);
-    const [mensajeExito, setMensajeExito] = useState('');
-    const [mensajeError, setMensajeError] = useState('');
+    const [token, setToken] = useState('');
+    const [mensajeExito, setMensajeExito] = useState(''); 
+    const [mensajeError, setMensajeError] = useState('');  
 
-    const obtenerFechaActual = () => {
-        const fecha = new Date();
-        return new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000).toISOString().split("T")[0];
-    };
+    // 3. Cálculo dinámico del total en cada renderizado (Evita bucles infinitos)
+    const totalVenta = subVentas.reduce((acc, subVenta) => acc + Number(subVenta.subtotal || 0), 0);
 
+    // Efecto para verificar sesión e identificar al usuario
     useEffect(() => {
-        const storedToken = localStorage.getItem("token");
+        const storedToken = localStorage.getItem('token');
         if (!storedToken) {
-            setMensajeError("Sesión expirada o no iniciada. Por favor, inicie sesión.");
+            alert('Sesión expirada o no iniciada. Por favor, inicie sesión.');
+            navigate('/login');
             return;
         }
 
+        setToken(storedToken);
         try {
             const decoded = jwtDecode(storedToken);
-            if (!decoded.sub || !decoded.id || !decoded.rol) {
-                setMensajeError("Información del usuario incompleta en el token.");
-                return;
-            }
-
             setUsuario({ id: decoded.id, nombre: decoded.sub, rol: decoded.roles });
-            setVenta((prevVenta) => ({
-                ...prevVenta,
-                fecha: obtenerFechaActual()
-            }));
         } catch (error) {
             console.error("Error al decodificar el token:", error);
-            setMensajeError("Error al decodificar el token.");
+            setMensajeError("Error de autenticación.");
         }
-    }, []);
+    }, [navigate]);
 
+    // Efecto para cargar clientes y productos solo cuando el token existe
     useEffect(() => {
-        // Asignar número de venta automáticamente
-        const fetchNumeroVenta = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/api/ventas/ultimoNumero');
-                const ultimoNumero = response.data.ultimoNumero || 0;
-                setVenta((prevVenta) => ({
-                    ...prevVenta,
-                    numeroVenta: `V-${ultimoNumero + 1}`
-                }));
-            } catch (error) {
-                console.error('Error al obtener el último número de venta:', error);
-                setMensajeError('Error al obtener el último número de venta.');
-            }
-        };
+        if (!token) return;
 
-        fetchNumeroVenta();
-
-        // Cargar clientes y productos desde el servidor
         const fetchData = async () => {
+            const config = {
+                headers: { Authorization: `Bearer ${token}` }
+            };
+
             try {
-                const clientesResponse = await axios.get('http://localhost:8080/api/clientes');
-                const productosResponse = await axios.get('http://localhost:8080/api/productos');
+                const [clientesResponse, productosResponse] = await Promise.all([
+                    axios.get('http://localhost:8080/api/clientes', config),
+                    axios.get('http://localhost:8080/api/productos', config)
+                ]);
+
                 setClientes(clientesResponse.data);
                 setProductos(productosResponse.data);
             } catch (error) {
-                console.error('Error al cargar clientes o productos:', error);
-                setMensajeError('Error al cargar clientes o productos.');
+                console.error('Error al cargar datos:', error);
+                setMensajeError('No se pudieron cargar clientes/productos.');
             }
         };
 
         fetchData();
-    }, []);
-
-    useEffect(() => {
-        const calcularTotalVenta = () => {
-            const total = subVentas.reduce((acc, subVenta) => acc + subVenta.total, 0);
-            setVenta((prevVenta) => ({
-                ...prevVenta,
-                total
-            }));
-        };
-
-        calcularTotalVenta();
-    }, [subVentas]);
+    }, [token]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -106,68 +90,146 @@ const RegistrarVenta = () => {
     const handleSubVentaChange = (index, e) => {
         const { name, value } = e.target;
         const updatedSubVentas = [...subVentas];
-        updatedSubVentas[index] = {
-            ...updatedSubVentas[index],
-            [name]: value
-        };
+        const subVentaActual = { ...updatedSubVentas[index], [name]: value };
 
-        if (name === 'producto') {
-            const selectedProducto = productos.find((producto) => producto.id === value);
-            if (selectedProducto) {
-                updatedSubVentas[index].subtotal = selectedProducto.precio;
-            }
-        }
+        // Buscamos el producto para calcular el subtotal dinámicamente
+        const selectedProducto = productos.find(
+            (p) => String(p.id) === (name === 'producto' ? String(value) : String(subVentaActual.producto))
+        );
+        const precioUnitario = selectedProducto ? Number(selectedProducto.precio) : 0;
+        const cant = name === 'cantidad' ? Number(value) : Number(subVentaActual.cantidad);
 
-        if (name === 'cantidad') {
-            updatedSubVentas[index].total = updatedSubVentas[index].cantidad * updatedSubVentas[index].subtotal;
-        }
-
+        subVentaActual.subtotal = cant * precioUnitario;
+        updatedSubVentas[index] = subVentaActual;
         setSubVentas(updatedSubVentas);
     };
 
     const handleAddSubVenta = () => {
-        setSubVentas([...subVentas, { producto: '', cantidad: 0, subtotal: 0, total: 0 }]);
+        setSubVentas([...subVentas, { producto: '', cantidad: 0, subtotal: 0 }]);
     };
 
     const handleRemoveSubVenta = (index) => {
-        const nuevasSubVentas = subVentas.filter((_, i) => i !== index);
-        setSubVentas(nuevasSubVentas);
+        setSubVentas((prev) => prev.filter((_, i) => i !== index));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Aquí se puede agregar la lógica para registrar la venta
-        console.log('Venta registrada:', venta);
-        console.log('SubVentas registradas:', subVentas);
-        setMensajeExito('Venta registrada con éxito.');
-        setTimeout(() => setMensajeExito(''), 3000); // Mensaje desaparecerá después de 3 segundos
+
+        if (!usuario || !usuario.id) {
+            setMensajeError("Error: No se pudo identificar al usuario desde el token.");
+            return;
+        }
+
+        if (subVentas.length === 0 || subVentas.some(sv => !sv.producto || Number(sv.cantidad) <= 0)) {
+            setMensajeError("Debe agregar al menos un producto con cantidad válida.");
+            return;
+        }
+
+        // 4. Aseguramos que los datos que enviamos al backend sean números (Integer/Long) y no Strings
+        const payload = {
+            fecha: venta.fecha + "T00:00:00", // Agregamos la hora porque Java espera un LocalDateTime
+            clienteId: Number(venta.cliente), // <-- Cambiado de idCliente a clienteId
+            usuarioId: Number(usuario.id),
+            total: Number(totalVenta),
+            observaciones: venta.observaciones,
+            detalles: subVentas.map(sv => ({
+                productoId: Number(sv.producto), // <-- Cambiado de idProducto a productoId
+                cantidad: Number(sv.cantidad),
+                subtotal: Number(sv.subtotal)
+            }))
+        };
+
+        // Imprimimos el payload para que puedas verificar en consola qué estás enviando
+        console.log("Enviando payload al backend:", payload);
+
+        try {
+            const config = {
+                headers: { Authorization: `Bearer ${token}` },
+                responseType: 'blob' // Esperamos un archivo (PDF)
+            };
+
+            const response = await axios.post('http://localhost:8080/api/ventas', payload, config);
+
+            // Lógica para descargar el PDF
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+            const link = document.createElement('a');
+            link.href = url;
+
+            const nombreArchivo = venta.numeroVenta
+                ? `Factura_${venta.numeroVenta}.pdf`
+                : 'Factura_Venta.pdf';
+            link.setAttribute('download', nombreArchivo);
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+            setMensajeExito('Venta registrada y factura descargada con éxito.');
+            setMensajeError('');
+
+            // Limpiamos el formulario tras el éxito
+            setVenta(prev => ({
+                ...prev,
+                cliente: '',
+                observaciones: ''
+            }));
+            setSubVentas([{ producto: '', cantidad: 0, subtotal: 0 }]);
+
+            setTimeout(() => setMensajeExito(''), 3000);
+
+        } catch (error) {
+            console.error('Error al registrar la venta:', error);
+            
+            // 5. Lectura del Blob de error para cazar el Error 500 del servidor
+            if (error.response && error.response.data instanceof Blob) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const errorText = reader.result;
+                    console.log("Respuesta real del servidor (Texto):", errorText); 
+                    
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        setMensajeError(errorData.message || 'Hubo un error al registrar la venta.');
+                    } catch {
+                        // Si no es un JSON, mostramos el texto plano del servidor
+                        setMensajeError(`Error del servidor: ${errorText}`);
+                    }
+                };
+                reader.readAsText(error.response.data);
+            } else {
+                setMensajeError('Hubo un error de conexión con el servidor.');
+            }
+        }
     };
 
     return (
-        <div className="registrar-venta-container">
-            <div className="usuario">Usuario: {usuario && usuario.nombre}</div>
-            <div className="form-row">
-                <div className="form-group">
-                    <div className="fecha">Fecha: {venta.fecha}</div>
-                </div>
+        <div className="crear-asiento-modal"> 
+            <div className="crear-asiento-header">
+                {usuario && <div className="usuario">Usuario: {usuario.nombre}</div>}
+                <div className="fecha">Fecha: {venta.fecha}</div>
             </div>
-            <h2>Registrar Venta</h2>
+            
+            <h2 className="crear-asiento-title">Registrar Venta</h2>
+            
             <form onSubmit={handleSubmit}>
-                <div className="form-row">
-                    <div className="form-group">
-                        <label>Cliente:</label>
-                        <select name="cliente" value={venta.cliente} onChange={handleChange} required>
-                            <option value="">Seleccione un cliente</option>
-                            {clientes.map((cliente) => (
-                                <option key={cliente.id} value={cliente.id}>
-                                    {cliente.nombre}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-                <h3 style={{ marginTop: '5px', marginBottom: '5px' }}>SubVentas:</h3>
-                <table className="registrar-venta-tabla">
+                <select 
+                    name="cliente" 
+                    value={venta.cliente} 
+                    onChange={handleChange} 
+                    required
+                    className="crear-asiento-descripcion"
+                    style={{ marginBottom: '15px' }}
+                >
+                    <option value="">Seleccione un cliente</option>
+                    {clientes.map((cliente) => (
+                        <option key={cliente.id} value={cliente.id}>{cliente.nombre}</option>
+                    ))}
+                </select>
+                
+                <h3>SubVentas</h3>
+                
+                <table className="crear-asiento-tabla">
                     <thead>
                         <tr>
                             <th>Producto</th>
@@ -188,9 +250,7 @@ const RegistrarVenta = () => {
                                     >
                                         <option value="">Seleccione un producto</option>
                                         {productos.map((producto) => (
-                                            <option key={producto.id} value={producto.id}>
-                                                {producto.nombre}
-                                            </option>
+                                            <option key={producto.id} value={producto.id}>{producto.nombre}</option>
                                         ))}
                                     </select>
                                 </td>
@@ -204,15 +264,11 @@ const RegistrarVenta = () => {
                                         required
                                     />
                                 </td>
-                                <td>
-                                    <span>{subVenta.subtotal}</span>
+                                <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
+                                    ${subVenta.subtotal}
                                 </td>
                                 <td>
-                                    <button
-                                        type="button"
-                                        className="eliminar-subventa-button"
-                                        onClick={() => handleRemoveSubVenta(index)}
-                                    >
+                                    <button type="button" className="crear-asiento-boton eliminar" onClick={() => handleRemoveSubVenta(index)}>
                                         Eliminar
                                     </button>
                                 </td>
@@ -220,18 +276,39 @@ const RegistrarVenta = () => {
                         ))}
                     </tbody>
                 </table>
+
+                <div style={{ marginTop: '15px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <label htmlFor="observaciones" style={{ fontSize: '0.9rem', marginBottom: '5px', color: '#555' }}>
+                        Observaciones (opcional)
+                    </label>
+                    <textarea 
+                        name="observaciones"
+                        id="observaciones"
+                        value={venta.observaciones}
+                        onChange={handleChange}
+                        placeholder="Escriba aquí..."
+                        className="crear-asiento-descripcion"
+                        rows="2"
+                        style={{ width: '50%', minWidth: '250px', resize: 'vertical' }}
+                    ></textarea>
+                </div>
+
+                <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1.2rem', margin: '15px 0' }}>
+                    Total Venta: ${totalVenta}
+                </div>
+
                 <div className="boton-container">
-                    <button type="button" className="add-subventa-button" onClick={handleAddSubVenta}>
+                    <button className="crear-asiento-boton" type="button" onClick={handleAddSubVenta}>
                         Agregar SubVenta
                     </button>
-                    <div className="form-group">
-                        <div className="Total">Total Venta: {venta.total}</div>
-                    </div>
-                    <button type="submit">Registrar Venta</button>
+                    <button className="crear-asiento-boton" type="submit">
+                        Registrar Venta
+                    </button>
                 </div>
-                {mensajeExito && <p className="mensaje-exito">{mensajeExito}</p>}
-                {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
             </form>
+
+            {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
+            {mensajeExito && <p className="mensaje-exito">{mensajeExito}</p>}
         </div>
     );
 };

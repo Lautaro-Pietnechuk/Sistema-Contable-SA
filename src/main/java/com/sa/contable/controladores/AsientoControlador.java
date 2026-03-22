@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sa.contable.configuracion.JwtUtil;
 import com.sa.contable.dto.AsientoDTO;
 import com.sa.contable.dto.CuentaAsientoDTO;
 import com.sa.contable.entidades.Asiento;
@@ -36,8 +35,6 @@ import com.sa.contable.servicios.CuentaAsientoServicio;
 import com.sa.contable.servicios.CuentaServicio;
 import com.sa.contable.servicios.UsuarioServicio;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/asientos")
@@ -46,11 +43,7 @@ public class AsientoControlador {
     @Autowired
     private AsientoServicio asientoServicio;
 
-    @Autowired
-    private JwtUtil jwtUtil;
 
-    @Autowired
-    private HttpServletRequest request;
 
     @Autowired
     private CuentaServicio cuentaServicio;
@@ -230,7 +223,6 @@ public ResponseEntity<?> crearAsiento(@PathVariable Long idUsuario, @RequestBody
         dto.setDebe(cuentaAsiento.getDebe());
         dto.setHaber(cuentaAsiento.getHaber());
         dto.setAsientoId(cuentaAsiento.getAsiento().getId());
-        dto.setSaldo(cuentaAsiento.getSaldo());
         return dto;
     }
 }

@@ -8,15 +8,13 @@ public class CuentaAsientoDTO {
     private BigDecimal debe; // Cambiado a BigDecimal
     private BigDecimal haber; // Cambiado a BigDecimal
     private Long asientoId;
-    private BigDecimal saldo; // Cambiado a BigDecimal
     private Long id;
 
-    public CuentaAsientoDTO(Long cuentaCodigo, BigDecimal debe, BigDecimal haber, Long asientoId, BigDecimal saldo) {
+    public CuentaAsientoDTO(Long cuentaCodigo, BigDecimal debe, BigDecimal haber, Long asientoId) {
         this.cuentaCodigo = cuentaCodigo;
         this.debe = debe;
         this.haber = haber;
         this.asientoId = asientoId;
-        this.saldo = saldo;
     }
 
     public CuentaAsientoDTO() {
@@ -64,13 +62,6 @@ public class CuentaAsientoDTO {
         this.asientoId = asientoId;
     }
 
-    public BigDecimal getSaldo() {
-        return saldo;
-    }
-
-    public void setSaldo(BigDecimal saldo) {
-        this.saldo = saldo;
-    }
 
     public void setId(Long id) {
         this.id = id;

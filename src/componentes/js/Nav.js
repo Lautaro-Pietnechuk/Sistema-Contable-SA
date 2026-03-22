@@ -15,6 +15,7 @@ import NotFound from './NotFound';
 import LibroMayor from './LibroMayor';
 import RegistrarVenta from './RegistrarVenta';
 import RegistrarCliente from './RegistrarCliente';
+import CrearProducto from './CrearProducto';    
 import '../css/Nav.css';
 
 // Componente auxiliar para los menús desplegables (Acordeón)
@@ -91,6 +92,7 @@ const Nav = () => {
                         <NavSection title="Ventas" isOpen={openVentas} toggle={() => setOpenVentas(!openVentas)}>
                             <NavLink to="/registrar-cliente">Registrar Cliente</NavLink>
                             <NavLink to="/registrar-venta">Registrar Venta</NavLink>
+                            <NavLink to="/productos/crear">Crear Producto</NavLink>     
                         </NavSection>
 
                         {/* Sección Configuración (Solo visible si hay opciones para el usuario) */}
@@ -122,6 +124,7 @@ const Nav = () => {
                     <Route path="/usuarios/eliminar" element={<PrivateRoute><EliminarUsuario /></PrivateRoute>} />
                     <Route path="/registrar-venta" element={<PrivateRoute><RegistrarVenta /></PrivateRoute>} />
                     <Route path="/registrar-cliente" element={<PrivateRoute><RegistrarCliente /></PrivateRoute>} />
+                    <Route path="/productos/crear" element={<PrivateRoute><CrearProducto /></PrivateRoute>} />
                     <Route path="*" element={<NotFound />} />
                     <Route path="/" element={<Navigate to="/login" />} />
                 </Routes>
