@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sa.contable.controladores.VentaControlador;
 import com.sa.contable.dto.ClienteDTO;
 import com.sa.contable.entidades.Cliente;
 import com.sa.contable.repositorios.ClienteRepository;
@@ -59,6 +60,10 @@ public class ClienteService {
     }
 
     public void eliminar(Long id) {
+        VentaControlador ventaControlador = new VentaControlador();
+        if (ventaControlador.obtenerPorCliente(id) != null) {
+            throw new RuntimeException("No se puede eliminar el cliente porque tiene ventas asociadas");
+        }
         clienteRepository.deleteById(id);
     }
 

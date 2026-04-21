@@ -43,9 +43,6 @@ public class Venta {
     @Column(length = 255)
     private String observaciones;
 
-    @Column(nullable = false)
-    private Boolean anulada = false;
-
 
     public Venta() {
         this.fecha = LocalDateTime.now();
@@ -56,7 +53,7 @@ public class Venta {
         this.fecha = LocalDateTime.now();
         this.cliente = cliente;
         this.total = total;
-        this.anulada = false;
+
     }
 
     // Getters y Setters
@@ -118,13 +115,6 @@ public class Venta {
         this.observaciones = observaciones;
     }
 
-    public Boolean getAnulada() {
-        return anulada;
-    }
-
-    public void setAnulada(Boolean anulada) {
-        this.anulada = anulada;
-    }
 
     // Métodos auxiliares
 

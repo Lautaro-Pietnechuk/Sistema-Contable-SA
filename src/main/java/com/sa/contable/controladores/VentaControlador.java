@@ -8,11 +8,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,11 +52,6 @@ public class VentaControlador {
         return ResponseEntity.ok(ventas);
     }
 
-    @GetMapping("/activas")
-    public ResponseEntity<List<VentaDTO>> obtenerNoAnuladas() {
-        List<VentaDTO> ventas = ventaServicio.obtenerNoAnuladas();
-        return ResponseEntity.ok(ventas);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id) {
@@ -105,24 +98,6 @@ public class VentaControlador {
         }
     }
 
-    @PutMapping("/anular/{id}")
-    public ResponseEntity<?> anularVenta(@PathVariable Long id) {
-        try {
-            VentaDTO ventaAnulada = ventaServicio.anularVenta(id);
-            return ResponseEntity.ok(ventaAnulada);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarVenta(@PathVariable Long id) {
-        try {
-            ventaServicio.eliminarVenta(id);
-            return ResponseEntity.ok("Venta eliminada correctamente");
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+    
 
 }

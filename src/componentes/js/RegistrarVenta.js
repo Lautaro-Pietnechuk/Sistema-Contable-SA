@@ -65,7 +65,7 @@ const RegistrarVenta = () => {
             try {
                 const [clientesResponse, productosResponse] = await Promise.all([
                     axios.get('http://localhost:8080/api/clientes', config),
-                    axios.get('http://localhost:8080/api/productos', config)
+                    axios.get('http://localhost:8080/api/productos/activos', config)
                 ]);
 
                 setClientes(clientesResponse.data);
@@ -249,7 +249,7 @@ const RegistrarVenta = () => {
                                         required
                                     >
                                         <option value="">Seleccione un producto</option>
-                                        {productos.map((producto) => (
+                                        {productos.filter((producto) => producto.activo !== false).map((producto) => (
                                             <option key={producto.id} value={producto.id}>{producto.nombre}</option>
                                         ))}
                                     </select>

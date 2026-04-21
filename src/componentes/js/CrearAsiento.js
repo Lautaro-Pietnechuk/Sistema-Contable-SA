@@ -83,6 +83,23 @@
       return nuevaFecha.toISOString().split("T")[0];
     };
 
+    const totales = transacciones.reduce(
+      (acumulado, transaccion) => {
+        const monto = parseFloat(transaccion.monto) || 0;
+
+        if (transaccion.tipo === "debe") {
+          acumulado.debe += monto;
+        }
+
+        if (transaccion.tipo === "haber") {
+          acumulado.haber += monto;
+        }
+
+        return acumulado;
+      },
+      { debe: 0, haber: 0 }
+    );
+
     const handleSubmit = async (e) => {
       e.preventDefault();
       const storedToken = localStorage.getItem("token");
@@ -245,6 +262,11 @@
               ))}
             </tbody>
           </table>
+
+          <div className="totales-transacciones">
+            <p>Total Debe: {totales.debe.toFixed(2)}</p>
+            <p>Total Haber: {totales.haber.toFixed(2)}</p>
+          </div>
 
           <div className="boton-container">
             <button className="crear-asiento-boton" type="button" onClick={handleAddTransaccion}>

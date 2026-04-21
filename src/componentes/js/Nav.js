@@ -14,8 +14,11 @@ import EliminarUsuario from './EliminarUsuario';
 import NotFound from './NotFound';
 import LibroMayor from './LibroMayor';
 import RegistrarVenta from './RegistrarVenta';
+import ListarVentas from './ListarVentas';
 import RegistrarCliente from './RegistrarCliente';
+import ListarClientes from './ListarClientes';
 import CrearProducto from './CrearProducto';    
+import ListarProductos from './ListarProductos';
 import '../css/Nav.css';
 
 // Componente auxiliar para los menús desplegables (Acordeón)
@@ -91,8 +94,11 @@ const Nav = () => {
                         {/* Sección Ventas */}
                         <NavSection title="Ventas" isOpen={openVentas} toggle={() => setOpenVentas(!openVentas)}>
                             <NavLink to="/registrar-cliente">Registrar Cliente</NavLink>
+                            <NavLink to="/clientes">Listar Clientes</NavLink>
                             <NavLink to="/registrar-venta">Registrar Venta</NavLink>
+                            <NavLink to="/ventas">Listar Ventas</NavLink>
                             <NavLink to="/productos/crear">Crear Producto</NavLink>     
+                            <NavLink to="/productos">Listar Productos</NavLink>
                         </NavSection>
 
                         {/* Sección Configuración (Solo visible si hay opciones para el usuario) */}
@@ -123,8 +129,18 @@ const Nav = () => {
                     <Route path="/libro-mayor" element={<PrivateRoute><LibroMayor /></PrivateRoute>} />
                     <Route path="/usuarios/eliminar" element={<PrivateRoute><EliminarUsuario /></PrivateRoute>} />
                     <Route path="/registrar-venta" element={<PrivateRoute><RegistrarVenta /></PrivateRoute>} />
+                    <Route path="/ventas" element={<PrivateRoute><ListarVentas show={true} /></PrivateRoute>} />
                     <Route path="/registrar-cliente" element={<PrivateRoute><RegistrarCliente /></PrivateRoute>} />
+                    <Route
+                        path="/clientes"
+                        element={
+                            <PrivateRoute>
+                                <ListarClientes show={true} handleClose={() => navigate('/registrar-cliente')} />
+                            </PrivateRoute>
+                        }
+                    />
                     <Route path="/productos/crear" element={<PrivateRoute><CrearProducto /></PrivateRoute>} />
+                    <Route path="/productos" element={<PrivateRoute><ListarProductos show={true} /></PrivateRoute>} />
                     <Route path="*" element={<NotFound />} />
                     <Route path="/" element={<Navigate to="/login" />} />
                 </Routes>

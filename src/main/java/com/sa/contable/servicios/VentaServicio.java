@@ -47,13 +47,6 @@ public class VentaServicio {
                 .collect(Collectors.toList());
     }
 
-    public List<VentaDTO> obtenerNoAnuladas() {
-        return ventaRepositorio.findByAnuladaFalse()
-                .stream()
-                .map(this::convertirADTO)
-                .collect(Collectors.toList());
-    }
-
     public VentaDTO obtenerPorId(Long id) {
         Venta venta = ventaRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada con id: " + id));
@@ -74,7 +67,7 @@ public class VentaServicio {
     }
 
     public List<VentaDTO> obtenerPorRangoFechas(LocalDateTime desde, LocalDateTime hasta) {
-        return ventaRepositorio.findByAnuladaFalseAndFechaBetween(desde, hasta)
+        return ventaRepositorio.findByFechaBetween(desde, hasta)
                 .stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
@@ -92,7 +85,6 @@ public class VentaServicio {
         venta.setFecha(ventaDTO.getFecha() != null ? ventaDTO.getFecha() : LocalDateTime.now());
         venta.setCliente(cliente);
         venta.setObservaciones(ventaDTO.getObservaciones());
-        venta.setAnulada(false);
         venta.setTotal(0.0);
         Venta ventaGuardada = ventaRepositorio.save(venta);
         String comprobanteReal = "V-" + String.format("%05d", ventaGuardada.getId());
@@ -160,43 +152,7 @@ public class VentaServicio {
         return convertirADTO(ventaGuardada);
     }
 
-    @Transactional
-    public VentaDTO anularVenta(Long id) {
-        Venta venta = ventaRepositorio.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada con id: " + id));
-
-        if (venta.getAnulada()) {
-            throw new RuntimeException("La venta ya se encuentra anulada");
-        }
-
-        // Reponer stock
-        for (DetalleVenta detalle : venta.getDetalles()) {
-            Producto producto = detalle.getProducto();
-            producto.setStock(producto.getStock() + detalle.getCantidad());
-            productoRepositorio.save(producto);
-        }
-
-        venta.setAnulada(true);
-        Venta ventaAnulada = ventaRepositorio.save(venta);
-        return convertirADTO(ventaAnulada);
-    }
-
-    @Transactional
-    public void eliminarVenta(Long id) {
-        Venta venta = ventaRepositorio.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada con id: " + id));
-
-        // Si no está anulada, reponer stock antes de eliminar
-        if (!venta.getAnulada()) {
-            for (DetalleVenta detalle : venta.getDetalles()) {
-                Producto producto = detalle.getProducto();
-                producto.setStock(producto.getStock() + detalle.getCantidad());
-                productoRepositorio.save(producto);
-            }
-        }
-
-        ventaRepositorio.delete(venta);
-    }
+    
 
     // Métodos de conversión
 
@@ -209,7 +165,6 @@ public class VentaServicio {
         dto.setClienteNombre(venta.getCliente().getNombre());
         dto.setTotal(venta.getTotal());
         dto.setObservaciones(venta.getObservaciones());
-        dto.setAnulada(venta.getAnulada());
 
         if (venta.getDetalles() != null) {
             List<DetalleVentaDTO> detallesDTO = venta.getDetalles()

@@ -33,23 +33,27 @@ const RegistrarCliente = ({ show, handleClose, handleSave }) => {
     };
 
     try {
-      const response = await axios.post('http://localhost:8080/clientes', cliente, {
+      const response = await axios.post('http://localhost:8080/api/clientes', cliente, {
         headers: {
           'Content-Type': 'application/json', 
           'Authorization': `Bearer ${token}` 
         }
       });
 
-      setMensajeExito('Cuenta creada con éxito.');
+      setMensajeExito('Cliente creado con éxito.');
       setTimeout(() => setMensajeExito(''), 3000); 
 
       const nuevoCliente = response.data; 
-      handleSave(nuevoCliente);
+      if (typeof handleSave === 'function') {
+        handleSave(nuevoCliente);
+      }
 
       setNombre('');
       setEmail('');
       setTelefono('');
-      handleClose();
+      if (typeof handleClose === 'function') {
+        handleClose();
+      }
 
     } catch (error) {
         if (error.response) {
@@ -116,9 +120,11 @@ const RegistrarCliente = ({ show, handleClose, handleSave }) => {
   };
 
   return (
-    <div className={`registrar-cliente-modal ${show ? 'show' : ''}`}>
+    <div className={`registrar-cliente-modal ${show === false ? '' : 'show'}`}>
       <div className="registrar-cliente-header">
-        <button className="close-button" onClick={handleClose}>X</button>
+        {typeof handleClose === 'function' && (
+          <button className="close-button" onClick={handleClose}>X</button>
+        )}
         <h2>Registrar Cliente</h2>
       </div>
 
@@ -166,6 +172,14 @@ const RegistrarCliente = ({ show, handleClose, handleSave }) => {
 
         <div className="boton-container" style={{ marginTop: '10px' }}>
           <button type="submit" className="registrar-cliente-boton">Registrar Cliente</button>
+          <button
+            type="button"
+            className="registrar-cliente-boton"
+            onClick={() => navigate('/clientes')}
+            style={{ marginLeft: '8px' }}
+          >
+            Ver Clientes
+          </button>
         </div>
       </form>
     </div>

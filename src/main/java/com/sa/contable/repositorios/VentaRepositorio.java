@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
 import com.sa.contable.entidades.Venta;
 
 @Repository
@@ -18,10 +17,6 @@ public interface VentaRepositorio extends JpaRepository<Venta, Long> {
     List<Venta> findByClienteId(Long clienteId);
 
     List<Venta> findByFechaBetween(LocalDateTime desde, LocalDateTime hasta);
-
-    List<Venta> findByAnuladaFalse();
-
-    List<Venta> findByAnuladaFalseAndFechaBetween(LocalDateTime desde, LocalDateTime hasta);
 
     boolean existsByNumeroComprobante(String numeroComprobante);
 }
