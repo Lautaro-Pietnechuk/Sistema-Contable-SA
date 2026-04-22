@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 import '../css/Asientos.css';
 
@@ -87,32 +87,48 @@ const Asientos = () => {
     };
 
     const generarPDF = () => {
-        const doc = new jsPDF();
+        try {
+            const doc = new jsPDF();
+            autoTable(doc, {
+                head: [['ID', 'Fecha', 'Descripción', 'Usuario', 'Movimientos']],
+                body: asientos.map((asiento) => [
+                    asiento.id,
+                    new Date(asiento.fecha).toLocaleDateString(),
+                    asiento.descripcion,
+                    asiento.nombreUsuario || 'Usuario desconocido',
+                    asiento.movimientos.length > 0
+                        ? asiento.movimientos.map((movimiento) =>
+                              `${movimiento.cuentaNombre}: ${movimiento.debe} (Debe), ${movimiento.haber} (Haber)`
+                          ).join(', ')
+                        : 'No hay movimientos',
+                ]),
+                startY: 40,
+                margin: { top: 40 },
+                styles: { fontSize: 8 },
+                columnStyles: {
+                    4: { cellWidth: 'wrap' }
+                }
+            });
 
-        doc.setFont('helvetica', 'normal');
-        doc.text('Libro Diario', 14, 20);
-        doc.text(`Fecha: ${fechaInicio} - ${fechaFin}`, 14, 30);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Libro Diario', 14, 20);
+            doc.text(`Fecha: ${fechaInicio} - ${fechaFin}`, 14, 30);
 
-        let y = 40; // Y-Position para las filas
-        doc.autoTable({
-            head: [['ID', 'Fecha', 'Descripción', 'Usuario', 'Movimientos']],
-            body: asientos.map((asiento) => [
-                asiento.id,
-                new Date(asiento.fecha).toLocaleDateString(),
-                asiento.descripcion,
-                asiento.nombreUsuario || 'Usuario desconocido',
-                asiento.movimientos.length > 0
-                    ? asiento.movimientos.map((movimiento) =>
-                          `${movimiento.cuentaNombre}: ${movimiento.debe} (Debe), ${movimiento.haber} (Haber)`
-                      ).join(', ')
-                    : 'No hay movimientos',
-            ]),
-            startY: y,
-            margin: { top: 40 },
-            styles: { fontSize: 8 },
-        });
-
-        doc.save('asientos.pdf');
+            // Generar el PDF y descargarlo
+            const pdfBuffer = doc.output('arraybuffer');
+            const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `asientos_${fechaInicio}_${fechaFin}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error al generar el PDF:', error);
+            alert('Error al generar el PDF: ' + error.message);
+        }
     };
 
     return (

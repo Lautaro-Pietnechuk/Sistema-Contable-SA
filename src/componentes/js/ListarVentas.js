@@ -15,19 +15,24 @@ function ListarVentas({ show, handleClose }) {
 
   const fetchVentas = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/ventas');
+      const response = await axios.get('/api/ventas');
       const ventasData = Array.isArray(response.data) ? response.data : [];
-      setVentas(ventasData);
+      setVentas(ventasData);  
       setErrorMessage('');
     } catch (error) {
       console.error('Error al cargar las ventas:', error);
-      setErrorMessage('No se pudieron cargar las ventas.');
+      const status = error?.response?.status;
+      if (status === 401 || status === 403) {
+        setErrorMessage('Tu sesion no es valida. Inicia sesion nuevamente.');
+      } else {
+        setErrorMessage('No se pudieron cargar las ventas.');
+      }
     }
   }, []);
 
   const fetchClientes = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/clientes');
+      const response = await axios.get('/api/clientes');
       setClientes(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error al cargar los clientes:', error);

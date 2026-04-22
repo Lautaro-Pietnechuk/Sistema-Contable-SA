@@ -52,6 +52,8 @@ const Nav = () => {
     const [openCuentas, setOpenCuentas] = useState(false);
     const [openAsientos, setOpenAsientos] = useState(false);
     const [openVentas, setOpenVentas] = useState(false);
+    const [openClientes, setOpenClientes] = useState(false);
+    const [openProductos, setOpenProductos] = useState(false);
     const [openConfig, setOpenConfig] = useState(false);
 
     const isAdmin = role && role[0] === 'ROLE_ADMINISTRADOR';
@@ -64,7 +66,7 @@ const Nav = () => {
 
     return (
         <div style={{ display: 'flex' }}>
-            <nav style={{ display: 'flex', flexDirection: 'column', padding: '10px', width: '220px', borderRight: '1px solid #ccc' }}>
+            <nav style={{ display: 'flex', flexDirection: 'column', padding: '10px', width: '220px', minHeight: '100vh', borderRight: '1px solid #ccc', overflowY: 'auto' }}>
                 {!isAuthenticated ? (
                     <>
                         <NavLink to="/login">Login</NavLink>
@@ -93,11 +95,19 @@ const Nav = () => {
 
                         {/* Sección Ventas */}
                         <NavSection title="Ventas" isOpen={openVentas} toggle={() => setOpenVentas(!openVentas)}>
-                            <NavLink to="/registrar-cliente">Registrar Cliente</NavLink>
-                            <NavLink to="/clientes">Listar Clientes</NavLink>
                             <NavLink to="/registrar-venta">Registrar Venta</NavLink>
                             <NavLink to="/ventas">Listar Ventas</NavLink>
-                            <NavLink to="/productos/crear">Crear Producto</NavLink>     
+                        </NavSection>
+
+                        {/* Sección Clientes */}
+                        <NavSection title="Clientes" isOpen={openClientes} toggle={() => setOpenClientes(!openClientes)}>
+                            <NavLink to="/registrar-cliente">Registrar Cliente</NavLink>
+                            <NavLink to="/clientes">Listar Clientes</NavLink>
+                        </NavSection>
+
+                        {/* Sección Productos */}
+                        <NavSection title="Productos" isOpen={openProductos} toggle={() => setOpenProductos(!openProductos)}>
+                            <NavLink to="/productos/crear">Crear Producto</NavLink>
                             <NavLink to="/productos">Listar Productos</NavLink>
                         </NavSection>
 

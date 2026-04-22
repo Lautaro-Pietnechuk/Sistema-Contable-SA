@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import '../css/CrearAsiento.css'; 
 
 // 1. Función movida fuera del componente para evitar recreaciones en cada render
@@ -144,26 +146,16 @@ const RegistrarVenta = () => {
 
         try {
             const config = {
-                headers: { Authorization: `Bearer ${token}` },
-                responseType: 'blob' // Esperamos un archivo (PDF)
+                headers: { Authorization: `Bearer ${token}` }
             };
 
             const response = await axios.post('http://localhost:8080/api/ventas', payload, config);
+            const ventaCreada = response.data;
 
-            // Lógica para descargar el PDF
-            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-            const link = document.createElement('a');
-            link.href = url;
+            console.log("Venta creada:", ventaCreada);
 
-            const nombreArchivo = venta.numeroVenta
-                ? `Factura_${venta.numeroVenta}.pdf`
-                : 'Factura_Venta.pdf';
-            link.setAttribute('download', nombreArchivo);
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+            // Generar PDF con los datos de la venta
+            generarPDFVenta(ventaCreada);
 
             setMensajeExito('Venta registrada y factura descargada con éxito.');
             setMensajeError('');
@@ -180,26 +172,67 @@ const RegistrarVenta = () => {
 
         } catch (error) {
             console.error('Error al registrar la venta:', error);
-            
-            // 5. Lectura del Blob de error para cazar el Error 500 del servidor
-            if (error.response && error.response.data instanceof Blob) {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const errorText = reader.result;
-                    console.log("Respuesta real del servidor (Texto):", errorText); 
-                    
-                    try {
-                        const errorData = JSON.parse(errorText);
-                        setMensajeError(errorData.message || 'Hubo un error al registrar la venta.');
-                    } catch {
-                        // Si no es un JSON, mostramos el texto plano del servidor
-                        setMensajeError(`Error del servidor: ${errorText}`);
-                    }
-                };
-                reader.readAsText(error.response.data);
-            } else {
-                setMensajeError('Hubo un error de conexión con el servidor.');
+            setMensajeError(error.response?.data || 'Hubo un error de conexión con el servidor.');
+        }
+    };
+
+    const generarPDFVenta = (ventaData) => {
+        try {
+            const doc = new jsPDF();
+
+            // Encabezado
+            doc.setFont('helvetica', 'bold');
+            doc.text('FACTURA DE VENTA', 14, 20);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.text(`Comprobante: ${ventaData.numeroComprobante}`, 14, 30);
+            doc.text(`Fecha: ${new Date(ventaData.fecha).toLocaleDateString()}`, 14, 37);
+            doc.text(`Cliente: ${ventaData.clienteNombre}`, 14, 44);
+
+            // Tabla de detalles
+            const detalles = ventaData.detalles.map(d => [
+                d.productoNombre,
+                d.cantidad,
+                `$${d.precioUnitario.toFixed(2)}`,
+                `$${d.subtotal.toFixed(2)}`
+            ]);
+
+            autoTable(doc, {
+                head: [['Producto', 'Cantidad', 'Precio Unit.', 'Subtotal']],
+                body: detalles,
+                startY: 52,
+                margin: { left: 14, right: 14 },
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [41, 128, 185] }
+            });
+
+            // Total
+            const finalY = doc.lastAutoTable.finalY || 100;
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Total: $${ventaData.total.toFixed(2)}`, 14, finalY + 10);
+
+            // Observaciones
+            if (ventaData.observaciones) {
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9);
+                doc.text(`Observaciones: ${ventaData.observaciones}`, 14, finalY + 20);
             }
+
+            // Descargar
+            const pdfBuffer = doc.output('arraybuffer');
+            const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Factura_${ventaData.numeroComprobante}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error al generar el PDF:', error);
+            alert('Error al generar el PDF: ' + error.message);
         }
     };
 
@@ -213,10 +246,10 @@ const RegistrarVenta = () => {
             <h2 className="crear-asiento-title">Registrar Venta</h2>
             
             <form onSubmit={handleSubmit}>
-                <select 
-                    name="cliente" 
-                    value={venta.cliente} 
-                    onChange={handleChange} 
+                <select
+                    name="cliente"
+                    value={venta.cliente}
+                    onChange={handleChange}
                     required
                     className="crear-asiento-descripcion"
                     style={{ marginBottom: '15px' }}
@@ -226,7 +259,7 @@ const RegistrarVenta = () => {
                         <option key={cliente.id} value={cliente.id}>{cliente.nombre}</option>
                     ))}
                 </select>
-                
+
                 <h3>SubVentas</h3>
                 
                 <table className="crear-asiento-tabla">

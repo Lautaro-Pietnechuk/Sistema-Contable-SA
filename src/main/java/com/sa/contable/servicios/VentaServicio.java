@@ -40,6 +40,7 @@ public class VentaServicio {
     private AsientoServicio asientoServicio;
 
 
+    @Transactional(readOnly = true)
     public List<VentaDTO> obtenerTodas() {
         return ventaRepositorio.findAll()
                 .stream()
@@ -47,18 +48,21 @@ public class VentaServicio {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public VentaDTO obtenerPorId(Long id) {
         Venta venta = ventaRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada con id: " + id));
         return convertirADTO(venta);
     }
 
+    @Transactional(readOnly = true)
     public VentaDTO obtenerPorComprobante(String numeroComprobante) {
         Venta venta = ventaRepositorio.findByNumeroComprobante(numeroComprobante)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada con comprobante: " + numeroComprobante));
         return convertirADTO(venta);
     }
 
+    @Transactional(readOnly = true)
     public List<VentaDTO> obtenerPorCliente(Long clienteId) {
         return ventaRepositorio.findByClienteId(clienteId)
                 .stream()
@@ -66,6 +70,7 @@ public class VentaServicio {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<VentaDTO> obtenerPorRangoFechas(LocalDateTime desde, LocalDateTime hasta) {
         return ventaRepositorio.findByFechaBetween(desde, hasta)
                 .stream()

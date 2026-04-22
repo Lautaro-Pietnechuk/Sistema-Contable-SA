@@ -1,6 +1,8 @@
 // axiosConfig.js
 import axios from 'axios';
 
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 // Configurar un interceptor para agregar el token a las solicitudes
 axios.interceptors.request.use(config => {
     const token = localStorage.getItem('token'); // Recuperar el token

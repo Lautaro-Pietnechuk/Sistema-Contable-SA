@@ -49,6 +49,7 @@ public class VentaControlador {
     @GetMapping
     public ResponseEntity<List<VentaDTO>> obtenerTodas() {
         List<VentaDTO> ventas = ventaServicio.obtenerTodas();
+        
         return ResponseEntity.ok(ventas);
     }
 
