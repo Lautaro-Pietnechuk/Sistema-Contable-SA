@@ -15,7 +15,7 @@ public class VentaDTO {
     private Double iva;
     private Double total;
     private String observaciones;
-    private Boolean anulada;
+    private Boolean anulada = false; // Nuevo campo para indicar si la venta está anulada
 
     public VentaDTO() {
     }

@@ -43,6 +43,8 @@ public class Venta {
     @Column(length = 255)
     private String observaciones;
 
+    private Boolean anulada = false;
+
 
     public Venta() {
         this.fecha = LocalDateTime.now();
@@ -126,5 +128,13 @@ public class Venta {
     public void eliminarDetalle(DetalleVenta detalle) {
         detalles.remove(detalle);
         detalle.setVenta(null);
+    }
+
+    public Boolean getAnulada() {
+        return anulada;
+    }
+
+    public void setAnulada(Boolean anulada) {
+        this.anulada = anulada;
     }
 }

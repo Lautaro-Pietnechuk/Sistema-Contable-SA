@@ -20,8 +20,7 @@ public class Nota {
     private Long idNota; // bigint NN 
 
     @Column(name = "tipo", nullable = false, length = 1)
-    private String tipo; // character NN (Ej: 'C' para Crédito, 'D' para Débito) 
-
+    private char tipo; // char(1) NN (C para Crédito, D para Débito)
 
     @Column(name = "id_venta", nullable = false)
     private Long idVenta; // bigint NN 
@@ -35,9 +34,6 @@ public class Nota {
     @Column(name = "motivo", nullable = false, columnDefinition = "TEXT")
     private String motivo; // text NN 
 
-    @Column(name = "cuenta_codigo", nullable = false)
-    private Long cuentaCodigo; // bigint NN 
-
     // Getters y Setters
 
     public Long getIdNota() {
@@ -48,12 +44,17 @@ public class Nota {
         this.idNota = idNota;
     }
 
-    public String getTipo() {
+    public char getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setTipo(char tipo) {
+        if (tipo != 'C' && tipo != 'D') {
+            throw new IllegalArgumentException("El tipo de nota debe ser 'C' para Crédito o 'D' para Débito.");
+        } else {
+            this.tipo = tipo;
+        }   
+        
     }
 
     public Long getIdVenta() {
@@ -86,14 +87,6 @@ public class Nota {
 
     public void setMotivo(String motivo) {
         this.motivo = motivo;
-    }
-
-    public Long getCuentaCodigo() {
-        return cuentaCodigo;
-    }
-
-    public void setCuentaCodigo(Long cuentaCodigo) {
-        this.cuentaCodigo = cuentaCodigo;
     }
 
 

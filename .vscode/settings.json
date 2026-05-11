@@ -6,14 +6,21 @@
     "java.compile.nullAnalysis.mode": "automatic",
     
     // Ruta de Java Home
-    "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-21",
+    "java.jdt.ls.java.home": "D:\\Java\\openJdk-25",
     
     // Configuración de runtimes de Java
     "java.configuration.runtimes": [
+
         {
-            "name": "JavaSE-17",
-            "path": "C:\\Program Files\\Java\\jdk-21"
+
+            "name": "JavaSE-25",
+
+            "path": "D:\\Java\\openJdk-25",
+
+            "default": true
+
         }
+
     ],
     
     // Aumentar la memoria asignada para la importación de proyectos Gradle y Maven

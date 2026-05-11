@@ -24,8 +24,8 @@ import com.sa.contable.repositorios.VentaRepositorio;
 @Service
 public class VentaServicio {
 
-    private static Long cuentaDebe = 121L;
-    private static Long cuentaHaber = 411L;
+    private static final Long cuentaDebe = 121L; //deudores por venta
+    private static final Long cuentaHaber = 411L; // ventas
 
     @Autowired
     private VentaRepositorio ventaRepositorio;
@@ -170,6 +170,7 @@ public class VentaServicio {
         dto.setClienteNombre(venta.getCliente().getNombre());
         dto.setTotal(venta.getTotal());
         dto.setObservaciones(venta.getObservaciones());
+        dto.setAnulada(venta.getAnulada());
 
         if (venta.getDetalles() != null) {
             List<DetalleVentaDTO> detallesDTO = venta.getDetalles()
