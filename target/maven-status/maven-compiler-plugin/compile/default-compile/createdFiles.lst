@@ -4,7 +4,9 @@ com\sa\contable\servicios\CuentaServicio.class
 com\sa\contable\servicios\CuentaAsientoServicio.class
 com\sa\contable\controladores\CuentaAsientoControlador.class
 com\sa\contable\dto\AsientoDTO.class
+com\sa\contable\controladores\ClienteController.class
 com\sa\contable\controladores\CuentaControlador.class
+com\sa\contable\repositorios\ClienteRepository.class
 com\sa\contable\dto\ClienteDTO.class
 com\sa\contable\repositorios\CuentaAsientoRepositorio.class
 com\sa\contable\controladores\ProductoControlador.class
@@ -24,6 +26,7 @@ com\sa\contable\controladores\CorsTestController.class
 com\sa\contable\dto\DetalleVentaDTO.class
 com\sa\contable\GlobalExceptionHandler.class
 com\sa\contable\configuracion\JwtUtil.class
+com\sa\contable\entidades\Cliente.class
 com\sa\contable\entidades\Rol.class
 com\sa\contable\ContableApplication.class
 com\sa\contable\repositorios\AsientoRepositorio.class
@@ -50,6 +53,7 @@ com\sa\contable\servicios\LibroMayorServicio.class
 com\sa\contable\entidades\Nota.class
 com\sa\contable\entidades\Producto.class
 com\sa\contable\entidades\Usuario.class
+com\sa\contable\servicios\ClienteService.class
 com\sa\contable\entidades\DetalleVenta.class
 com\sa\contable\response\AsientosResponse.class
 com\sa\contable\repositorios\UsuarioRepositorio.class

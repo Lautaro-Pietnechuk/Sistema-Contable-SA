@@ -1,6 +1,7 @@
     package com.sa.contable.controladores;
 
-    import java.util.List;
+    import java.math.BigDecimal;
+import java.util.List;
 
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.http.HttpStatus;
@@ -67,9 +68,9 @@
         }
 
         @PutMapping("/{id}")
-        public ResponseEntity<?> actualizarProducto(@PathVariable Long id, @RequestBody ProductoDTO productoDTO) {
+        public ResponseEntity<?> actualizarProducto(@PathVariable Long id, @RequestBody ProductoDTO productoDTO, @RequestParam BigDecimal costoTotalCompra) {
             try {
-                ProductoDTO productoActualizado = productoServicio.actualizarProducto(id, productoDTO);
+                ProductoDTO productoActualizado = productoServicio.actualizarProducto(id, productoDTO, costoTotalCompra);
                 return ResponseEntity.ok(productoActualizado);
             } catch (RuntimeException e) {
                 return ResponseEntity.badRequest().body(e.getMessage());

@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
 const CrearProducto = () => {
-    // Estado actualizado: se eliminó el campo 'codigo'
     const [token, setToken] = useState('');
     const navigate = useNavigate();
+    
+    // 1. Agregamos costoPromedio al estado inicial
     const [producto, setProducto] = useState({
         nombre: '',
         descripcion: '',
         precio: '',
+        costoPromedio: '', 
         stock: ''
     });
 
     const [mensaje, setMensaje] = useState('');
     const [error, setError] = useState(false);
-
 
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
@@ -41,7 +41,6 @@ const CrearProducto = () => {
         setError(false);
 
         try {
-            // La URL se mantiene igual según tu ProductoControlador.java
             const response = await fetch('http://localhost:8080/api/productos', {
                 method: 'POST',
                 headers: {
@@ -51,6 +50,8 @@ const CrearProducto = () => {
                 body: JSON.stringify({
                     ...producto,
                     precio: parseFloat(producto.precio),
+                    // 2. Parseamos el costo para que el backend lo reciba como número (BigDecimal)
+                    costoPromedio: parseFloat(producto.costoPromedio),
                     stock: parseInt(producto.stock)
                 }),
             });
@@ -58,8 +59,8 @@ const CrearProducto = () => {
             if (response.ok) {
                 const data = await response.json();
                 setMensaje(`Producto "${data.nombre}" creado con éxito.`);
-                // Limpiar formulario manteniendo la estructura sin código
-                setProducto({ nombre: '', descripcion: '', precio: '', stock: '' });
+                // 3. Limpiamos también el costoPromedio al finalizar
+                setProducto({ nombre: '', descripcion: '', precio: '', costoPromedio: '', stock: '' });
             } else {
                 const errorMsg = await response.text();
                 setError(true);
@@ -72,7 +73,7 @@ const CrearProducto = () => {
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: '20px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', fontFamily: 'Arial' }}>
+        <div style={{ maxWidth: '500px', margin: '20px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', fontFamily: 'Arial' }}>
             <h2 style={{ textAlign: 'center' }}>Nuevo Producto</h2>
             
             <form onSubmit={handleSubmit}>
@@ -86,11 +87,18 @@ const CrearProducto = () => {
                     <textarea name="descripcion" value={producto.descripcion} onChange={handleChange} style={{ width: '100%', padding: '8px', boxSizing: 'border-box', minHeight: '60px' }} />
                 </div>
 
+                {/* 4. Adaptamos el contenedor flex para acomodar 3 columnas */}
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                     <div style={{ flex: 1 }}>
-                        <label style={{ display: 'block', marginBottom: '5px' }}>Precio:</label>
+                        <label style={{ display: 'block', marginBottom: '5px' }}>Precio Venta:</label>
                         <input type="number" step="0.01" name="precio" value={producto.precio} onChange={handleChange} required style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }} />
                     </div>
+                    
+                    <div style={{ flex: 1 }}>
+                        <label style={{ display: 'block', marginBottom: '5px' }}>Costo (por unidad):</label>
+                        <input type="number" step="0.01" name="costoPromedio" value={producto.costoPromedio} onChange={handleChange} required style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }} />
+                    </div>
+
                     <div style={{ flex: 1 }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Stock Inicial:</label>
                         <input type="number" name="stock" value={producto.stock} onChange={handleChange} required style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }} />

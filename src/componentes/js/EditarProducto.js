@@ -6,6 +6,9 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
   const [descripcion, setDescripcion] = useState('');
   const [precio, setPrecio] = useState('');
   const [stock, setStock] = useState('');
+  
+  // Nuevo estado para el costo por unidad de la mercadería entrante
+  const [costoNuevoUnidad, setCostoNuevoUnidad] = useState(''); 
   const [mensajeError, setMensajeError] = useState('');
 
   useEffect(() => {
@@ -14,6 +17,7 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
       setDescripcion(producto.descripcion || '');
       setPrecio(producto.precio ?? '');
       setStock(producto.stock ?? '');
+      setCostoNuevoUnidad(''); // Reiniciamos el input al abrir
       setMensajeError('');
     }
   }, [show, producto]);
@@ -24,12 +28,24 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
       return;
     }
 
+    // 1. Calculamos cuántas unidades REALMENTE se están agregando
+    const stockIngresado = Number(stock);
+    const stockAnterior = Number(producto.stock || 0);
+    const stockAgregado = stockIngresado - stockAnterior;
+
+    // 2. Calculamos el costo total de la compra (solo si se agregó stock)
+    let costoTotalCompra = 0;
+    if (stockAgregado > 0) {
+      costoTotalCompra = stockAgregado * Number(costoNuevoUnidad || 0);
+    }
+
     try {
-      await axios.put(`http://localhost:8080/api/productos/${producto.id}`, {
+      // 3. Enviamos el DTO en el body y el costoTotalCompra como parámetro URL
+      await axios.put(`http://localhost:8080/api/productos/${producto.id}?costoTotalCompra=${costoTotalCompra}`, {
         nombre,
         descripcion,
         precio: Number(precio),
-        stock: Number(stock),
+        stock: stockIngresado,
         activo: producto.activo
       });
 
@@ -47,6 +63,9 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
   if (!show || !producto) {
     return null;
   }
+
+  // Comprobación para deshabilitar el input de costo si no se está agregando stock
+  const estaAgregandoStock = Number(stock) > Number(producto.stock || 0);
 
   return (
     <div
@@ -67,7 +86,7 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
       <div
         style={{
           width: '90%',
-          maxWidth: '560px',
+          maxWidth: '650px', // Un poco más ancho para que entren las 3 columnas
           backgroundColor: '#fff',
           borderRadius: '10px',
           padding: '20px',
@@ -103,7 +122,7 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
 
           <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
             <div style={{ flex: 1 }}>
-              <label htmlFor="precio-producto"><strong>Precio</strong></label>
+              <label htmlFor="precio-producto"><strong>Precio Venta</strong></label>
               <input
                 id="precio-producto"
                 type="number"
@@ -116,7 +135,7 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
               />
             </div>
             <div style={{ flex: 1 }}>
-              <label htmlFor="stock-producto"><strong>Stock</strong></label>
+              <label htmlFor="stock-producto"><strong>Stock Total</strong></label>
               <input
                 id="stock-producto"
                 type="number"
@@ -128,15 +147,39 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
                 style={{ width: '100%', marginTop: '6px', padding: '8px' }}
               />
             </div>
+            
+            {/* Nueva columna para el costo por unidad */}
+            <div style={{ flex: 1 }}>
+              <label htmlFor="costo-nuevo-producto">
+                <strong>Costo (x Unidad)</strong>
+              </label>
+              <input
+                id="costo-nuevo-producto"
+                type="number"
+                min="0"
+                step="0.01"
+                value={costoNuevoUnidad}
+                onChange={(event) => setCostoNuevoUnidad(event.target.value)}
+                disabled={!estaAgregandoStock}
+                required={estaAgregandoStock}
+                placeholder={!estaAgregandoStock ? "Solo al sumar stock" : "Ej: 15000.50"}
+                style={{ 
+                  width: '100%', 
+                  marginTop: '6px', 
+                  padding: '8px',
+                  backgroundColor: !estaAgregandoStock ? '#e9ecef' : '#fff'
+                }}
+              />
+            </div>
           </div>
 
           {mensajeError && (
             <p style={{ color: '#842029', marginBottom: '12px' }}>{mensajeError}</p>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-            <button type="button" onClick={handleClose}>Cancelar</button>
-            <button type="submit">Guardar Cambios</button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '20px' }}>
+            <button type="button" onClick={handleClose} style={{ padding: '8px 16px' }}>Cancelar</button>
+            <button type="submit" style={{ padding: '8px 16px', backgroundColor: '#0d6efd', color: '#fff', border: 'none', borderRadius: '4px' }}>Guardar Cambios</button>
           </div>
         </form>
       </div>

@@ -1,6 +1,8 @@
 // filepath: d:\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\ProductoDTO.java
 package com.sa.contable.dto;
 
+import java.math.BigDecimal;
+
 public class ProductoDTO {
 
     private Long id;
@@ -9,6 +11,7 @@ public class ProductoDTO {
     private Double precio;
     private Integer stock;
     private Boolean activo;
+    private BigDecimal costoPromedio; // Lo que te cuesta a vos comprarlo
 
     public ProductoDTO() {
     }
@@ -20,6 +23,7 @@ public class ProductoDTO {
         this.precio = precio;
         this.stock = stock;
         this.activo = activo;
+        this.costoPromedio = BigDecimal.ZERO;
     }
 
     // Getters y Setters
@@ -71,5 +75,13 @@ public class ProductoDTO {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    public BigDecimal getCostoPromedio() {
+        return costoPromedio;
+    }
+
+    public void setCostoPromedio(BigDecimal costoPromedio) {
+        this.costoPromedio = costoPromedio;
     }
 }

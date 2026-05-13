@@ -1,5 +1,4 @@
-Al crear un producto o agregarle stock creo que se deberian de generar los asientos contables para comprar ese producto 
-o los materiales pero creo que seria muy dificil de hacer
+Falta que se hagan los asientos contables al agregar stock o crear un producto
 
 
 notas de debito

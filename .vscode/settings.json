@@ -6,7 +6,7 @@
     "java.compile.nullAnalysis.mode": "automatic",
     
     // Ruta de Java Home
-    "java.jdt.ls.java.home": "D:\\Java\\openJdk-25",
+    "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-23",
     
     // Configuración de runtimes de Java
     "java.configuration.runtimes": [

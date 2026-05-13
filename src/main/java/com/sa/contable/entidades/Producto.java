@@ -1,5 +1,7 @@
 package com.sa.contable.entidades;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +32,9 @@ public class Producto {
     @Column(nullable = false)
     private Boolean activo = true;
 
+    @Column(nullable = false)
+    private BigDecimal costoPromedio; // Lo que te cuesta a vos comprarlo
+
     public Producto() {
     }
 
@@ -39,6 +44,7 @@ public class Producto {
         this.precio = precio;
         this.stock = stock;
         this.activo = true;
+        this.costoPromedio = BigDecimal.ZERO;
     }
 
     // Getters y Setters
@@ -89,5 +95,13 @@ public class Producto {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    public BigDecimal getCostoPromedio() {
+        return costoPromedio;
+    }
+
+    public void setCostoPromedio(BigDecimal costoPromedio) {
+        this.costoPromedio = costoPromedio;
     }
 }

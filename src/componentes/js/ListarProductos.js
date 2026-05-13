@@ -53,6 +53,7 @@ function ListarProductos({ show }) {
         nombre: productoToUpdate.nombre,
         descripcion: productoToUpdate.descripcion,
         precio: Number(productoToUpdate.precio),
+        costoPromedio: Number(productoToUpdate.costoPromedio || 0), // Agregado para no perder el costo al cambiar de estado
         stock: Number(productoToUpdate.stock),
         activo: nuevoEstado
       });
@@ -145,7 +146,8 @@ function ListarProductos({ show }) {
               <tr>
                 <th style={{ border: '1px solid #343a40', padding: '8px' }}>Nombre</th>
                 <th style={{ border: '1px solid #343a40', padding: '8px' }}>Descripcion</th>
-                <th style={{ border: '1px solid #343a40', padding: '8px' }}>Precio</th>
+                <th style={{ border: '1px solid #343a40', padding: '8px' }}>Precio Venta</th>
+                <th style={{ border: '1px solid #343a40', padding: '8px' }}>Costo Prom.</th>
                 <th style={{ border: '1px solid #343a40', padding: '8px' }}>Stock</th>
                 <th style={{ border: '1px solid #343a40', padding: '8px' }}>Estado</th>
                 <th style={{ border: '1px solid #343a40', padding: '8px' }}>Acciones</th>
@@ -157,6 +159,8 @@ function ListarProductos({ show }) {
                   <td style={{ border: '1px solid #343a40', padding: '8px' }}>{producto.nombre || '-'}</td>
                   <td style={{ border: '1px solid #343a40', padding: '8px' }}>{producto.descripcion || '-'}</td>
                   <td style={{ border: '1px solid #343a40', padding: '8px' }}>{formatMoneda(producto.precio)}</td>
+                  {/* Nueva celda con el costo promedio */}
+                  <td style={{ border: '1px solid #343a40', padding: '8px' }}>{formatMoneda(producto.costoPromedio)}</td>
                   <td style={{ border: '1px solid #343a40', padding: '8px' }}>{producto.stock ?? 0}</td>
                   <td style={{ border: '1px solid #343a40', padding: '8px' }}>{producto.activo ? 'Activo' : 'Inactivo'}</td>
                   <td style={{ border: '1px solid #343a40', padding: '8px' }}>

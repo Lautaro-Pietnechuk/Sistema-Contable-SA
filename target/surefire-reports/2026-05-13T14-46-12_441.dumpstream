@@ -1,0 +1,5 @@
+# Created at 2026-05-13T14:46:14.341
+Boot Manifest-JAR contains absolute paths in classpath 'D:\Documentos\GitHub\Sistema-Contable-SA\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+
