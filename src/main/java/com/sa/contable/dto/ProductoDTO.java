@@ -12,6 +12,7 @@ public class ProductoDTO {
     private Integer stock;
     private Boolean activo;
     private BigDecimal costoPromedio; // Lo que te cuesta a vos comprarlo
+    private String tipoDePago; // Puede recibir: "EFECTIVO", "DEBITO" o "CREDITO"
 
     public ProductoDTO() {
     }
@@ -83,5 +84,17 @@ public class ProductoDTO {
 
     public void setCostoPromedio(BigDecimal costoPromedio) {
         this.costoPromedio = costoPromedio;
+    }
+
+    public String getTipoDePago() {
+        return tipoDePago;
+    }
+
+    public void setTipoDePago(String tipoDePago) {
+        tipoDePago = tipoDePago.toUpperCase();
+        if (tipoDePago != null && !tipoDePago.matches("EFECTIVO|DEBITO|CREDITO")) {
+            throw new IllegalArgumentException("Tipo de pago inválido. Debe ser 'EFECTIVO', 'DEBITO' o 'CREDITO'.");
+        }
+        this.tipoDePago = tipoDePago;
     }
 }

@@ -1,4 +1,6 @@
-Falta que se hagan los asientos contables al agregar stock o crear un producto
+
 
 
 notas de debito
+
+testear

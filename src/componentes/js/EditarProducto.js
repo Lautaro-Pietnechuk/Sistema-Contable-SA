@@ -7,8 +7,10 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
   const [precio, setPrecio] = useState('');
   const [stock, setStock] = useState('');
   
-  // Nuevo estado para el costo por unidad de la mercadería entrante
+  // Estados para el ingreso de nueva mercadería
   const [costoNuevoUnidad, setCostoNuevoUnidad] = useState(''); 
+  const [metodoPago, setMetodoPago] = useState('EFECTIVO'); // Nuevo estado para el pago
+  
   const [mensajeError, setMensajeError] = useState('');
 
   useEffect(() => {
@@ -17,7 +19,8 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
       setDescripcion(producto.descripcion || '');
       setPrecio(producto.precio ?? '');
       setStock(producto.stock ?? '');
-      setCostoNuevoUnidad(''); // Reiniciamos el input al abrir
+      setCostoNuevoUnidad(''); 
+      setMetodoPago('EFECTIVO'); // Reiniciamos al valor por defecto
       setMensajeError('');
     }
   }, [show, producto]);
@@ -40,13 +43,14 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
     }
 
     try {
-      // 3. Enviamos el DTO en el body y el costoTotalCompra como parámetro URL
+      // 3. Enviamos el DTO en el body (incluyendo metodoPago) y el costoTotalCompra como parámetro URL
       await axios.put(`http://localhost:8080/api/productos/${producto.id}?costoTotalCompra=${costoTotalCompra}`, {
         nombre,
         descripcion,
         precio: Number(precio),
         stock: stockIngresado,
-        activo: producto.activo
+        activo: producto.activo,
+        metodoPago: estaAgregandoStock ? metodoPago : null // Mandamos el método de pago solo si hubo compra
       });
 
       if (typeof onProductoUpdated === 'function') {
@@ -64,7 +68,7 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
     return null;
   }
 
-  // Comprobación para deshabilitar el input de costo si no se está agregando stock
+  // Comprobación para deshabilitar los inputs de compra si no se está agregando stock
   const estaAgregandoStock = Number(stock) > Number(producto.stock || 0);
 
   return (
@@ -86,7 +90,7 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
       <div
         style={{
           width: '90%',
-          maxWidth: '650px', // Un poco más ancho para que entren las 3 columnas
+          maxWidth: '600px', 
           backgroundColor: '#fff',
           borderRadius: '10px',
           padding: '20px',
@@ -105,7 +109,7 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
               value={nombre}
               onChange={(event) => setNombre(event.target.value)}
               required
-              style={{ width: '100%', marginTop: '6px', padding: '8px' }}
+              style={{ width: '100%', marginTop: '6px', padding: '8px', boxSizing: 'border-box' }}
             />
           </div>
 
@@ -115,12 +119,13 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
               id="descripcion-producto"
               value={descripcion}
               onChange={(event) => setDescripcion(event.target.value)}
-              rows="3"
-              style={{ width: '100%', marginTop: '6px', padding: '8px', resize: 'vertical' }}
+              rows="2"
+              style={{ width: '100%', marginTop: '6px', padding: '8px', resize: 'vertical', boxSizing: 'border-box' }}
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+          {/* Fila 1: Datos de Venta y Stock Total */}
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '15px' }}>
             <div style={{ flex: 1 }}>
               <label htmlFor="precio-producto"><strong>Precio Venta</strong></label>
               <input
@@ -131,7 +136,7 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
                 value={precio}
                 onChange={(event) => setPrecio(event.target.value)}
                 required
-                style={{ width: '100%', marginTop: '6px', padding: '8px' }}
+                style={{ width: '100%', marginTop: '6px', padding: '8px', boxSizing: 'border-box' }}
               />
             </div>
             <div style={{ flex: 1 }}>
@@ -144,14 +149,24 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
                 value={stock}
                 onChange={(event) => setStock(event.target.value)}
                 required
-                style={{ width: '100%', marginTop: '6px', padding: '8px' }}
+                style={{ width: '100%', marginTop: '6px', padding: '8px', boxSizing: 'border-box' }}
               />
             </div>
-            
-            {/* Nueva columna para el costo por unidad */}
+          </div>
+
+          {/* Fila 2: Datos de Ingreso de Mercadería (Con fondo resaltado) */}
+          <div style={{ 
+            display: 'flex', 
+            gap: '12px', 
+            marginBottom: '15px', 
+            padding: '12px', 
+            backgroundColor: estaAgregandoStock ? '#e8f4fd' : '#f8f9fa', 
+            borderRadius: '6px',
+            border: '1px solid #dee2e6'
+          }}>
             <div style={{ flex: 1 }}>
-              <label htmlFor="costo-nuevo-producto">
-                <strong>Costo (x Unidad)</strong>
+              <label htmlFor="costo-nuevo-producto" style={{ color: !estaAgregandoStock ? '#6c757d' : '#000' }}>
+                <strong>Costo (x Unidad Nueva)</strong>
               </label>
               <input
                 id="costo-nuevo-producto"
@@ -167,19 +182,51 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
                   width: '100%', 
                   marginTop: '6px', 
                   padding: '8px',
-                  backgroundColor: !estaAgregandoStock ? '#e9ecef' : '#fff'
+                  backgroundColor: !estaAgregandoStock ? '#e9ecef' : '#fff',
+                  boxSizing: 'border-box',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px'
                 }}
               />
+            </div>
+
+            <div style={{ flex: 1 }}>
+              <label htmlFor="metodo-pago-producto" style={{ color: !estaAgregandoStock ? '#6c757d' : '#000' }}>
+                <strong>Método de Pago</strong>
+              </label>
+              <select
+                id="metodo-pago-producto"
+                value={metodoPago}
+                onChange={(event) => setMetodoPago(event.target.value)}
+                disabled={!estaAgregandoStock}
+                style={{ 
+                  width: '100%', 
+                  marginTop: '6px', 
+                  padding: '8px',
+                  backgroundColor: !estaAgregandoStock ? '#e9ecef' : '#fff',
+                  boxSizing: 'border-box',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px'
+                }}
+              >
+                <option value="EFECTIVO">Efectivo</option>
+                <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+                <option value="CREDITO">Credito</option>
+              </select>
             </div>
           </div>
 
           {mensajeError && (
-            <p style={{ color: '#842029', marginBottom: '12px' }}>{mensajeError}</p>
+            <p style={{ color: '#842029', marginBottom: '12px', fontWeight: 'bold', textAlign: 'center' }}>{mensajeError}</p>
           )}
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '20px' }}>
-            <button type="button" onClick={handleClose} style={{ padding: '8px 16px' }}>Cancelar</button>
-            <button type="submit" style={{ padding: '8px 16px', backgroundColor: '#0d6efd', color: '#fff', border: 'none', borderRadius: '4px' }}>Guardar Cambios</button>
+            <button type="button" onClick={handleClose} style={{ padding: '10px 16px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+              Cancelar
+            </button>
+            <button type="submit" style={{ padding: '10px 16px', backgroundColor: '#0d6efd', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+              Guardar Cambios
+            </button>
           </div>
         </form>
       </div>

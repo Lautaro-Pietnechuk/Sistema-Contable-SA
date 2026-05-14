@@ -24,7 +24,9 @@ import com.sa.contable.repositorios.VentaRepositorio;
 @Service
 public class VentaServicio {
 
-    private static final Long cuentaDebe = 121L; //deudores por venta
+    private static final Long cuentaDebeCredito = 121L; //deudores por venta - crédito
+    private static final Long cuentaDebeEfectivo = 111L; // caja - efectivo
+    private static final Long cuentaDebeDebito = 113L; // banco c/c - débito
     private static final Long cuentaHaber = 411L; // ventas
 
     @Autowired
@@ -124,7 +126,19 @@ public class VentaServicio {
             asientoDTO.setNombreUsuario("UsuarioID: " + usuarioId); 
             
             CuentaAsientoDTO movimientoDebe = new CuentaAsientoDTO();
-            movimientoDebe.setCuentaCodigo(cuentaDebe);
+            switch (ventaDTO.getTipoDePago()) {
+                case "EFECTIVO":
+                    movimientoDebe.setCuentaCodigo(cuentaDebeEfectivo);
+                    break;
+                case "DEBITO":
+                    movimientoDebe.setCuentaCodigo(cuentaDebeDebito);
+                    break;
+                case "CREDITO":
+                    movimientoDebe.setCuentaCodigo(cuentaDebeCredito);
+                    break;
+                default:
+                    throw new RuntimeException("Tipo de pago no válido. Debe ser: EFECTIVO, DEBITO o CREDITO");
+            }
             movimientoDebe.setDebe(BigDecimal.valueOf(detalleDTO.getCantidad() * precioParaCalculo));
             movimientoDebe.setHaber(BigDecimal.valueOf(0.0));
             
@@ -161,27 +175,27 @@ public class VentaServicio {
 
     // Métodos de conversión
 
-    private VentaDTO convertirADTO(Venta venta) {
-        VentaDTO dto = new VentaDTO();
-        dto.setId(venta.getId());
-        dto.setNumeroComprobante(venta.getNumeroComprobante());
-        dto.setFecha(venta.getFecha());
-        dto.setClienteId(venta.getCliente().getId());
-        dto.setClienteNombre(venta.getCliente().getNombre());
-        dto.setTotal(venta.getTotal());
-        dto.setObservaciones(venta.getObservaciones());
-        dto.setAnulada(venta.getAnulada());
+        private VentaDTO convertirADTO(Venta venta) {
+            VentaDTO dto = new VentaDTO();
+            dto.setId(venta.getId());
+            dto.setNumeroComprobante(venta.getNumeroComprobante());
+            dto.setFecha(venta.getFecha());
+            dto.setClienteId(venta.getCliente().getId());
+            dto.setClienteNombre(venta.getCliente().getNombre());
+            dto.setTotal(venta.getTotal());
+            dto.setObservaciones(venta.getObservaciones());
+            dto.setAnulada(venta.getAnulada());
 
-        if (venta.getDetalles() != null) {
-            List<DetalleVentaDTO> detallesDTO = venta.getDetalles()
-                    .stream()
-                    .map(this::convertirDetalleADTO)
-                    .collect(Collectors.toList());
-            dto.setDetalles(detallesDTO);
+            if (venta.getDetalles() != null) {
+                List<DetalleVentaDTO> detallesDTO = venta.getDetalles()
+                        .stream()
+                        .map(this::convertirDetalleADTO)
+                        .collect(Collectors.toList());
+                dto.setDetalles(detallesDTO);
+            }
+
+            return dto;
         }
-
-        return dto;
-    }
 
     private DetalleVentaDTO convertirDetalleADTO(DetalleVenta detalle) {
         DetalleVentaDTO dto = new DetalleVentaDTO();

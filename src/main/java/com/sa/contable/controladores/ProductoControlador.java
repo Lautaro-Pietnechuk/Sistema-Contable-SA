@@ -20,6 +20,8 @@ import java.util.List;
     import com.sa.contable.dto.ProductoDTO;
     import com.sa.contable.servicios.ProductoServicio;
 
+import jakarta.servlet.http.HttpServletRequest;
+
     @RestController
     @RequestMapping("/api/productos")
     @CrossOrigin(origins = "http://localhost:3000")
@@ -27,6 +29,9 @@ import java.util.List;
 
         @Autowired
         private ProductoServicio productoServicio;
+
+        @Autowired
+        private HttpServletRequest request;
 
         @GetMapping
         public ResponseEntity<List<ProductoDTO>> obtenerTodos() {
@@ -58,9 +63,10 @@ import java.util.List;
         }
 
         @PostMapping
-        public ResponseEntity<?> crearProducto(@RequestBody ProductoDTO productoDTO) {
+        public ResponseEntity<?> crearProducto(@PathVariable Long id, @RequestBody ProductoDTO productoDTO, @RequestParam BigDecimal costoTotalCompra) {
             try {
-                ProductoDTO productoCreado = productoServicio.crearProducto(productoDTO);
+                Long usuarioId = obtenerUsuarioIdDesdeToken();
+                ProductoDTO productoCreado = productoServicio.crearProducto(productoDTO, usuarioId, id, costoTotalCompra);
                 return ResponseEntity.status(HttpStatus.CREATED).body(productoCreado);
             } catch (RuntimeException e) {
                 return ResponseEntity.badRequest().body(e.getMessage());
@@ -70,7 +76,8 @@ import java.util.List;
         @PutMapping("/{id}")
         public ResponseEntity<?> actualizarProducto(@PathVariable Long id, @RequestBody ProductoDTO productoDTO, @RequestParam BigDecimal costoTotalCompra) {
             try {
-                ProductoDTO productoActualizado = productoServicio.actualizarProducto(id, productoDTO, costoTotalCompra);
+                Long usuarioId = obtenerUsuarioIdDesdeToken();
+                ProductoDTO productoActualizado = productoServicio.actualizarProducto(id, productoDTO, costoTotalCompra, usuarioId);
                 return ResponseEntity.ok(productoActualizado);
             } catch (RuntimeException e) {
                 return ResponseEntity.badRequest().body(e.getMessage());
@@ -95,5 +102,15 @@ import java.util.List;
             } catch (RuntimeException e) {
                 return ResponseEntity.notFound().build();
             }
+        }
+
+
+        private Long obtenerUsuarioIdDesdeToken() {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new RuntimeException("Token no enviado o formato inválido");
+            }
+            // Aquí iría la lógica para extraer el ID del usuario del token
+            return null; // Placeholder - reemplazar con la lógica real
         }
     }

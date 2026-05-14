@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../axiosConfig'; 
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import '../css/CrearAsiento.css'; 
 
-// 1. Función movida fuera del componente para evitar recreaciones en cada render
 const obtenerFechaActual = () => {
     const fecha = new Date();
     return new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000).toISOString().split("T")[0];
@@ -15,11 +14,11 @@ const obtenerFechaActual = () => {
 const RegistrarVenta = () => {
     const navigate = useNavigate();
 
-    // 2. Estado inicial limpio y sin dependencias cruzadas
     const [venta, setVenta] = useState({
         fecha: obtenerFechaActual(), 
         numeroVenta: '',
         cliente: '',
+        tipoDePago: 'EFECTIVO', 
         observaciones: '' 
     });
 
@@ -33,10 +32,8 @@ const RegistrarVenta = () => {
     const [mensajeExito, setMensajeExito] = useState(''); 
     const [mensajeError, setMensajeError] = useState('');  
 
-    // 3. Cálculo dinámico del total en cada renderizado (Evita bucles infinitos)
     const totalVenta = subVentas.reduce((acc, subVenta) => acc + Number(subVenta.subtotal || 0), 0);
 
-    // Efecto para verificar sesión e identificar al usuario
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         if (!storedToken) {
@@ -55,7 +52,6 @@ const RegistrarVenta = () => {
         }
     }, [navigate]);
 
-    // Efecto para cargar clientes y productos solo cuando el token existe
     useEffect(() => {
         if (!token) return;
 
@@ -94,7 +90,6 @@ const RegistrarVenta = () => {
         const updatedSubVentas = [...subVentas];
         const subVentaActual = { ...updatedSubVentas[index], [name]: value };
 
-        // Buscamos el producto para calcular el subtotal dinámicamente
         const selectedProducto = productos.find(
             (p) => String(p.id) === (name === 'producto' ? String(value) : String(subVentaActual.producto))
         );
@@ -127,22 +122,19 @@ const RegistrarVenta = () => {
             return;
         }
 
-        // 4. Aseguramos que los datos que enviamos al backend sean números (Integer/Long) y no Strings
         const payload = {
-            fecha: venta.fecha + "T00:00:00", // Agregamos la hora porque Java espera un LocalDateTime
-            clienteId: Number(venta.cliente), // <-- Cambiado de idCliente a clienteId
+            fecha: venta.fecha + "T00:00:00",
+            clienteId: Number(venta.cliente),
             usuarioId: Number(usuario.id),
+            tipoDePago: venta.tipoDePago, 
             total: Number(totalVenta),
             observaciones: venta.observaciones,
             detalles: subVentas.map(sv => ({
-                productoId: Number(sv.producto), // <-- Cambiado de idProducto a productoId
+                productoId: Number(sv.producto),
                 cantidad: Number(sv.cantidad),
                 subtotal: Number(sv.subtotal)
             }))
         };
-
-        // Imprimimos el payload para que puedas verificar en consola qué estás enviando
-        console.log("Enviando payload al backend:", payload);
 
         try {
             const config = {
@@ -152,18 +144,15 @@ const RegistrarVenta = () => {
             const response = await axios.post('http://localhost:8080/api/ventas', payload, config);
             const ventaCreada = response.data;
 
-            console.log("Venta creada:", ventaCreada);
-
-            // Generar PDF con los datos de la venta
             generarPDFVenta(ventaCreada);
 
             setMensajeExito('Venta registrada y factura descargada con éxito.');
             setMensajeError('');
 
-            // Limpiamos el formulario tras el éxito
             setVenta(prev => ({
                 ...prev,
                 cliente: '',
+                tipoDePago: 'EFECTIVO',
                 observaciones: ''
             }));
             setSubVentas([{ producto: '', cantidad: 0, subtotal: 0 }]);
@@ -179,8 +168,6 @@ const RegistrarVenta = () => {
     const generarPDFVenta = (ventaData) => {
         try {
             const doc = new jsPDF();
-
-            // Encabezado
             doc.setFont('helvetica', 'bold');
             doc.text('FACTURA DE VENTA', 14, 20);
 
@@ -189,8 +176,8 @@ const RegistrarVenta = () => {
             doc.text(`Comprobante: ${ventaData.numeroComprobante}`, 14, 30);
             doc.text(`Fecha: ${new Date(ventaData.fecha).toLocaleDateString()}`, 14, 37);
             doc.text(`Cliente: ${ventaData.clienteNombre}`, 14, 44);
+            doc.text(`Método de Pago: ${ventaData.tipoDePago}`, 14, 51); 
 
-            // Tabla de detalles
             const detalles = ventaData.detalles.map(d => [
                 d.productoNombre,
                 d.cantidad,
@@ -201,38 +188,25 @@ const RegistrarVenta = () => {
             autoTable(doc, {
                 head: [['Producto', 'Cantidad', 'Precio Unit.', 'Subtotal']],
                 body: detalles,
-                startY: 52,
+                startY: 58,
                 margin: { left: 14, right: 14 },
                 styles: { fontSize: 10 },
                 headStyles: { fillColor: [41, 128, 185] }
             });
 
-            // Total
             const finalY = doc.lastAutoTable.finalY || 100;
             doc.setFont('helvetica', 'bold');
             doc.text(`Total: $${ventaData.total.toFixed(2)}`, 14, finalY + 10);
 
-            // Observaciones
             if (ventaData.observaciones) {
                 doc.setFont('helvetica', 'normal');
                 doc.setFontSize(9);
                 doc.text(`Observaciones: ${ventaData.observaciones}`, 14, finalY + 20);
             }
 
-            // Descargar
-            const pdfBuffer = doc.output('arraybuffer');
-            const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
-            const url = window.URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `Factura_${ventaData.numeroComprobante}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+            doc.save(`Factura_${ventaData.numeroComprobante}.pdf`);
         } catch (error) {
             console.error('Error al generar el PDF:', error);
-            alert('Error al generar el PDF: ' + error.message);
         }
     };
 
@@ -246,72 +220,102 @@ const RegistrarVenta = () => {
             <h2 className="crear-asiento-title">Registrar Venta</h2>
             
             <form onSubmit={handleSubmit}>
-                <select
-                    name="cliente"
-                    value={venta.cliente}
-                    onChange={handleChange}
-                    required
-                    className="crear-asiento-descripcion"
-                    style={{ marginBottom: '15px' }}
-                >
-                    <option value="">Seleccione un cliente</option>
-                    {clientes.map((cliente) => (
-                        <option key={cliente.id} value={cliente.id}>{cliente.nombre}</option>
-                    ))}
-                </select>
+                {/* Contenedor Flex para Cliente y Pago bien alineados */}
+                <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+                    <div style={{ flex: 1 }}>
+                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>Cliente:</label>
+                        <select
+                            name="cliente"
+                            value={venta.cliente}
+                            onChange={handleChange}
+                            required
+                            style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }}
+                        >
+                            <option value="">Seleccione un cliente</option>
+                            {clientes.map((cliente) => (
+                                <option key={cliente.id} value={cliente.id}>{cliente.nombre}</option>
+                            ))}
+                        </select>
+                    </div>
 
-                <h3>SubVentas</h3>
+                    <div style={{ flex: 1 }}>
+                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>Método de Pago:</label>
+                        <select
+                            name="tipoDePago"
+                            value={venta.tipoDePago}
+                            onChange={handleChange}
+                            required
+                            style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }}
+                        >
+                            <option value="EFECTIVO">Efectivo</option>
+                            <option value="TRANSFERENCIA">Transferencia</option>
+                            <option value="CUENTA_CORRIENTE">Credito</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3 style={{ borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Detalle de Productos</h3>
                 
-                <table className="crear-asiento-tabla">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>SubTotal</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {subVentas.map((subVenta, index) => (
-                            <tr key={index}>
-                                <td>
-                                    <select
-                                        name="producto"
-                                        value={subVenta.producto}
-                                        onChange={(e) => handleSubVentaChange(index, e)}
-                                        required
-                                    >
-                                        <option value="">Seleccione un producto</option>
-                                        {productos.filter((producto) => producto.activo !== false).map((producto) => (
-                                            <option key={producto.id} value={producto.id}>{producto.nombre}</option>
-                                        ))}
-                                    </select>
-                                </td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        name="cantidad"
-                                        value={subVenta.cantidad}
-                                        onChange={(e) => handleSubVentaChange(index, e)}
-                                        min="1"
-                                        required
-                                    />
-                                </td>
-                                <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
-                                    ${subVenta.subtotal}
-                                </td>
-                                <td>
-                                    <button type="button" className="crear-asiento-boton eliminar" onClick={() => handleRemoveSubVenta(index)}>
-                                        Eliminar
-                                    </button>
-                                </td>
+                <div style={{ overflowX: 'auto' }}>
+                    <table className="crear-asiento-tabla" style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+                        <thead>
+                            <tr>
+                                <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid #ddd' }}>Producto</th>
+                                <th style={{ padding: '10px', textAlign: 'center', borderBottom: '2px solid #ddd', width: '100px' }}>Cantidad</th>
+                                <th style={{ padding: '10px', textAlign: 'right', borderBottom: '2px solid #ddd', width: '150px' }}>SubTotal</th>
+                                <th style={{ padding: '10px', textAlign: 'center', borderBottom: '2px solid #ddd', width: '100px' }}>Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {subVentas.map((subVenta, index) => (
+                                <tr key={index}>
+                                    <td style={{ padding: '8px 0' }}>
+                                        <select
+                                            name="producto"
+                                            value={subVenta.producto}
+                                            onChange={(e) => handleSubVentaChange(index, e)}
+                                            required
+                                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }}
+                                        >
+                                            <option value="">Seleccione un producto</option>
+                                            {productos.filter((producto) => producto.activo !== false).map((producto) => (
+                                                <option key={producto.id} value={producto.id}>{producto.nombre}</option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                    <td style={{ padding: '8px 10px', textAlign: 'center' }}>
+                                        <input
+                                            type="number"
+                                            name="cantidad"
+                                            value={subVenta.cantidad}
+                                            onChange={(e) => handleSubVentaChange(index, e)}
+                                            min="1"
+                                            required
+                                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px', textAlign: 'center' }}
+                                        />
+                                    </td>
+                                    <td style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 'bold', fontSize: '1.1rem' }}>
+                                        ${subVenta.subtotal.toFixed(2)}
+                                    </td>
+                                    <td style={{ padding: '8px 0', textAlign: 'center' }}>
+                                        <button 
+                                            type="button" 
+                                            className="crear-asiento-boton eliminar" 
+                                            onClick={() => handleRemoveSubVenta(index)}
+                                            style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
 
-                <div style={{ marginTop: '15px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <label htmlFor="observaciones" style={{ fontSize: '0.9rem', marginBottom: '5px', color: '#555' }}>
+                {/* Observaciones ocupando el ancho total */}
+                <div style={{ marginBottom: '20px' }}>
+                    <label htmlFor="observaciones" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
                         Observaciones (opcional)
                     </label>
                     <textarea 
@@ -319,29 +323,37 @@ const RegistrarVenta = () => {
                         id="observaciones"
                         value={venta.observaciones}
                         onChange={handleChange}
-                        placeholder="Escriba aquí..."
-                        className="crear-asiento-descripcion"
+                        placeholder="Detalles adicionales de la venta..."
                         rows="2"
-                        style={{ width: '50%', minWidth: '250px', resize: 'vertical' }}
+                        style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px', resize: 'vertical' }}
                     ></textarea>
                 </div>
 
-                <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1.2rem', margin: '15px 0' }}>
-                    Total Venta: ${totalVenta}
+                {/* Total Venta alineado a la derecha como en facturas */}
+                <div style={{ textAlign: 'right', fontWeight: 'bold', fontSize: '1.4rem', margin: '20px 0', color: '#2c3e50', paddingRight: '15px' }}>
+                    Total Venta: ${totalVenta.toFixed(2)}
                 </div>
 
-                <div className="boton-container">
-                    <button className="crear-asiento-boton" type="button" onClick={handleAddSubVenta}>
-                        Agregar SubVenta
+                {/* Botones alineados y separados */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '15px', marginTop: '20px' }}>
+                    <button 
+                        type="button" 
+                        onClick={handleAddSubVenta}
+                        style={{ flex: 1, padding: '12px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem' }}
+                    >
+                        + Agregar Producto
                     </button>
-                    <button className="crear-asiento-boton" type="submit">
-                        Registrar Venta
+                    <button 
+                        type="submit"
+                        style={{ flex: 1, padding: '12px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem' }}
+                    >
+                        ✔ Confirmar y Registrar Venta
                     </button>
                 </div>
             </form>
 
-            {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
-            {mensajeExito && <p className="mensaje-exito">{mensajeExito}</p>}
+            {mensajeError && <p className="mensaje-error" style={{ color: '#dc3545', textAlign: 'center', marginTop: '15px', fontWeight: 'bold' }}>{mensajeError}</p>}
+            {mensajeExito && <p className="mensaje-exito" style={{ color: '#28a745', textAlign: 'center', marginTop: '15px', fontWeight: 'bold' }}>{mensajeExito}</p>}
         </div>
     );
 };

@@ -5,13 +5,14 @@ const CrearProducto = () => {
     const [token, setToken] = useState('');
     const navigate = useNavigate();
     
-    // 1. Agregamos costoPromedio al estado inicial
+    // 1. Agregamos metodoPago al estado inicial (Por defecto EFECTIVO)
     const [producto, setProducto] = useState({
         nombre: '',
         descripcion: '',
         precio: '',
         costoPromedio: '', 
-        stock: ''
+        stock: '',
+        metodoPago: 'EFECTIVO' 
     });
 
     const [mensaje, setMensaje] = useState('');
@@ -48,9 +49,8 @@ const CrearProducto = () => {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    ...producto,
+                    ...producto, // Esto ya incluye el metodoPago
                     precio: parseFloat(producto.precio),
-                    // 2. Parseamos el costo para que el backend lo reciba como número (BigDecimal)
                     costoPromedio: parseFloat(producto.costoPromedio),
                     stock: parseInt(producto.stock)
                 }),
@@ -59,8 +59,15 @@ const CrearProducto = () => {
             if (response.ok) {
                 const data = await response.json();
                 setMensaje(`Producto "${data.nombre}" creado con éxito.`);
-                // 3. Limpiamos también el costoPromedio al finalizar
-                setProducto({ nombre: '', descripcion: '', precio: '', costoPromedio: '', stock: '' });
+                // 3. Limpiamos todos los campos y volvemos metodoPago a su valor por defecto
+                setProducto({ 
+                    nombre: '', 
+                    descripcion: '', 
+                    precio: '', 
+                    costoPromedio: '', 
+                    stock: '',
+                    metodoPago: 'EFECTIVO'
+                });
             } else {
                 const errorMsg = await response.text();
                 setError(true);
@@ -87,8 +94,7 @@ const CrearProducto = () => {
                     <textarea name="descripcion" value={producto.descripcion} onChange={handleChange} style={{ width: '100%', padding: '8px', boxSizing: 'border-box', minHeight: '60px' }} />
                 </div>
 
-                {/* 4. Adaptamos el contenedor flex para acomodar 3 columnas */}
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
                     <div style={{ flex: 1 }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Precio Venta:</label>
                         <input type="number" step="0.01" name="precio" value={producto.precio} onChange={handleChange} required style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }} />
@@ -103,6 +109,22 @@ const CrearProducto = () => {
                         <label style={{ display: 'block', marginBottom: '5px' }}>Stock Inicial:</label>
                         <input type="number" name="stock" value={producto.stock} onChange={handleChange} required style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }} />
                     </div>
+                </div>
+
+                {/* 4. Nuevo bloque para el Método de Pago de la compra inicial */}
+                <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px' }}>Método de Pago (Compra Inicial):</label>
+                    <select 
+                        name="metodoPago" 
+                        value={producto.metodoPago} 
+                        onChange={handleChange} 
+                        required 
+                        style={{ width: '100%', padding: '8px', boxSizing: 'border-box', backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px' }}
+                    >
+                        <option value="EFECTIVO">Efectivo</option>
+                        <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+                        <option value="CREDITO">Credito</option>
+                    </select>
                 </div>
 
                 <button type="submit" style={{ width: '100%', padding: '12px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>

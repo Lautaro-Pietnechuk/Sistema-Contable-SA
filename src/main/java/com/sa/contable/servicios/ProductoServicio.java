@@ -5,24 +5,33 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sa.contable.dto.AsientoDTO;
+import com.sa.contable.dto.CuentaAsientoDTO;
 import com.sa.contable.dto.ProductoDTO;
 import com.sa.contable.entidades.Producto;
 import com.sa.contable.repositorios.ProductoRepositorio;
 
 import jakarta.transaction.Transactional;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 public class ProductoServicio {
 
     @Autowired
     private ProductoRepositorio productoRepositorio;
+
+    @Autowired
+    private AsientoServicio asientoServicio;
+
+    private static final Long cuentaDebe = 131L; // Mercaderías
+    private static final Long cuentaHaberCredito = 211L; //  Proveedores - Crédito
+    private static final Long cuentaHaberEfectivo = 111L; //  Caja - Efectivo
+    private static final Long cuentaHaberDebito = 113L; //  Banco c/c - Débito
+
 
     private static final Logger logger = LoggerFactory.getLogger(ProductoServicio.class);
 
@@ -54,15 +63,50 @@ public class ProductoServicio {
                 .collect(Collectors.toList());
     }
 
-    public ProductoDTO crearProducto(ProductoDTO productoDTO) {
-
+    @Transactional
+    public ProductoDTO crearProducto(ProductoDTO productoDTO, Long usuarioId, Long id, BigDecimal costoTotalCompra) {
         Producto producto = convertirAEntidad(productoDTO);
         producto.setActivo(true);
+
+
+ // Crear Asiento Contable
+        AsientoDTO asientoDTO = new AsientoDTO();
+        asientoDTO.setFecha(java.time.LocalDate.now());
+        asientoDTO.setDescripcion("Compra de productos: " + producto.getNombre());
+        asientoDTO.setNombreUsuario("UsuarioID: " + usuarioId); 
+            
+        CuentaAsientoDTO movimientoDebe = new CuentaAsientoDTO();
+        movimientoDebe.setCuentaCodigo(cuentaDebe);
+        movimientoDebe.setDebe(costoTotalCompra);
+        movimientoDebe.setHaber(BigDecimal.valueOf(0.0));
+            
+        CuentaAsientoDTO movimientoHaber = new CuentaAsientoDTO();
+        switch (productoDTO.getTipoDePago()) {
+            case "EFECTIVO":
+                movimientoHaber.setCuentaCodigo(cuentaHaberEfectivo);
+                break;
+            case "DEBITO":
+                movimientoHaber.setCuentaCodigo(cuentaHaberDebito);
+                break;
+            case "CREDITO":
+                movimientoHaber.setCuentaCodigo(cuentaHaberCredito);
+                break;
+            default:
+                throw new RuntimeException("Tipo de pago no válido. Debe ser: EFECTIVO, DEBITO o CREDITO");
+        }
+        movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
+        movimientoHaber.setHaber(costoTotalCompra);
+
+        asientoDTO.setMovimientos(List.of(movimientoDebe, movimientoHaber));
+        asientoServicio.crearAsiento(asientoDTO, usuarioId);
+
+        
         Producto productoGuardado = productoRepositorio.save(producto);
         return convertirADTO(productoGuardado);
     }
 
-    public ProductoDTO actualizarProducto(Long id, ProductoDTO productoDTO, BigDecimal costoTotalCompra     ) {
+    @Transactional
+    public ProductoDTO actualizarProducto(Long id, ProductoDTO productoDTO, BigDecimal costoTotalCompra, Long usuarioId) {
         Producto productoExistente = productoRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
 
@@ -82,6 +126,36 @@ public class ProductoServicio {
         if (productoDTO.getActivo() != null) {
             productoExistente.setActivo(productoDTO.getActivo());
         }
+
+        AsientoDTO asientoDTO = new AsientoDTO();
+        asientoDTO.setFecha(java.time.LocalDate.now());
+        asientoDTO.setDescripcion("Compra de productos: " + productoExistente.getNombre());
+        asientoDTO.setNombreUsuario("UsuarioID: " + usuarioId); 
+            
+        CuentaAsientoDTO movimientoDebe = new CuentaAsientoDTO();
+        movimientoDebe.setCuentaCodigo(cuentaDebe);
+        movimientoDebe.setDebe(costoTotalCompra);
+        movimientoDebe.setHaber(BigDecimal.valueOf(0.0));
+            
+        CuentaAsientoDTO movimientoHaber = new CuentaAsientoDTO();
+        switch (productoDTO.getTipoDePago()) {
+            case "EFECTIVO":
+                movimientoHaber.setCuentaCodigo(cuentaHaberEfectivo);
+                break;
+            case "DEBITO":
+                movimientoHaber.setCuentaCodigo(cuentaHaberDebito);
+                break;
+            case "CREDITO":
+                movimientoHaber.setCuentaCodigo(cuentaHaberCredito);
+                break;
+            default:
+                throw new RuntimeException("Tipo de pago no válido. Debe ser: EFECTIVO, DEBITO o CREDITO");
+        }
+        movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
+        movimientoHaber.setHaber(costoTotalCompra);
+
+        asientoDTO.setMovimientos(List.of(movimientoDebe, movimientoHaber));
+        asientoServicio.crearAsiento(asientoDTO, usuarioId);
 
         Producto productoActualizado = productoRepositorio.save(productoExistente);
         return convertirADTO(productoActualizado);

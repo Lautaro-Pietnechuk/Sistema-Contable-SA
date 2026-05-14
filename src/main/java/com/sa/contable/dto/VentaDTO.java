@@ -16,6 +16,7 @@ public class VentaDTO {
     private Double total;
     private String observaciones;
     private Boolean anulada = false; // Nuevo campo para indicar si la venta está anulada
+    private String tipoDePago; // Puede recibir: "EFECTIVO", "DEBITO" o "CREDITO"
 
     public VentaDTO() {
     }
@@ -116,5 +117,17 @@ public class VentaDTO {
 
     public void setAnulada(Boolean anulada) {
         this.anulada = anulada;
+    }
+
+    public String getTipoDePago() {
+        return tipoDePago;
+    }
+
+    public void setTipoDePago(String tipoDePago) {
+        tipoDePago = tipoDePago.toUpperCase();
+        if (tipoDePago != null && !tipoDePago.matches("EFECTIVO|DEBITO|CREDITO")) {
+            throw new IllegalArgumentException("Tipo de pago inválido. Debe ser 'EFECTIVO', 'DEBITO' o 'CREDITO'.");
+    }
+        this.tipoDePago = tipoDePago;
     }
 }
