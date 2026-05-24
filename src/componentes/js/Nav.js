@@ -19,6 +19,9 @@ import RegistrarCliente from './RegistrarCliente';
 import ListarClientes from './ListarClientes';
 import CrearProducto from './CrearProducto';    
 import ListarProductos from './ListarProductos';
+// NUEVOS IMPORTS: Ajustá las rutas de las carpetas si es necesario
+import FormularioCobro from './FormularioCobro'; 
+import ResumenCuentaCorriente from './ResumenCuentaCorriente';
 import '../css/Nav.css';
 
 // Componente auxiliar para los menús desplegables (Acordeón)
@@ -54,6 +57,7 @@ const Nav = () => {
     const [openVentas, setOpenVentas] = useState(false);
     const [openClientes, setOpenClientes] = useState(false);
     const [openProductos, setOpenProductos] = useState(false);
+    const [openCobranzas, setOpenCobranzas] = useState(false); // NUEVO ESTADO
     const [openConfig, setOpenConfig] = useState(false);
 
     const isAdmin = role && role[0] === 'ROLE_ADMINISTRADOR';
@@ -99,6 +103,12 @@ const Nav = () => {
                             <NavLink to="/ventas">Listar Ventas</NavLink>
                         </NavSection>
 
+                        {/* Sección Cobranzas (NUEVA SECCIÓN) */}
+                        <NavSection title="Cobranzas" isOpen={openCobranzas} toggle={() => setOpenCobranzas(!openCobranzas)}>
+                            <NavLink to="/registrar-cobro">Registrar Cobro</NavLink>
+                            <NavLink to="/cuenta-corriente">Cuenta Corriente</NavLink>
+                        </NavSection>
+
                         {/* Sección Clientes */}
                         <NavSection title="Clientes" isOpen={openClientes} toggle={() => setOpenClientes(!openClientes)}>
                             <NavLink to="/registrar-cliente">Registrar Cliente</NavLink>
@@ -111,7 +121,7 @@ const Nav = () => {
                             <NavLink to="/productos">Listar Productos</NavLink>
                         </NavSection>
 
-                        {/* Sección Configuración (Solo visible si hay opciones para el usuario) */}
+                        {/* Sección Configuración */}
                         {isAdmin && (
                             <NavSection title="Configuración" isOpen={openConfig} toggle={() => setOpenConfig(!openConfig)}>
                                 <NavLink to="/usuarios/eliminar">Eliminar Usuario</NavLink>
@@ -140,6 +150,27 @@ const Nav = () => {
                     <Route path="/usuarios/eliminar" element={<PrivateRoute><EliminarUsuario /></PrivateRoute>} />
                     <Route path="/registrar-venta" element={<PrivateRoute><RegistrarVenta /></PrivateRoute>} />
                     <Route path="/ventas" element={<PrivateRoute><ListarVentas show={true} /></PrivateRoute>} />
+                    
+                    {/* NUEVAS RUTAS PROTEGIDAS */}
+                    <Route 
+                        path="/registrar-cobro" 
+                        element={
+                            <PrivateRoute>
+                                {/* Pasa una lista de clientes mock o traída de tu contexto general si es necesario */}
+                                <FormularioCobro clientes={[]} onCobroExitoso={() => console.log("Cobro actualizado")} />
+                            </PrivateRoute>
+                        } 
+                    />
+                    <Route 
+                        path="/cuenta-corriente" 
+                        element={
+                            <PrivateRoute>
+                                {/* Podés manejar el clienteId de forma dinámica mediante un selector externo o contexto */}
+                                <ResumenCuentaCorriente clienteId={null} />
+                            </PrivateRoute>
+                        } 
+                    />
+
                     <Route path="/registrar-cliente" element={<PrivateRoute><RegistrarCliente /></PrivateRoute>} />
                     <Route
                         path="/clientes"

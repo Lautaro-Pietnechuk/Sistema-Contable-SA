@@ -42,9 +42,15 @@ public class Venta {
 
     @Column(length = 255)
     private String observaciones;
+    @Column(nullable = false, length = 20)
+    private String tipoDePago = "EFECTIVO";
 
-    private Boolean anulada = false;
+    // NUEVO CAMPO: Inicializado por defecto en PENDIENTE
+    @Column(nullable = false, length = 20)
+    private String estado = "PENDIENTE";
 
+    @Column(nullable = false)
+    private Double saldoPendiente = 0.0; 
 
     public Venta() {
         this.fecha = LocalDateTime.now();
@@ -55,11 +61,10 @@ public class Venta {
         this.fecha = LocalDateTime.now();
         this.cliente = cliente;
         this.total = total;
-
+        this.estado = "PENDIENTE"; // Se asegura de nacer pendiente
     }
 
     // Getters y Setters
-
     public Long getId() {
         return id;
     }
@@ -100,7 +105,6 @@ public class Venta {
         this.detalles = detalles;
     }
 
-
     public Double getTotal() {
         return total;
     }
@@ -117,9 +121,38 @@ public class Venta {
         this.observaciones = observaciones;
     }
 
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        if (estado.equals("PENDIENTE") || estado.equals("PAGADA") || estado.equals("ANULADA")) {
+            this.estado = estado;
+            if (estado.equals("PAGADA")) {
+                this.saldoPendiente = 0.0; // Si se paga, el saldo pendiente se vuelve 0
+            }
+        } else {
+            throw new IllegalArgumentException("Estado inválido: " + estado);
+        }
+    }
+
+    public String getTipoDePago() {
+        return tipoDePago;
+    }
+
+    public void setTipoDePago(String tipoDePago) {
+        if (tipoDePago == null || tipoDePago.trim().isEmpty()) {
+            throw new IllegalArgumentException("El tipo de pago no puede ser nulo o vacío");
+        }
+
+        String limpio = tipoDePago.trim().toUpperCase();
+        if (!limpio.matches("EFECTIVO|DEBITO|CUENTA_CORRIENTE")) {
+            throw new IllegalArgumentException("Tipo de pago inválido. Debe ser 'EFECTIVO', 'DEBITO' o 'CUENTA_CORRIENTE'.");
+        }
+        this.tipoDePago = limpio;
+    }
 
     // Métodos auxiliares
-
     public void agregarDetalle(DetalleVenta detalle) {
         detalles.add(detalle);
         detalle.setVenta(this);
@@ -130,11 +163,19 @@ public class Venta {
         detalle.setVenta(null);
     }
 
-    public Boolean getAnulada() {
-        return anulada;
+    public Double getSaldoPendiente() {
+        return saldoPendiente;
     }
 
-    public void setAnulada(Boolean anulada) {
-        this.anulada = anulada;
+    public void setSaldoPendiente(Double saldoPendiente) {
+        if (saldoPendiente < 0) {
+            throw new IllegalArgumentException("El saldo pendiente no puede ser negativo.");
+        }
+        this.saldoPendiente = saldoPendiente;
+        if (saldoPendiente == 0) {
+            this.estado = "PAGADA"; // Si el saldo pendiente es 0 o negativo, la venta se considera pagada
+        } else {
+            this.estado = "PENDIENTE"; // Si hay saldo pendiente, la venta sigue siendo pendiente
+        }
     }
 }

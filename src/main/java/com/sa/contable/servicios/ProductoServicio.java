@@ -28,7 +28,7 @@ public class ProductoServicio {
     private AsientoServicio asientoServicio;
 
     private static final Long cuentaDebe = 131L; // Mercaderías
-    private static final Long cuentaHaberCredito = 211L; //  Proveedores - Crédito
+    private static final Long cuentaHaberCuentaCorriente = 211L; //  Proveedores - Crédito
     private static final Long cuentaHaberEfectivo = 111L; //  Caja - Efectivo
     private static final Long cuentaHaberDebito = 113L; //  Banco c/c - Débito
 
@@ -88,11 +88,11 @@ public class ProductoServicio {
             case "DEBITO":
                 movimientoHaber.setCuentaCodigo(cuentaHaberDebito);
                 break;
-            case "CREDITO":
-                movimientoHaber.setCuentaCodigo(cuentaHaberCredito);
+            case "CUENTA_CORRIENTE":
+                movimientoHaber.setCuentaCodigo(cuentaHaberCuentaCorriente);
                 break;
             default:
-                throw new RuntimeException("Tipo de pago no válido. Debe ser: EFECTIVO, DEBITO o CREDITO");
+                throw new RuntimeException("Tipo de pago no válido. Debe ser: EFECTIVO, DEBITO o CUENTA_CORRIENTE");
         }
         movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
         movimientoHaber.setHaber(costoTotalCompra);
@@ -145,11 +145,11 @@ public class ProductoServicio {
             case "DEBITO":
                 movimientoHaber.setCuentaCodigo(cuentaHaberDebito);
                 break;
-            case "CREDITO":
-                movimientoHaber.setCuentaCodigo(cuentaHaberCredito);
+            case "CUENTA_CORRIENTE":
+                movimientoHaber.setCuentaCodigo(cuentaHaberCuentaCorriente);
                 break;
             default:
-                throw new RuntimeException("Tipo de pago no válido. Debe ser: EFECTIVO, DEBITO o CREDITO");
+                throw new RuntimeException("Tipo de pago no válido. Debe ser: EFECTIVO, DEBITO o CUENTA_CORRIENTE");
         }
         movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
         movimientoHaber.setHaber(costoTotalCompra);

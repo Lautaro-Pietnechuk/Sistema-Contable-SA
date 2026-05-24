@@ -15,15 +15,16 @@ public class VentaDTO {
     private Double iva;
     private Double total;
     private String observaciones;
-    private Boolean anulada = false; // Nuevo campo para indicar si la venta está anulada
-    private String tipoDePago; // Puede recibir: "EFECTIVO", "DEBITO" o "CREDITO"
+    private String tipoDePago; // "EFECTIVO", "DEBITO" o "CUENTA_CORRIENTE"
+    private String estado = "PENDIENTE"; 
 
     public VentaDTO() {
     }
 
+    // CORREGIDO: Ahora el constructor recibe y asigna el tipoDePago
     public VentaDTO(Long id, String numeroComprobante, LocalDateTime fecha, Long clienteId,
                     String clienteNombre, List<DetalleVentaDTO> detalles,
-                    Double iva, Double total, String observaciones, Boolean anulada) {
+                    Double iva, Double total, String observaciones, String tipoDePago, Boolean anulada) {
         this.id = id;
         this.numeroComprobante = numeroComprobante;
         this.fecha = fecha;
@@ -33,7 +34,8 @@ public class VentaDTO {
         this.iva = iva;
         this.total = total;
         this.observaciones = observaciones;
-        this.anulada = anulada;
+        this.tipoDePago = tipoDePago != null ? tipoDePago.toUpperCase() : null;
+        this.estado = anulada ? "ANULADA" : "PENDIENTE";
     }
 
     // Getters y Setters
@@ -86,7 +88,6 @@ public class VentaDTO {
         this.detalles = detalles;
     }
 
-
     public Double getIva() {
         return iva;
     }
@@ -111,23 +112,33 @@ public class VentaDTO {
         this.observaciones = observaciones;
     }
 
-    public Boolean getAnulada() {
-        return anulada;
-    }
-
-    public void setAnulada(Boolean anulada) {
-        this.anulada = anulada;
-    }
-
     public String getTipoDePago() {
         return tipoDePago;
     }
 
+    // CORREGIDO: Validación blindada contra valores nulos y espacios
     public void setTipoDePago(String tipoDePago) {
-        tipoDePago = tipoDePago.toUpperCase();
-        if (tipoDePago != null && !tipoDePago.matches("EFECTIVO|DEBITO|CREDITO")) {
-            throw new IllegalArgumentException("Tipo de pago inválido. Debe ser 'EFECTIVO', 'DEBITO' o 'CREDITO'.");
+        if (tipoDePago == null || tipoDePago.trim().isEmpty()) {
+            this.tipoDePago = null;
+            return;
+        }
+        
+        String limpio = tipoDePago.trim().toUpperCase();
+        if (!limpio.matches("EFECTIVO|DEBITO|CUENTA_CORRIENTE")) {
+            throw new IllegalArgumentException("Tipo de pago inválido. Debe ser 'EFECTIVO', 'DEBITO' o 'CUENTA_CORRIENTE'.");
+        }
+        this.tipoDePago = limpio;
     }
-        this.tipoDePago = tipoDePago;
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        if (estado.equals("PENDIENTE") || estado.equals("PAGADA") || estado.equals("ANULADA")) {
+            this.estado = estado;
+        } else {
+            throw new IllegalArgumentException("Estado inválido: " + estado);
+        }
     }
 }

@@ -15,13 +15,20 @@ function DetallesVenta({ show, handleClose, venta }) {
 
     useEffect(() => {
         const fetchDetalleVenta = async () => {
-            if (!show || !venta?.id) {
-                return;
-            }
+            if (!show || !venta?.id) return;
 
             setError('');
             try {
                 const response = await axios.get(`http://localhost:8080/api/ventas/${venta.id}`);
+                
+                // 🚨 SUPER LOGS EN EL NAVEGADOR (Presioná F12)
+                console.group("%c🔎 DEBUEANDO TIPO DE PAGO", "color: #007bff; font-weight: bold; font-size: 14px;");
+                console.log("ID de Venta analizada:", venta.id);
+                console.log("¿Viene como 'tipoDePago' (CamelCase)?:", response.data.tipoDePago);
+                console.log("¿Viene como 'tipo_de_pago' (SnakeCase)?:", response.data.tipo_de_pago);
+                console.log("Objeto JSON entero que mandó Java:", response.data);
+                console.groupEnd();
+                
                 setDetalleVenta(response.data);
             } catch (fetchError) {
                 console.error('Error al cargar los detalles de la venta:', fetchError);
@@ -38,52 +45,45 @@ function DetallesVenta({ show, handleClose, venta }) {
     };
 
     const formatFecha = (fechaIso) => {
-        if (!fechaIso) {
-            return '-';
-        }
-
+        if (!fechaIso) return '-';
         const fecha = new Date(fechaIso);
-        if (Number.isNaN(fecha.getTime())) {
-            return '-';
-        }
-
+        if (Number.isNaN(fecha.getTime())) return '-';
         return fecha.toLocaleString('es-AR');
     };
 
-    if (!show || !venta) {
-        return null;
-    }
+    const formatTipoPago = (tipo) => {
+        if (!tipo) return '❌ VIENE VACÍO O NULO DESDE EL BACKEND';
+        const t = tipo.toLowerCase().trim();
+        if (t === 'efectivo') return '💸 Efectivo';
+        if (t === 'debito') return '💳 Débito';
+        if (t === 'cuenta_corriente') return '📓 Cuenta Corriente';
+        return `❓ Tipo desconocido: ${tipo}`;
+    };
+
+    if (!show || !venta) return null;
 
     return (
         <div
             style={{
                 position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
+                top: 0, left: 0, width: '100%', height: '100%',
                 backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
+                display: 'flex', justifyContent: 'center', alignItems: 'center',
                 zIndex: 1300
             }}
             onClick={handleClose}
         >
             <div
                 style={{
-                    width: '90%',
-                    maxWidth: '760px',
-                    backgroundColor: '#fff',
-                    borderRadius: '10px',
-                    padding: '20px',
+                    width: '90%', maxWidth: '760px', backgroundColor: '#fff',
+                    borderRadius: '10px', padding: '20px',
                     boxShadow: '0 12px 30px rgba(0, 0, 0, 0.2)',
-                    maxHeight: '90vh',
-                    overflowY: 'auto'
+                    maxHeight: '90vh', overflowY: 'auto'
                 }}
                 onClick={(event) => event.stopPropagation()}
             >
-                <h2 style={{ marginTop: 0 }}>Detalles de la Venta</h2>
+                {/* MANTIENE AZUL EL TÍTULO */}
+                <h2 style={{ marginTop: 0, color: '#4a90e2' }}>Detalles de la Venta</h2>
 
                 {error && <p style={{ color: '#842029' }}>{error}</p>}
 
@@ -92,27 +92,34 @@ function DetallesVenta({ show, handleClose, venta }) {
                         <div style={filaInfo}><strong>Comprobante:</strong> {detalleVenta.numeroComprobante || '-'}</div>
                         <div style={filaInfo}><strong>Fecha:</strong> {formatFecha(detalleVenta.fecha)}</div>
                         <div style={filaInfo}><strong>Cliente:</strong> {detalleVenta.clienteNombre || '-'}</div>
+                        
+                        {/* Muestra el resultado del formateo o el error explícito */}
+                        <div style={filaInfo}>
+                            <strong>Método de Pago:</strong> {formatTipoPago(detalleVenta.tipoDePago || detalleVenta.tipo_de_pago)}
+                        </div>
+                        
                         <div style={filaInfo}><strong>Total:</strong> {formatMoneda(detalleVenta.total)}</div>
                         <div style={filaInfo}><strong>Observaciones:</strong> {detalleVenta.observaciones || '-'}</div>
 
-                        <h3 style={{ marginTop: '16px' }}>Items</h3>
+                        <h3 style={{ marginTop: '20px', color: '#333' }}>Items Facturados</h3>
                         <div style={{ overflowX: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
-                                    <tr>
-                                        <th style={{ border: '1px solid #343a40', padding: '8px' }}>Producto</th>
-                                        <th style={{ border: '1px solid #343a40', padding: '8px' }}>Cantidad</th>
-                                        <th style={{ border: '1px solid #343a40', padding: '8px' }}>Precio Unitario</th>
-                                        <th style={{ border: '1px solid #343a40', padding: '8px' }}>Subtotal</th>
+                                    {/* MANTIENE AZUL LA CABECERA */}
+                                    <tr style={{ backgroundColor: '#4a90e2' }}>
+                                        <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: 'white' }}>Producto</th>
+                                        <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: 'white' }}>Cantidad</th>
+                                        <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: 'white' }}>Precio Unitario</th>
+                                        <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: 'white' }}>Subtotal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {(detalleVenta.detalles || []).map((detalle) => (
-                                        <tr key={detalle.id || `${detalle.productoId}-${detalle.productoNombre}`}>
-                                            <td style={{ border: '1px solid #343a40', padding: '8px' }}>{detalle.productoNombre || '-'}</td>
-                                            <td style={{ border: '1px solid #343a40', padding: '8px' }}>{detalle.cantidad ?? 0}</td>
-                                            <td style={{ border: '1px solid #343a40', padding: '8px' }}>{formatMoneda(detalle.precioUnitario)}</td>
-                                            <td style={{ border: '1px solid #343a40', padding: '8px' }}>{formatMoneda(detalle.subtotal)}</td>
+                                        <tr key={detalle.id || `${detalle.productoId}-${detalle.productoNombre}`} style={{ borderBottom: '1px solid #ddd' }}>
+                                            <td style={{ padding: '10px', border: '1px solid #ddd' }}>{detalle.productoNombre || '-'}</td>
+                                            <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'center' }}>{detalle.cantidad ?? 0}</td>
+                                            <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'right' }}>{formatMoneda(detalle.precioUnitario)}</td>
+                                            <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'right' }}>{formatMoneda(detalle.subtotal)}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -121,8 +128,19 @@ function DetallesVenta({ show, handleClose, venta }) {
                     </>
                 )}
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
-                    <button type="button" onClick={handleClose}>Cerrar</button>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '25px' }}>
+                    {/* MANTIENE AZUL EL BOTÓN */}
+                    <button 
+                        type="button" 
+                        onClick={handleClose}
+                        style={{
+                            backgroundColor: '#007bff', color: 'white', border: 'none',
+                            padding: '10px 24px', borderRadius: '4px', cursor: 'pointer',
+                            fontWeight: 'bold', fontSize: '15px'
+                        }}
+                    >
+                        Cerrar Detalles
+                    </button>
                 </div>
             </div>
         </div>

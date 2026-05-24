@@ -248,8 +248,8 @@ const RegistrarVenta = () => {
                             style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }}
                         >
                             <option value="EFECTIVO">Efectivo</option>
-                            <option value="TRANSFERENCIA">Transferencia</option>
-                            <option value="CUENTA_CORRIENTE">Credito</option>
+                            <option value="DEBITO">Transferencia / Debito</option>
+                            <option value="CUENTA_CORRIENTE">Sumar a Cuenta Corriente</option>
                         </select>
                     </div>
                 </div>

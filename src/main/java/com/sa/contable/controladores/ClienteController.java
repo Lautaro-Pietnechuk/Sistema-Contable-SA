@@ -1,4 +1,5 @@
 package com.sa.contable.controladores;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sa.contable.dto.ClienteDTO;
+import com.sa.contable.dto.MovimientoCuentaDTO;
 import com.sa.contable.entidades.Cliente;
 import com.sa.contable.servicios.ClienteService;
 
@@ -46,5 +49,13 @@ public class ClienteController {
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Long id) {
         clienteService.eliminar(id);
+    }
+
+    @GetMapping("/{id}/deudas")
+    public List<MovimientoCuentaDTO> listarDeudasPorCliente(
+            @PathVariable Long id,
+            @RequestParam(required = false) String desde,
+            @RequestParam(required = false) String hasta) {
+        return clienteService.obtenerDeudasPorCliente(id, desde, hasta);
     }
 }

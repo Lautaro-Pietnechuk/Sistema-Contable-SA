@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../css/LibroMayor.css';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const LibroMayor = () => {
     const [codigoCuenta, setCodigoCuenta] = useState('');
@@ -102,23 +102,76 @@ const LibroMayor = () => {
     };
 
     const generarPDF = () => {
-        const doc = new jsPDF();
-        
-        const rows = libroMayor.map((movimiento) => [
-            new Date(movimiento.fecha).toLocaleDateString(),
-            movimiento.descripcion,
-            movimiento.debe?.toFixed(2) || '0.00',
-            movimiento.haber?.toFixed(2) || '0.00',
-            movimiento.saldo?.toFixed(2) || '0.00',
-        ]);
-
-        doc.autoTable({
-            head: [['Fecha', 'Descripción', 'Debe', 'Haber', 'Saldo']],
-            body: rows,
-        });
-
-        doc.text(`Saldo Final: ${saldoFinal.toFixed(2)}`, 14, doc.lastAutoTable.finalY + 10);
-        doc.save('libro_mayor.pdf');
+        try {
+            const doc = new jsPDF();
+            
+            // Obtener nombre de la cuenta
+            const cuenta = cuentas.find(c => c.codigo.toString() === codigoCuenta);
+            const nombreCuenta = cuenta ? cuenta.nombre : 'Cuenta Desconocida';
+            
+            // Crear encabezado del PDF
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(14);
+            doc.text('LIBRO MAYOR', 14, 15);
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.text(`Cuenta: ${nombreCuenta} (Código: ${codigoCuenta})`, 14, 25);
+            doc.text(`Período: ${fechaInicio} al ${fechaFin}`, 14, 32);
+            doc.text(`Saldo Final: ${saldoFinal.toFixed(2)}`, 14, 39);
+            
+            // Crear tabla
+            const rows = libroMayor.map((movimiento) => [
+                new Date(movimiento.fecha).toLocaleDateString(),
+                movimiento.descripcion || '',
+                movimiento.debe ? movimiento.debe.toFixed(2) : '0.00',
+                movimiento.haber ? movimiento.haber.toFixed(2) : '0.00',
+                movimiento.saldo ? movimiento.saldo.toFixed(2) : '0.00',
+            ]);
+            
+            autoTable(doc, {
+                head: [['Fecha', 'Descripción', 'Debe', 'Haber', 'Saldo']],
+                body: rows,
+                startY: 48,
+                margin: { top: 48 },
+                styles: {
+                    fontSize: 9,
+                    cellPadding: 3,
+                },
+                headStyles: {
+                    fillColor: [41, 128, 185],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                },
+                columnStyles: {
+                    0: { halign: 'center', cellWidth: 20 },
+                    1: { cellWidth: 'auto' },
+                    2: { halign: 'right', cellWidth: 25 },
+                    3: { halign: 'right', cellWidth: 25 },
+                    4: { halign: 'right', cellWidth: 25 },
+                },
+            });
+            
+            // Agregar pie de página
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.text(`Fecha de generación: ${new Date().toLocaleString()}`, 14, doc.internal.pageSize.getHeight() - 10);
+            
+            // Descargar PDF
+            const pdfBuffer = doc.output('arraybuffer');
+            const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `libro_mayor_${codigoCuenta}_${fechaInicio}_${fechaFin}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error al generar el PDF:', error);
+            alert('Error al generar el PDF: ' + error.message);
+        }
     };
 
     return (

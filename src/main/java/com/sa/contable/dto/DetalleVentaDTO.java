@@ -10,6 +10,7 @@ public class DetalleVentaDTO {
     private Integer cantidad;
     private Double precioUnitario;
     private Double subtotal;
+    private String tipoDePago; // "EFECTIVO", "DEBITO" o "CUENTA_CORRIENTE"
 
     public DetalleVentaDTO() {
     }
@@ -81,5 +82,13 @@ public class DetalleVentaDTO {
 
     public void setSubtotal(Double subtotal) {
         this.subtotal = subtotal;
+    }
+
+    public String getTipoDePago() {
+        return tipoDePago;
+    }
+
+    public void setTipoDePago(String tipoDePago) {
+        this.tipoDePago = tipoDePago;
     }
 }

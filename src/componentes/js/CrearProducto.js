@@ -123,7 +123,7 @@ const CrearProducto = () => {
                     >
                         <option value="EFECTIVO">Efectivo</option>
                         <option value="TRANSFERENCIA">Transferencia Bancaria</option>
-                        <option value="CREDITO">Credito</option>
+                        <option value="CUENTA_CORRIENTE">Cuenta Corriente</option>
                     </select>
                 </div>
 

@@ -36,30 +36,44 @@ public class VentaControlador {
     private HttpServletRequest request;
 
     private Long obtenerUsuarioIdDesdeToken() {
-    String authHeader = request.getHeader("Authorization");
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-        throw new RuntimeException("Token no enviado o formato inválido");
-    }
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Token no enviado o formato inválido");
+        }
 
-    String token = authHeader.substring(7);
-    String id = jwtUtil.obtenerIdDelToken(token);
-    return Long.parseLong(id);
+        String token = authHeader.substring(7);
+        String id = jwtUtil.obtenerIdDelToken(token);
+        return Long.parseLong(id);
     }
 
     @GetMapping
     public ResponseEntity<List<VentaDTO>> obtenerTodas() {
         List<VentaDTO> ventas = ventaServicio.obtenerTodas();
-        
+
         return ResponseEntity.ok(ventas);
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id) {
         try {
+            System.out.println("\n==================================================");
+            System.out.println("🚀 [LOG CONTROLADOR] - Solicitud para /api/ventas/" + id);
+
             VentaDTO venta = ventaServicio.obtenerPorId(id);
+
+            // Super logs de diagnóstico
+            System.out.println("📦 [LOG CONTROLADOR] - VentaDTO armado por el Servicio:");
+            System.out.println("   👉 ID Venta: " + venta.getId());
+            System.out.println("   👉 Comprobante: " + venta.getNumeroComprobante());
+            System.out.println("   👉 Cliente: " + venta.getClienteNombre());
+            System.out.println("   👉 TIPO DE PAGO DETECTADO: [" + venta.getTipoDePago() + "]"); // ⚡ LA CLAVE
+            System.out.println("   👉 Estado Actual: [" + venta.getEstado() + "]");
+            System.out.println("==================================================\n");
+
             return ResponseEntity.ok(venta);
         } catch (RuntimeException e) {
+            System.out.println("\n❌ [LOG CONTROLADOR] - Error. No se encontró la venta ID " + id + ". Motivo: " + e.getMessage());
+            System.out.println("==================================================\n");
             return ResponseEntity.notFound().build();
         }
     }
@@ -98,7 +112,5 @@ public class VentaControlador {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    
 
 }

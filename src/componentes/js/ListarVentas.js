@@ -1,6 +1,9 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import axios from '../../axiosConfig';
 import DetallesVenta from './DetallesVenta';
+import NotaDebito from './NotaDebito'; 
+import { jsPDF } from 'jspdf'; 
+import autoTable from 'jspdf-autotable'; 
 
 function ListarVentas({ show, handleClose }) {
   const [ventas, setVentas] = useState([]);
@@ -19,15 +22,16 @@ function ListarVentas({ show, handleClose }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Función robusta para evaluar si la venta está anulada (maneja booleanos, strings y números)
-  const esAnulada = (valor) => {
-    return valor === true || valor === 'true' || valor === 1 || valor === '1';
+  const [showNotaDebito, setShowNotaDebito] = useState(false);
+  const [ventaParaNotaDebito, setVentaParaNotaDebito] = useState(null);
+
+  const esAnulada = (estado) => {
+    return estado === "ANULADA";
   };
 
   const fetchVentas = useCallback(async () => {
     try {
       const response = await axios.get('/api/ventas');
-      console.log("ESTO ES LO QUE MANDA EL BACKEND:", response.data);
       const ventasData = Array.isArray(response.data) ? response.data : [];
       setVentas(ventasData);  
       setErrorMessage('');
@@ -68,6 +72,17 @@ function ListarVentas({ show, handleClose }) {
     setVentaSeleccionada(null);
   };
 
+  const handleShowNotaDebito = (venta) => {
+    setVentaParaNotaDebito(venta);
+    setShowNotaDebito(true);
+  };
+
+  const handleCloseNotaDebito = () => {
+    setShowNotaDebito(false);
+    setVentaParaNotaDebito(null);
+    fetchVentas(); 
+  };
+
   const confirmCancelVenta = (venta) => {
     setVentaToCancel(venta);
     setMotivoCancelacion('');
@@ -81,19 +96,11 @@ function ListarVentas({ show, handleClose }) {
   };
 
   const handleCancelVenta = async () => {
-    if (!ventaToCancel?.id) {
-      return;
-    }
+    if (!ventaToCancel?.id) return;
 
     const motivo = motivoCancelacion.trim();
     if (!motivo) {
       setErrorMessage('El motivo de cancelación es obligatorio.');
-      return;
-    }
-
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      setErrorMessage('No se pudo identificar al usuario para cancelar la venta.');
       return;
     }
 
@@ -105,42 +112,68 @@ function ListarVentas({ show, handleClose }) {
     };
 
     try {
-      // CORRECCIÓN: Se agregó el ?userId=${userId} que el controlador de Java necesita
       await axios.post(`/api/notas`, payload);
-      
       cerrarCancelacion();
       setShowSuccessMessage(true);
       setMensajeExito('Venta cancelada con éxito.');
       setErrorMessage('');
-      
       await fetchVentas();
       
       setTimeout(() => {
         setShowSuccessMessage(false);
       }, 3000);
-
     } catch (error) {
-      console.error('Error completo al cancelar la venta:', error);
-      
-      // CORRECCIÓN: Lectura inteligente del JSON de error de Spring Boot
+      console.error('Error al cancelar la venta:', error);
       let mensajeAmostrar = 'Error al cancelar la venta.';
-      
       if (error.response?.data) {
-        if (typeof error.response.data === 'string') {
-          mensajeAmostrar = error.response.data; // Si mandaste un String desde el backend
-        } else if (error.response.data.message) {
-          mensajeAmostrar = error.response.data.message; // Si Spring Boot mandó su JSON de error por defecto
-        } else {
-          mensajeAmostrar = `Error del servidor: ${error.response.status}`;
-        }
-      } else if (error.request) {
-        mensajeAmostrar = 'Error de red: No se pudo conectar con el servidor.';
+        mensajeAmostrar = typeof error.response.data === 'string' ? error.response.data : error.response.data.message || mensajeAmostrar;
+      }
+      setErrorMessage(mensajeAmostrar);
+    }
+  };
+
+  const generarPDFVenta = (ventaData) => {
+    try {
+      const doc = new jsPDF();
+      doc.setFont('helvetica', 'bold');
+      doc.text('FACTURA DE VENTA', 14, 20);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text(`Comprobante: ${ventaData.numeroComprobante || '-'}`, 14, 30);
+      doc.text(`Fecha: ${formatFecha(ventaData.fecha)}`, 14, 37);
+      doc.text(`Cliente: ${ventaData.cliente?.nombre || ventaData.clienteNombre || '-'}`, 14, 44);
+      doc.text(`Método de Pago: ${ventaData.tipoDePago || 'EFECTIVO'}`, 14, 51); 
+
+      const detalles = (ventaData.detalles || []).map(d => [
+        d.productoNombre || 'Producto',
+        d.cantidad || 0,
+        `$${Number(d.precioUnitario || d.subtotal / d.cantidad || 0).toFixed(2)}`,
+        `$${Number(d.subtotal || 0).toFixed(2)}`
+      ]);
+
+      autoTable(doc, {
+        head: [['Producto', 'Cantidad', 'Precio Unit.', 'Subtotal']],
+        body: detalles,
+        startY: 58,
+        margin: { left: 14, right: 14 },
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [41, 128, 185] }
+      });
+
+      const finalY = doc.lastAutoTable.finalY || 100;
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Total: $${Number(ventaData.total || 0).toFixed(2)}`, 14, finalY + 10);
+
+      if (ventaData.observaciones) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.text(`Observaciones: ${ventaData.observaciones}`, 14, finalY + 20);
       }
 
-      setErrorMessage(mensajeAmostrar);
-      
-      // Ocultar el mensaje de error después de 5 segundos para que no quede trabado en pantalla
-      setTimeout(() => setErrorMessage(''), 5000);
+      doc.save(`Factura_${ventaData.numeroComprobante || ventaData.id}.pdf`);
+    } catch (error) {
+      console.error('Error al generar el PDF:', error);
     }
   };
 
@@ -150,21 +183,14 @@ function ListarVentas({ show, handleClose }) {
   };
 
   const formatFecha = (fechaIso) => {
-    if (!fechaIso) {
-      return '-';
-    }
-
+    if (!fechaIso) return '-';
     const partes = fechaIso.split('T')[0].split('-');
     if (partes.length === 3) {
       const fechaLocal = new Date(partes[0], partes[1] - 1, partes[2]);
       return fechaLocal.toLocaleDateString('es-AR');
     }
-
     const fecha = new Date(fechaIso);
-    if (Number.isNaN(fecha.getTime())) {
-      return '-';
-    }
-
+    if (Number.isNaN(fecha.getTime())) return '-';
     return fecha.toLocaleDateString('es-AR');
   };
 
@@ -178,11 +204,9 @@ function ListarVentas({ show, handleClose }) {
       
       const cumpleFechaInicio = !inicio || (fechaVenta && fechaVenta >= inicio);
       const cumpleFechaFin = !fin || (fechaVenta && fechaVenta <= fin);
-
-      const cumpleCliente = !clienteSeleccionado || String(venta.clienteId) === String(clienteSeleccionado);
+      const cumpleCliente = !clienteSeleccionado || String(venta.cliente?.id || venta.clienteId) === String(clienteSeleccionado);
       
-      // CORRECCIÓN: Uso de la función esAnulada() para evitar bugs con strings "false"
-      const ventaEstaAnulada = esAnulada(venta.anulada);
+      const ventaEstaAnulada = esAnulada(venta.estado);
       const cumpleEstado =
         filtroEstado === 'todas'
         || (filtroEstado === 'canceladas' && ventaEstaAnulada)
@@ -192,7 +216,7 @@ function ListarVentas({ show, handleClose }) {
       const contieneTermino =
         !termino
         || (venta.numeroComprobante || '').toLowerCase().includes(termino)
-        || (venta.clienteNombre || '').toLowerCase().includes(termino)
+        || (venta.cliente?.nombre || venta.clienteNombre || '').toLowerCase().includes(termino)
         || (venta.observaciones || '').toLowerCase().includes(termino)
         || (venta.detalles || []).some((detalle) => (detalle.productoNombre || '').toLowerCase().includes(termino));
 
@@ -200,12 +224,54 @@ function ListarVentas({ show, handleClose }) {
     });
   }, [ventas, fechaInicio, fechaFin, clienteSeleccionado, filtroEstado, searchTerm]);
 
-  if (show === false) {
-    return null;
-  }
+  if (show === false) return null;
+
+  const obtenerColorEstado = (estado) => {
+    if (estado === "ANULADA") return '#dc3545'; 
+    if (estado === "PAGADA") return '#198754';  
+    return '#ffc107'; 
+  };
+
+  // FORZAMOS EL ESTILO AZUL INSTITUCIONAL PARA BOTONES Y CABECERA CON !IMPORTANT
+  const forcedBlueThemeCss = `
+    .azul-header-row {
+      background-color: #4a90e2 !important;
+      color: white !important;
+    }
+    .azul-header-row th {
+      color: white !important;
+      font-weight: bold !important;
+      border: 1px solid #ddd !important;
+      padding: 12px !important;
+    }
+    .sistema-blue-btn {
+      background-color: #007bff !important;
+      color: white !important;
+      border: 1px solid #007bff !important;
+      font-size: 14px !important;
+      padding: 6px 14px !important;
+      border-radius: 4px !important;
+      cursor: pointer !important;
+      font-weight: bold !important;
+      transition: all 0.2s ease !important;
+    }
+    .sistema-blue-btn:hover {
+      background-color: #0056b3 !important;
+      border-color: #004085 !important;
+    }
+    .sistema-blue-btn:disabled {
+      background-color: #e9ecef !important;
+      color: #6c757d !important;
+      border-color: #ced4da !important;
+      cursor: not-allowed !important;
+      opacity: 0.65 !important;
+    }
+  `;
 
   return (
     <>
+      <style>{forcedBlueThemeCss}</style>
+
       <div style={{ width: '100%', maxWidth: '1180px', margin: '0 auto', padding: '10px 20px 20px 20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ margin: 0 }}>Listar Ventas</h2>
@@ -214,111 +280,106 @@ function ListarVentas({ show, handleClose }) {
           )}
         </div>
 
-        <div
-          style={{
-            marginTop: '20px',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            columnGap: '18px',
-            rowGap: '14px',
-            alignItems: 'end'
-          }}
-        >
-          <div style={{ minWidth: 0 }}>
+        {/* Bloque de Filtros */}
+        <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', columnGap: '18px', rowGap: '14px', alignItems: 'end' }}>
+          <div>
             <label htmlFor="fecha-inicio-ventas"><strong>Fecha Inicio</strong></label>
-            <input
-              id="fecha-inicio-ventas"
-              type="date"
-              value={fechaInicio}
-              onChange={(event) => setFechaInicio(event.target.value)}
-              style={{ width: '100%', marginTop: '8px', padding: '9px 10px' }}
-            />
+            <input id="fecha-inicio-ventas" type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} style={{ width: '100%', marginTop: '8px', padding: '9px 10px' }} />
           </div>
 
-          <div style={{ minWidth: 0 }}>
+          <div>
             <label htmlFor="fecha-fin-ventas"><strong>Fecha Fin</strong></label>
-            <input
-              id="fecha-fin-ventas"
-              type="date"
-              value={fechaFin}
-              onChange={(event) => setFechaFin(event.target.value)}
-              style={{ width: '100%', marginTop: '8px', padding: '9px 10px' }}
-            />
+            <input id="fecha-fin-ventas" type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} style={{ width: '100%', marginTop: '8px', padding: '9px 10px' }} />
           </div>
 
-          <div style={{ minWidth: 0 }}>
+          <div>
             <label htmlFor="cliente-ventas"><strong>Cliente</strong></label>
-            <select
-              id="cliente-ventas"
-              value={clienteSeleccionado}
-              onChange={(event) => setClienteSeleccionado(event.target.value)}
-              style={{ width: '100%', marginTop: '8px', padding: '9px 10px' }}
-            >
+            <select id="cliente-ventas" value={clienteSeleccionado} onChange={(e) => setClienteSeleccionado(e.target.value)} style={{ width: '100%', marginTop: '8px', padding: '9px 10px' }}>
               <option value="">Todos</option>
-              {clientes.map((cliente) => (
-                <option key={cliente.id} value={cliente.id}>{cliente.nombre}</option>
+              {clientes.map((c) => (
+                <option key={c.id} value={c.id}>{c.nombre}</option>
               ))}
             </select>
           </div>
 
-          <div style={{ minWidth: 0 }}>
+          <div>
             <label htmlFor="estado-ventas"><strong>Estado</strong></label>
-            <select
-              id="estado-ventas"
-              value={filtroEstado}
-              onChange={(event) => setFiltroEstado(event.target.value)}
-              style={{ width: '100%', marginTop: '8px', padding: '9px 10px' }}
-            >
+            <select id="estado-ventas" value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} style={{ width: '100%', marginTop: '8px', padding: '9px 10px' }}>
               <option value="todas">Todas</option>
-              <option value="vigentes">No canceladas</option>
+              <option value="vigentes">Vigentes (No canceladas)</option>
               <option value="canceladas">Canceladas</option>
             </select>
           </div>
 
           <div style={{ gridColumn: '1 / -1' }}>
             <label htmlFor="buscar-ventas"><strong>Buscar (comprobante, cliente, observaciones o producto)</strong></label>
-            <input
-              id="buscar-ventas"
-              type="text"
-              placeholder="Buscar..."
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              style={{ width: '100%', marginTop: '6px', padding: '8px' }}
-            />
+            <input id="buscar-ventas" type="text" placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', marginTop: '6px', padding: '8px' }} />
           </div>
         </div>
 
-        <div style={{ overflowX: 'auto', marginTop: '15px' }}>
+        {/* Tabla principal */}
+        <div style={{ overflowX: 'auto', marginTop: '25px' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr>
-                <th style={{ border: '1px solid #343a40', padding: '8px' }}>Comprobante</th>
-                <th style={{ border: '1px solid #343a40', padding: '8px' }}>Cliente</th>
-                <th style={{ border: '1px solid #343a40', padding: '8px' }}>Fecha</th>
-                <th style={{ border: '1px solid #343a40', padding: '8px' }}>Total</th>
-                <th style={{ border: '1px solid #343a40', padding: '8px' }}>Estado</th>
-                <th style={{ border: '1px solid #343a40', padding: '8px' }}>Acciones</th>
+              {/* CORREGIDO: Fila de cabecera azul obligatoria con texto blanco legible */}
+              <tr className="azul-header-row">
+                <th>Comprobante</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {ventasFiltradas.map((venta) => (
-                <tr key={venta.id}>
-                  <td style={{ border: '1px solid #343a40', padding: '8px' }}>{venta.numeroComprobante || '-'}</td>
-                  <td style={{ border: '1px solid #343a40', padding: '8px' }}>{venta.clienteNombre || '-'}</td>
-                  <td style={{ border: '1px solid #343a40', padding: '8px' }}>{formatFecha(venta.fecha)}</td>
-                  <td style={{ border: '1px solid #343a40', padding: '8px' }}>{formatMoneda(venta.total)}</td>
-                  <td style={{ border: '1px solid #343a40', padding: '8px', color: esAnulada(venta.anulada) ? '#dc3545' : 'inherit' }}>
-                    {esAnulada(venta.anulada) ? 'Cancelada' : 'No cancelada'}
+                <tr key={venta.id} style={{ borderBottom: '1px solid #ddd' }}>
+                  <td style={{ padding: '12px' }}>{venta.numeroComprobante || '-'}</td>
+                  <td style={{ padding: '12px' }}>{venta.cliente?.nombre || venta.clienteNombre || '-'}</td>
+                  <td style={{ padding: '12px' }}>{formatFecha(venta.fecha)}</td>
+                  <td style={{ padding: '12px' }}>{formatMoneda(venta.total)}</td>
+                  
+                  <td style={{ padding: '12px', color: obtenerColorEstado(venta.estado), fontWeight: 'bold' }}>
+                    {venta.estado === 'ANULADA' ? 'Cancelada' : venta.estado === 'PAGADA' ? 'Pagada' : 'Pendiente'}
                   </td>
-                  <td style={{ border: '1px solid #343a40', padding: '8px' }}>
-                    <button type="button" onClick={() => handleShowDetalles(venta)}>Detalles</button>
+
+                  {/* RESTAURADO: Botones azules clásicos del sistema */}
+                  <td style={{ padding: '8px' }}>
+                    <button 
+                      type="button" 
+                      onClick={() => handleShowDetalles(venta)}
+                      className="sistema-blue-btn"
+                    >
+                      Detalles
+                    </button>
+                    
+                    <button 
+                      type="button" 
+                      onClick={() => generarPDFVenta(venta)} 
+                      className="sistema-blue-btn"
+                      style={{ marginLeft: '6px' }}
+                    >
+                      Comprobante
+                    </button>
+                    
+                    <button 
+                      type="button" 
+                      onClick={() => handleShowNotaDebito(venta)} 
+                      disabled={esAnulada(venta.estado)}
+                      className="sistema-blue-btn"
+                      style={{ marginLeft: '6px' }}
+                    >
+                      Nota Débito
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => confirmCancelVenta(venta)}
-                      disabled={esAnulada(venta.anulada)}
-                      style={{ marginLeft: '8px' }}
+                      disabled={esAnulada(venta.estado)}
+                      className="sistema-blue-btn"
+                      style={{ marginLeft: '6px' }}
                     >
-                      {esAnulada(venta.anulada) ? 'Anulada' : 'Cancelar'}
+                      {esAnulada(venta.estado) ? 'Anulada' : 'Cancelar'}
                     </button>
                   </td>
                 </tr>
@@ -328,65 +389,35 @@ function ListarVentas({ show, handleClose }) {
         </div>
       </div>
 
+      {/* Modal de Detalles de Venta */}
       {ventaSeleccionada && (
-        <DetallesVenta
-          show={showDetalles}
-          handleClose={handleCloseDetalles}
-          venta={ventaSeleccionada}
-        />
+        <DetallesVenta show={showDetalles} handleClose={handleCloseDetalles} venta={ventaSeleccionada} />
       )}
 
+      {/* Modal de la Nota de Débito */}
+      {ventaParaNotaDebito && (
+        <NotaDebito show={showNotaDebito} handleClose={handleCloseNotaDebito} ventaSeleccionada={ventaParaNotaDebito} />
+      )}
+
+      {/* Alertas Flotantes */}
       {showSuccessMessage && (
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          zIndex: 1300,
-          backgroundColor: '#d1e7dd',
-          color: '#0f5132',
-          padding: '10px 14px',
-          borderRadius: '6px',
-          border: '1px solid #badbcc'
-        }}>
+        <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1300, backgroundColor: '#d1e7dd', color: '#0f5132', padding: '10px 14px', borderRadius: '6px', border: '1px solid #badbcc' }}>
           {mensajeExito}
         </div>
       )}
 
       {errorMessage && (
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          zIndex: 1300,
-          backgroundColor: '#f8d7da',
-          color: '#842029',
-          padding: '10px 14px',
-          borderRadius: '6px',
-          border: '1px solid #f5c2c7',
-          boxShadow: '0px 4px 6px rgba(0,0,0,0.1)'
-        }}>
+        <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1300, backgroundColor: '#f8d7da', color: '#842029', padding: '10px 14px', borderRadius: '6px', border: '1px solid #f5c2c7', boxShadow: '0px 4px 6px rgba(0,0,0,0.1)' }}>
           <strong>Error: </strong> {errorMessage}
         </div>
       )}
 
+      {/* Modal de confirmación para anulación */}
       {showCancelConfirm && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1100
-        }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <div style={{ backgroundColor: '#fff', padding: '18px', borderRadius: '8px', width: '90%', maxWidth: '480px' }}>
             <h3 style={{ marginTop: 0 }}>Confirmar cancelación</h3>
-            <p>
-              ¿Estás seguro de que deseas cancelar la venta "{ventaToCancel?.numeroComprobante || ventaToCancel?.id}"?
-            </p>
+            <p>¿Estás seguro de que deseas cancelar la venta "{ventaToCancel?.numeroComprobante || ventaToCancel?.id}"?</p>
             <div style={{ marginBottom: '12px' }}>
               <label htmlFor="motivo-cancelacion"><strong>Motivo de la cancelación</strong></label>
               <textarea
@@ -399,12 +430,8 @@ function ListarVentas({ show, handleClose }) {
               />
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button type="button" onClick={cerrarCancelacion}>
-                No
-              </button>
-              <button type="button" onClick={handleCancelVenta} disabled={!motivoCancelacion.trim()}>
-                Sí, cancelar
-              </button>
+              <button type="button" onClick={cerrarCancelacion}>No</button>
+              <button type="button" onClick={handleCancelVenta} disabled={!motivoCancelacion.trim()}>Sí, cancelar</button>
             </div>
           </div>
         </div>

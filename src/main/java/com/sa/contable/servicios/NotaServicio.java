@@ -36,8 +36,10 @@ public class NotaServicio {
 
     private static final Logger logger = LoggerFactory.getLogger(NotaServicio.class);
 
-    private static final Long CUENTA_HABER = 121L;
-    private static final Long CUENTA_DEBE = 411L;
+    private static final Long CUENTA_HABER_CREDITO = 121L;
+    private static final Long CUENTA_DEBE_CREDITO = 411L;
+    private static final Long CUENTA_HABER_DEBITO = 411L;
+    private static final Long CUENTA_DEBE_DEBITO = 121L;
 
     public List<Nota> obtenerTodas() {
         return notaRepositorio.findAll();
@@ -61,7 +63,7 @@ public class NotaServicio {
                 logger.error("Fallo al crear nota: Venta no encontrada con id {}", nota.getIdVenta());
                 return new RuntimeException("Venta no encontrada con id: " + nota.getIdVenta());
             });
-        if (venta.getAnulada() == Boolean.TRUE) {
+        if (venta.getEstado().equals("ANULADA")) {
             logger.warn("Intento de crear nota para una venta ya anulada. Venta ID: {}", nota.getIdVenta());
             throw new IllegalStateException("No se pueden crear notas para una venta anulada.");
         }
@@ -76,12 +78,12 @@ public class NotaServicio {
         
             // CORRECCIÓN APLICADA: Cruzamos las cuentas para el contrasiento
             CuentaAsientoDTO movimientoDebe = new CuentaAsientoDTO();
-            movimientoDebe.setCuentaCodigo(CUENTA_HABER); // El Debe usa la cuenta de Ventas
+            movimientoDebe.setCuentaCodigo(CUENTA_DEBE_CREDITO); // El Debe usa la cuenta de Ventas
             movimientoDebe.setDebe(nota.getMonto());
             movimientoDebe.setHaber(BigDecimal.valueOf(0.0));
         
             CuentaAsientoDTO movimientoHaber = new CuentaAsientoDTO();
-            movimientoHaber.setCuentaCodigo(CUENTA_DEBE); // El Haber usa la cuenta de Deudores
+            movimientoHaber.setCuentaCodigo(CUENTA_HABER_CREDITO); // El Haber usa la cuenta de Deudores
             movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
             movimientoHaber.setHaber(nota.getMonto());
         
@@ -93,7 +95,7 @@ public class NotaServicio {
 
             logger.debug("Buscando venta ID: {} para validación y anulación", nota.getIdVenta());
 
-            if (Boolean.TRUE.equals(venta.getAnulada())) {
+            if (Boolean.TRUE.equals(venta.getEstado().equals("ANULADA"))) {
                 logger.warn("Intento rechazado: La venta ID {} ya se encontraba anulada previamente.", nota.getIdVenta());
                 throw new IllegalStateException("La venta ya se encuentra anulada.");
             }
@@ -111,13 +113,33 @@ public class NotaServicio {
             });
             logger.info("Stock de la venta ID {} restaurado exitosamente.", nota.getIdVenta());
 
-            venta.setAnulada(true);
+            venta.setEstado("ANULADA");
             ventasRepositorio.save(venta);
             logger.info("Venta ID {} marcada como anulada en la base de datos.", venta.getId());
 
-        } else {
-            logger.warn("Intento de crear un tipo de nota no soportado: '{}'", nota.getTipo());
-            throw new IllegalArgumentException("Nota de tipo Débito no implementada aún. Solo se permiten notas de tipo Crédito (C).");
+        } else if (nota.getTipo() == 'D') {
+            logger.info("Procesando Nota de Débito (Ajuste a la venta).");
+
+                AsientoDTO asientoDTO = new AsientoDTO();
+                asientoDTO.setFecha(nota.getFecha());
+                asientoDTO.setDescripcion("Asiento por nota de Débito para venta ID: " + nota.getIdVenta() + " - Motivo: " + nota.getMotivo());
+                asientoDTO.setNombreUsuario("UsuarioID: " + usuarioId); 
+            
+                CuentaAsientoDTO movimientoDebe = new CuentaAsientoDTO();
+                movimientoDebe.setCuentaCodigo(CUENTA_DEBE_DEBITO); // El Debe usa la cuenta de Deudores
+                movimientoDebe.setDebe(nota.getMonto());
+                movimientoDebe.setHaber(BigDecimal.valueOf(0.0));
+            
+                CuentaAsientoDTO movimientoHaber = new CuentaAsientoDTO();
+                movimientoHaber.setCuentaCodigo(CUENTA_HABER_DEBITO); // El Haber usa la cuenta de Ventas
+                movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
+                movimientoHaber.setHaber(nota.getMonto());
+            
+                asientoDTO.setMovimientos(List.of(movimientoDebe, movimientoHaber));
+            
+                logger.debug("Generando asiento contable por nota de débito con monto: {}", nota.getMonto());
+                asientoServicio.crearAsiento(asientoDTO, usuarioId);
+                logger.info("Asiento contable por nota de débito creado exitosamente.");
         }
     
         Nota notaGuardada = notaRepositorio.save(nota);
