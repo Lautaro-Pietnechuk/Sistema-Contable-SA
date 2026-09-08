@@ -1,5 +1,5 @@
 // filepath: d:\Documentos\GitHub\Sistema-Contable-SA\src\main\java\com\sa\contable\dto\ProductoDTO.java
-package com.sa.contable.dto;
+package com.sa.contable.DTO;
 
 import java.math.BigDecimal;
 

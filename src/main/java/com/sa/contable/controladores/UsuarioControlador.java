@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sa.contable.configuracion.JwtUtil;
-import com.sa.contable.dto.UsuarioDTO;
+import com.sa.contable.Configuracion.JwtUtil;
+import com.sa.contable.DTO.UsuarioDTO;
 import com.sa.contable.entidades.Usuario;
 import com.sa.contable.servicios.RolServicio;
 import com.sa.contable.servicios.UsuarioServicio;

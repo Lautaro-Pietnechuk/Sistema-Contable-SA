@@ -1,5 +1,5 @@
 
-package com.sa.contable.dto;
+package com.sa.contable.DTO;
 
 public class DetalleVentaDTO {
 

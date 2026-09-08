@@ -1,6 +1,6 @@
 package com.sa.contable.response;
 
-import com.sa.contable.dto.AsientoDTO;
+import com.sa.contable.DTO.AsientoDTO;
 import java.util.List;
 
 

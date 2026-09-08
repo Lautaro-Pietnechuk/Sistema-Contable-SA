@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sa.contable.configuracion.JwtUtil;
+import com.sa.contable.Configuracion.JwtUtil;
 import com.sa.contable.entidades.Nota;
 import com.sa.contable.servicios.NotaServicio;
 

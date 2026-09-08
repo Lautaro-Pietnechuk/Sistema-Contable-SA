@@ -1,4 +1,4 @@
-package com.sa.contable.dto;
+package com.sa.contable.DTO;
 
 import java.time.LocalDate;
 import java.util.List;

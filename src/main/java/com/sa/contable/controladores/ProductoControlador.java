@@ -17,7 +17,7 @@ import java.util.List;
     import org.springframework.web.bind.annotation.RequestParam;
     import org.springframework.web.bind.annotation.RestController;
 
-    import com.sa.contable.dto.ProductoDTO;
+    import com.sa.contable.DTO.ProductoDTO;
     import com.sa.contable.servicios.ProductoServicio;
 
 import jakarta.servlet.http.HttpServletRequest;

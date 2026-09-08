@@ -12,7 +12,7 @@ const LibroMayor = () => {
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState('');
     const [saldoFinal, setSaldoFinal] = useState(0);
-    const [cuentas, setCuentas] = useState([]); // Estado para las cuentas
+    const [cuentas, setCuentas] = useState([]);
     const [mensajeError, setMensajeError] = useState('');
 
     useEffect(() => {
@@ -27,7 +27,7 @@ const LibroMayor = () => {
 
         const storedToken = localStorage.getItem('token');
         if (storedToken) {
-            cargarCuentas(storedToken); // Cargar cuentas cuando se cargue el componente
+            cargarCuentas(storedToken);
         }
     }, []);
 
@@ -55,8 +55,11 @@ const LibroMayor = () => {
         }
     
         setCargando(true);
+        setError('');
+
         try {
-            const response = await axios.get('http://localhost:8080/api/libroMayor', {
+            // 1. Obtener los movimientos del libro mayor
+            const responseMovimientos = await axios.get('http://localhost:8080/api/libroMayor', {
                 params: {
                     codigoCuenta,
                     fechaInicio,
@@ -64,38 +67,22 @@ const LibroMayor = () => {
                 },
                 headers: { Authorization: `Bearer ${storedToken}` }
             });
-            setLibroMayor(response.data);
-    
-            let saldoAcumulado = 0;
-            response.data.forEach((movimiento) => {
-                const { debe, haber, tipoCuenta } = movimiento;
-                if (tipoCuenta) {
-                    let nuevoSaldo = saldoAcumulado;
-                    switch (tipoCuenta.toLowerCase()) {
-                        case "activo":
-                        case "egreso":
-                            nuevoSaldo = saldoAcumulado + (debe || 0) - (haber || 0);
-                            break;
-                        case "pasivo":
-                        case "patrimonio":
-                        case "ingreso":
-                            nuevoSaldo = saldoAcumulado - (debe || 0) + (haber || 0);
-                            break;
-                        default:
-                            console.error('Tipo de cuenta desconocido:', tipoCuenta);
-                    }
-                    saldoAcumulado = nuevoSaldo;
-                } else {
-                    console.error('tipoCuenta es undefined para el movimiento:', movimiento);
-                }
-                movimiento.saldo = saldoAcumulado;
+            setLibroMayor(responseMovimientos.data);
+
+            // 2. Obtener el saldo de la cuenta desde el nuevo endpoint
+            const responseSaldo = await axios.get(`http://localhost:8080/api/cuentas/${codigoCuenta}/saldo`, {
+                headers: { Authorization: `Bearer ${storedToken}` }
             });
-    
-            setSaldoFinal(saldoAcumulado);
-            setError('');
+
+            const saldo = typeof responseSaldo.data === 'number' 
+                ? responseSaldo.data 
+                : (responseSaldo.data.saldo ?? 0);
+
+            setSaldoFinal(saldo);
+            console.log('Saldo obtenido exitosamente:', saldo);
         } catch (error) {
-            console.error('Error al obtener el libro mayor:', error.response ? error.response.data : error.message);
-            setError(error.response ? error.response.data.mensaje : 'Error al obtener el libro mayor.');
+            console.error('Error al obtener datos del libro mayor o saldo:', error.response?.data || error.message);
+            setError(error.response?.data?.mensaje || 'Error al obtener los datos.');
         } finally {
             setCargando(false);
         }
@@ -105,11 +92,9 @@ const LibroMayor = () => {
         try {
             const doc = new jsPDF();
             
-            // Obtener nombre de la cuenta
             const cuenta = cuentas.find(c => c.codigo.toString() === codigoCuenta);
             const nombreCuenta = cuenta ? cuenta.nombre : 'Cuenta Desconocida';
             
-            // Crear encabezado del PDF
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(14);
             doc.text('LIBRO MAYOR', 14, 15);
@@ -120,7 +105,6 @@ const LibroMayor = () => {
             doc.text(`Período: ${fechaInicio} al ${fechaFin}`, 14, 32);
             doc.text(`Saldo Final: ${saldoFinal.toFixed(2)}`, 14, 39);
             
-            // Crear tabla
             const rows = libroMayor.map((movimiento) => [
                 new Date(movimiento.fecha).toLocaleDateString(),
                 movimiento.descripcion || '',
@@ -152,12 +136,10 @@ const LibroMayor = () => {
                 },
             });
             
-            // Agregar pie de página
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(8);
             doc.text(`Fecha de generación: ${new Date().toLocaleString()}`, 14, doc.internal.pageSize.getHeight() - 10);
             
-            // Descargar PDF
             const pdfBuffer = doc.output('arraybuffer');
             const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(pdfBlob);
@@ -178,13 +160,8 @@ const LibroMayor = () => {
         <div className="libro-mayor">
             <h1>Libro Mayor</h1>
 
-            {/* Mostrar mensaje de carga si está cargando */}
             {cargando && <p>Cargando...</p>}
-
-            {/* Mostrar mensaje de error si hay error */}
             {error && <p style={{ color: 'red' }}>{error}</p>}
-
-            {/* Mostrar mensaje de error si hay error al obtener las cuentas */}
             {mensajeError && <p style={{ color: 'red' }}>{mensajeError}</p>}
 
             <form onSubmit={obtenerLibroMayor}>

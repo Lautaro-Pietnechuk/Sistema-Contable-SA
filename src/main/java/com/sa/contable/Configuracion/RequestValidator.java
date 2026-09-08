@@ -1,4 +1,4 @@
-package com.sa.contable.configuracion;
+package com.sa.contable.Configuracion;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

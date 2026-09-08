@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sa.contable.dto.AsientoDTO;
-import com.sa.contable.dto.CuentaAsientoDTO;
-import com.sa.contable.dto.DetalleVentaDTO;
-import com.sa.contable.dto.VentaDTO;
+import com.sa.contable.DTO.AsientoDTO;
+import com.sa.contable.DTO.CuentaAsientoDTO;
+import com.sa.contable.DTO.DetalleVentaDTO;
+import com.sa.contable.DTO.VentaDTO;
 import com.sa.contable.entidades.Cliente;
 import com.sa.contable.entidades.DetalleVenta;
 import com.sa.contable.entidades.Producto;

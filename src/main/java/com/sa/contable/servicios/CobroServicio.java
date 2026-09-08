@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sa.contable.dto.AsientoDTO;
-import com.sa.contable.dto.CuentaAsientoDTO;
+import com.sa.contable.DTO.AsientoDTO;
+import com.sa.contable.DTO.CuentaAsientoDTO;
 import com.sa.contable.entidades.Cliente;
 import com.sa.contable.entidades.Cobro;
 import com.sa.contable.entidades.Venta;

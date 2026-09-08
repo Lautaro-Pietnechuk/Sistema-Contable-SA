@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sa.contable.configuracion.JwtUtil;
-import com.sa.contable.dto.CuentaDTO;
-import com.sa.contable.dto.SaldoDTO;
+import com.sa.contable.Configuracion.JwtUtil;
+import com.sa.contable.DTO.CuentaDTO;
+import com.sa.contable.DTO.SaldoDTO;
 import com.sa.contable.entidades.Cuenta;
 import com.sa.contable.repositorios.CuentaAsientoRepositorio;
 import com.sa.contable.repositorios.CuentaRepositorio;

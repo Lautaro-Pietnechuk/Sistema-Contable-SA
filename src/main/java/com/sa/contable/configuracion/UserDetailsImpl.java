@@ -1,5 +1,5 @@
-package com.sa.contable.configuracion;
-/* package com.sa.contable.configuracion;
+package com.sa.contable.Configuracion;
+/* package com.sa.contable.Configuracion;
 
 import com.sa.contable.entidades.Usuario;
 import org.springframework.security.core.GrantedAuthority;

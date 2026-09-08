@@ -1,4 +1,4 @@
-package com.sa.contable.dto;
+package com.sa.contable.DTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -8,18 +8,18 @@ public class LibroMayorDTO {
     private String descripcion;
     private BigDecimal debe;
     private BigDecimal haber;
-    private BigDecimal saldo;
     private String tipoCuenta;  // Nueva propiedad para tipoCuenta
 
     // Constructor actualizado
-    public LibroMayorDTO(LocalDate fecha, String descripcion, BigDecimal debe, BigDecimal haber, BigDecimal saldo, String tipoCuenta) {
+    public LibroMayorDTO(LocalDate fecha, String descripcion, BigDecimal debe, BigDecimal haber, String tipoCuenta) {
         this.fecha = fecha;
         this.descripcion = descripcion;
         this.debe = debe;
         this.haber = haber;
-        this.saldo = saldo;
         this.tipoCuenta = tipoCuenta;  // Inicializa el tipoCuenta
     }
+
+
 
     // Getters y Setters
     public LocalDate getFecha() {
@@ -54,13 +54,6 @@ public class LibroMayorDTO {
         this.haber = haber;
     }
 
-    public BigDecimal getSaldo() {
-        return saldo;
-    }
-
-    public void setSaldo(BigDecimal saldo) {
-        this.saldo = saldo;
-    }
 
     public String getTipoCuenta() {
         return tipoCuenta;  // Método para obtener tipoCuenta

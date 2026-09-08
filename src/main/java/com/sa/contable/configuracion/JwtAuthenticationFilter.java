@@ -1,4 +1,4 @@
-package com.sa.contable.configuracion;
+package com.sa.contable.Configuracion;
 
 import java.io.IOException;
 import java.util.List;

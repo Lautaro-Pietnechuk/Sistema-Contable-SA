@@ -1,4 +1,4 @@
-package com.sa.contable.dto;
+package com.sa.contable.DTO;
 
 public class AnularCobroRequest {
     private String motivo;

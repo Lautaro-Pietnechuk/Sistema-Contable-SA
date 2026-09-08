@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sa.contable.dto.LibroMayorDTO;
+import com.sa.contable.DTO.LibroMayorDTO;
 import com.sa.contable.entidades.CuentaAsiento;
 import com.sa.contable.repositorios.CuentaAsientoRepositorio;
 
@@ -31,7 +31,6 @@ public class LibroMayorServicio {
                         mov.getAsiento().getDescripcion(), 
                         mov.getDebe(), 
                         mov.getHaber(), 
-                        mov.getSaldo(),
                         mov.getCuenta().getTipo()) // Mostrar tipoCuenta
         );
     
@@ -41,7 +40,6 @@ public class LibroMayorServicio {
                         mov.getAsiento().getDescripcion(),
                         mov.getDebe(), // Obtener el debe
                         mov.getHaber(), // Obtener el haber
-                        mov.getSaldo(), // Obtener el saldo
                         mov.getCuenta().getTipo())) // Obtener el tipoCuenta
                 .collect(Collectors.toList());
     } 

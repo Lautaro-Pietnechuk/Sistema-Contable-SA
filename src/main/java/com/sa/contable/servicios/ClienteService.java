@@ -9,8 +9,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sa.contable.dto.ClienteDTO;
-import com.sa.contable.dto.MovimientoCuentaDTO;
+import com.sa.contable.DTO.ClienteDTO;
+import com.sa.contable.DTO.MovimientoCuentaDTO;
 import com.sa.contable.entidades.Cliente;
 import com.sa.contable.entidades.Venta;
 import com.sa.contable.repositorios.ClienteRepository;

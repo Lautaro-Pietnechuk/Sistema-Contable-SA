@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sa.contable.dto.ClienteDTO;
-import com.sa.contable.dto.MovimientoCuentaDTO;
+import com.sa.contable.DTO.ClienteDTO;
+import com.sa.contable.DTO.MovimientoCuentaDTO;
 import com.sa.contable.entidades.Cliente;
 import com.sa.contable.servicios.ClienteService;
 

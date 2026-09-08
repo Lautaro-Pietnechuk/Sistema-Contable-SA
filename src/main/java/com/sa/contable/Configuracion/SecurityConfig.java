@@ -1,4 +1,4 @@
-/* package com.sa.contable.configuracion;
+/* package com.sa.contable.Configuracion;
 
 import java.util.List;
 
@@ -79,7 +79,7 @@ public class SecurityConfig {
 }
 } */
 
-package com.sa.contable.configuracion;
+package com.sa.contable.Configuracion;
 
 import java.util.List;
 

@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sa.contable.dto.AnularCobroRequest;
-import com.sa.contable.dto.CobroRequest;
-import com.sa.contable.dto.CobroResponse;
+import com.sa.contable.DTO.AnularCobroRequest;
+import com.sa.contable.DTO.CobroRequest;
+import com.sa.contable.DTO.CobroResponse;
 import com.sa.contable.servicios.CobroServicio;
 
 @RestController

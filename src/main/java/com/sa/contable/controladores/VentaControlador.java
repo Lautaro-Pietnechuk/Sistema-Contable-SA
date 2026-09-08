@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sa.contable.configuracion.JwtUtil;
-import com.sa.contable.dto.VentaDTO;
+import com.sa.contable.Configuracion.JwtUtil;
+import com.sa.contable.DTO.VentaDTO;
 import com.sa.contable.servicios.VentaServicio;
 
 import jakarta.servlet.http.HttpServletRequest;

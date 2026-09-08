@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sa.contable.dto.LibroMayorDTO;
+import com.sa.contable.DTO.LibroMayorDTO;
+import com.sa.contable.servicios.CuentaServicio;
 import com.sa.contable.servicios.LibroMayorServicio;
 
 @RestController
@@ -20,6 +21,9 @@ public class LibroMayorControlador {
 
     @Autowired
     private LibroMayorServicio libroMayorServicio;
+
+    @Autowired 
+    private CuentaServicio cuentaServicio;
 
     @GetMapping("/libroMayor")
     public ResponseEntity<List<LibroMayorDTO>> obtenerLibroMayor(

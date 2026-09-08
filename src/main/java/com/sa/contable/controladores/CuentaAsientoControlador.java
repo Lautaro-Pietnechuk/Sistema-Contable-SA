@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sa.contable.dto.CuentaAsientoDTO;
+import com.sa.contable.DTO.CuentaAsientoDTO;
 import com.sa.contable.entidades.Cuenta;
 import com.sa.contable.entidades.CuentaAsiento;
 import com.sa.contable.repositorios.CuentaAsientoRepositorio;

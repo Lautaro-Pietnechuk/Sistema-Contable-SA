@@ -14,8 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.sa.contable.dto.AsientoDTO;
-import com.sa.contable.dto.CuentaAsientoDTO;
+import com.sa.contable.DTO.AsientoDTO;
+import com.sa.contable.DTO.CuentaAsientoDTO;
 import com.sa.contable.entidades.Asiento;
 import com.sa.contable.entidades.Cuenta;
 import com.sa.contable.entidades.CuentaAsiento;
