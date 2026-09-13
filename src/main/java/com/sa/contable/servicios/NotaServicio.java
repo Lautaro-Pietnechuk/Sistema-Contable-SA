@@ -113,8 +113,12 @@ public class NotaServicio {
             });
             logger.info("Stock de la venta ID {} restaurado exitosamente.", nota.getIdVenta());
 
+            double saldoAnulado = venta.getSaldoPendiente();
+            venta.setSaldoPendiente(0.0);
             venta.setEstado("ANULADA");
+            venta.getCliente().ajustarSaldoPendiente(-saldoAnulado);
             ventasRepositorio.save(venta);
+            ventasRepositorio.flush();
             logger.info("Venta ID {} marcada como anulada en la base de datos.", venta.getId());
 
         } else if (nota.getTipo() == 'D') {
@@ -140,6 +144,9 @@ public class NotaServicio {
                 logger.debug("Generando asiento contable por nota de débito con monto: {}", nota.getMonto());
                 asientoServicio.crearAsiento(asientoDTO, usuarioId);
                 logger.info("Asiento contable por nota de débito creado exitosamente.");
+            venta.setSaldoPendiente(venta.getSaldoPendiente() + nota.getMonto().doubleValue());
+            venta.getCliente().ajustarSaldoPendiente(nota.getMonto().doubleValue());
+            ventasRepositorio.save(venta);
         }
     
         Nota notaGuardada = notaRepositorio.save(nota);

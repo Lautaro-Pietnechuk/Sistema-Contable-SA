@@ -18,6 +18,9 @@ public class Cliente {
     private String mail;
     private String telefono;
 
+    @Column(nullable = false, columnDefinition = "double precision default 0")
+    private Double saldoPendiente = 0.0;
+
     // Constructores
     public Cliente() {}
 
@@ -50,5 +53,26 @@ public class Cliente {
         this.telefono = telefono;
     }
 
+    public Double getSaldoPendiente() {
+        return saldoPendiente;
+    }
 
-    } 
+    public void setSaldoPendiente(Double saldoPendiente) {
+        if (saldoPendiente == null || saldoPendiente < 0) {
+            throw new IllegalArgumentException("El saldo pendiente no puede ser nulo ni negativo.");
+        }
+        this.saldoPendiente = saldoPendiente;
+    }
+
+    public void ajustarSaldoPendiente(Double importe) {
+        if (importe == null) {
+            throw new IllegalArgumentException("El importe para ajustar el saldo no puede ser nulo.");
+        }
+        double nuevoSaldo = (saldoPendiente != null ? saldoPendiente : 0.0) + importe;
+        if (nuevoSaldo < 0) {
+            throw new IllegalArgumentException("El saldo pendiente no puede ser negativo.");
+        }
+        saldoPendiente = nuevoSaldo;
+    }
+
+    }

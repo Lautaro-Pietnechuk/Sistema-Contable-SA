@@ -95,7 +95,8 @@ public class VentaServicio {
         venta.setFecha(ventaDTO.getFecha() != null ? ventaDTO.getFecha() : LocalDateTime.now());
         venta.setCliente(cliente);
         venta.setObservaciones(ventaDTO.getObservaciones());
-        if (ventaDTO.getTipoDePago() == "efectivo" || ventaDTO.getTipoDePago() == "debito") {
+        if ("EFECTIVO".equalsIgnoreCase(ventaDTO.getTipoDePago())
+                || "DEBITO".equalsIgnoreCase(ventaDTO.getTipoDePago())) {
             venta.setEstado("PAGADA");
         } else {
             venta.setEstado("PENDIENTE");
@@ -201,10 +202,12 @@ public class VentaServicio {
         venta.setTotal(subtotalVenta);
         if (venta.getEstado().equals("PENDIENTE")) {
             venta.setSaldoPendiente(venta.getTotal());
+            cliente.ajustarSaldoPendiente(venta.getTotal());
         } else {
             venta.setSaldoPendiente(0.0);
         }
         ventaGuardada = ventaRepositorio.save(ventaGuardada);
+        clienteRepository.save(cliente);
         return convertirADTO(ventaGuardada);
     }
 

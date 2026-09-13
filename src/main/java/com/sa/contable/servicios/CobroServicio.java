@@ -89,6 +89,7 @@ public class CobroServicio {
         logger.info("Se encontraron {} facturas pendientes de pago para este cliente", deudas.size());
 
         Double plataDisponible = montoCobrado;
+        Double montoImputado = 0.0;
 
         for (Venta venta : deudas) {
             if (plataDisponible <= 0) {
@@ -105,11 +106,13 @@ public class CobroServicio {
                 venta.setSaldoPendiente(0.0);
                 venta.setEstado("PAGADA");
                 plataDisponible -= saldoDeLaFactura;
+                montoImputado += saldoDeLaFactura;
 
                 logger.info("Venta ID: {} cubierta totalmente. Nuevo saldo: $0.0 | Estado: PAGADA", venta.getId());
             } else {
                 // La plata no alcanza para toda la factura, es un pago parcial
                 venta.setSaldoPendiente(saldoDeLaFactura - plataDisponible);
+                montoImputado += plataDisponible;
                 logger.info("Venta ID: {} cubierta parcialmente. Cobrado: ${} | Queda un remanente de deuda de: ${}",
                         venta.getId(), plataDisponible, venta.getSaldoPendiente());
 
@@ -118,6 +121,8 @@ public class CobroServicio {
             ventaRepositorio.save(venta);
         }
 
+        cliente.ajustarSaldoPendiente(-montoImputado);
+        clienteRepositorio.save(cliente);
         logger.info("Finalizado el proceso de imputación. Vuelto/Excedente no imputado: ${}", plataDisponible);
     }
 
@@ -228,6 +233,8 @@ public class CobroServicio {
         }
 
         logger.info("Proceso de desimputación por anulación completado.");
+        cobro.getCliente().ajustarSaldoPendiente(cobro.getMonto());
+        clienteRepositorio.save(cobro.getCliente());
     }
 
     private void crearAsientoAnulacion(Cobro cobro, String motivo, Long usuarioId) {

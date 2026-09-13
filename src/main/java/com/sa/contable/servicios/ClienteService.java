@@ -34,7 +34,7 @@ public class ClienteService {
         List<ClienteDTO> clientesDTO = clientesBD.stream()
                 .map(cliente -> {
                     System.out.println("Mapeando cliente -> ID: " + cliente.getId() + ", Nombre: " + cliente.getNombre());
-                    return new ClienteDTO(cliente.getId(), cliente.getNombre());
+                    return new ClienteDTO(cliente.getId(), cliente.getNombre(), cliente.getSaldoPendiente());
                 })
                 .toList();
 
