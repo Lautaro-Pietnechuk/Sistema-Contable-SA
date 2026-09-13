@@ -5,14 +5,13 @@ const CrearProducto = () => {
     const [token, setToken] = useState('');
     const navigate = useNavigate();
     
-    // 1. Agregamos metodoPago al estado inicial (Por defecto EFECTIVO)
     const [producto, setProducto] = useState({
         nombre: '',
         descripcion: '',
         precio: '',
         costoPromedio: '', 
         stock: '',
-        metodoPago: 'EFECTIVO' 
+        tipoDePago: 'EFECTIVO'
     });
 
     const [mensaje, setMensaje] = useState('');
@@ -42,14 +41,15 @@ const CrearProducto = () => {
         setError(false);
 
         try {
-            const response = await fetch('http://localhost:8080/api/productos', {
+            const costoTotalCompra = parseFloat(producto.costoPromedio) * parseInt(producto.stock, 10);
+            const response = await fetch(`http://localhost:8080/api/productos?costoTotalCompra=${costoTotalCompra}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    ...producto, // Esto ya incluye el metodoPago
+                    ...producto,
                     precio: parseFloat(producto.precio),
                     costoPromedio: parseFloat(producto.costoPromedio),
                     stock: parseInt(producto.stock)
@@ -59,14 +59,13 @@ const CrearProducto = () => {
             if (response.ok) {
                 const data = await response.json();
                 setMensaje(`Producto "${data.nombre}" creado con éxito.`);
-                // 3. Limpiamos todos los campos y volvemos metodoPago a su valor por defecto
                 setProducto({ 
                     nombre: '', 
                     descripcion: '', 
                     precio: '', 
                     costoPromedio: '', 
                     stock: '',
-                    metodoPago: 'EFECTIVO'
+                    tipoDePago: 'EFECTIVO'
                 });
             } else {
                 const errorMsg = await response.text();
@@ -111,18 +110,17 @@ const CrearProducto = () => {
                     </div>
                 </div>
 
-                {/* 4. Nuevo bloque para el Método de Pago de la compra inicial */}
                 <div style={{ marginBottom: '20px' }}>
                     <label style={{ display: 'block', marginBottom: '5px' }}>Método de Pago (Compra Inicial):</label>
                     <select 
-                        name="metodoPago" 
-                        value={producto.metodoPago} 
+                        name="tipoDePago" 
+                        value={producto.tipoDePago} 
                         onChange={handleChange} 
                         required 
                         style={{ width: '100%', padding: '8px', boxSizing: 'border-box', backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px' }}
                     >
                         <option value="EFECTIVO">Efectivo</option>
-                        <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+                        <option value="DEBITO">Débito</option>
                         <option value="CUENTA_CORRIENTE">Cuenta Corriente</option>
                     </select>
                 </div>

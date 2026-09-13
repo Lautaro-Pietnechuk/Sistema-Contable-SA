@@ -44,7 +44,7 @@ public class CobroControlador {
             System.out.println("==================================================\n");
 
             // Ejecutamos la lógica de imputación en el servicio
-            cobroServicio.registrarCobro(request.getClienteId(), request.getMonto(), request.getMetodoPago(), 1L);
+            cobroServicio.registrarCobro(request.getClienteId(), request.getMonto(), request.getMetodoPago(), request.getVentaId(), 1L);
             
             return ResponseEntity.ok().body("{\"message\": \"Cobro procesado e imputado con éxito.\"}");
             

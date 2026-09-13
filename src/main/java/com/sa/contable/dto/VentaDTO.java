@@ -17,6 +17,7 @@ public class VentaDTO {
     private String observaciones;
     private String tipoDePago; // "EFECTIVO", "DEBITO" o "CUENTA_CORRIENTE"
     private String estado = "PENDIENTE"; 
+    private Double saldoPendiente;
 
     public VentaDTO() {
     }
@@ -140,5 +141,13 @@ public class VentaDTO {
         } else {
             throw new IllegalArgumentException("Estado inválido: " + estado);
         }
+    }
+
+    public Double getSaldoPendiente() {
+        return saldoPendiente;
+    }
+
+    public void setSaldoPendiente(Double saldoPendiente) {
+        this.saldoPendiente = saldoPendiente;
     }
 }

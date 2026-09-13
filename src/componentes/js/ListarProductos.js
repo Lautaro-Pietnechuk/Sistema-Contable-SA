@@ -7,6 +7,7 @@ function ListarProductos({ show }) {
   const [productos, setProductos] = useState([]);
   const [filteredProductos, setFilteredProductos] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [estadoFiltro, setEstadoFiltro] = useState('todos');
   const [showStatusConfirm, setShowStatusConfirm] = useState(false);
   const [productoToUpdate, setProductoToUpdate] = useState(null);
   const [productoToEdit, setProductoToEdit] = useState(null);
@@ -22,7 +23,6 @@ function ListarProductos({ show }) {
       const response = await axios.get('http://localhost:8080/api/productos');
       const productosData = Array.isArray(response.data) ? response.data : [];
       setProductos(productosData);
-      setFilteredProductos(productosData);
     } catch (error) {
       console.error('Error al obtener los productos:', error);
       setErrorMessage('No se pudieron cargar los productos.');
@@ -38,9 +38,25 @@ function ListarProductos({ show }) {
   useEffect(() => {
     if (!show) {
       setSearchTerm('');
-      setFilteredProductos(productos);
+      setEstadoFiltro('todos');
     }
   }, [show, productos]);
+
+  useEffect(() => {
+    const term = searchTerm.toLowerCase();
+    const filtered = productos.filter((producto) => {
+      const coincideTexto = !term
+        || (producto.nombre || '').toLowerCase().includes(term)
+        || (producto.descripcion || '').toLowerCase().includes(term);
+      const coincideEstado = estadoFiltro === 'todos'
+        || (estadoFiltro === 'activos' && producto.activo)
+        || (estadoFiltro === 'inactivos' && !producto.activo);
+
+      return coincideTexto && coincideEstado;
+    });
+
+    setFilteredProductos(filtered);
+  }, [productos, searchTerm, estadoFiltro]);
 
   const handleStatusChange = async () => {
     if (!productoToUpdate?.id) {
@@ -49,14 +65,7 @@ function ListarProductos({ show }) {
 
     try {
       const nuevoEstado = !productoToUpdate.activo;
-      await axios.put(`http://localhost:8080/api/productos/${productoToUpdate.id}`, {
-        nombre: productoToUpdate.nombre,
-        descripcion: productoToUpdate.descripcion,
-        precio: Number(productoToUpdate.precio),
-        costoPromedio: Number(productoToUpdate.costoPromedio || 0), // Agregado para no perder el costo al cambiar de estado
-        stock: Number(productoToUpdate.stock),
-        activo: nuevoEstado
-      });
+      await axios.put(`http://localhost:8080/api/productos/${productoToUpdate.id}/estado`);
 
       setShowStatusConfirm(false);
       setProductoToUpdate(null);
@@ -94,16 +103,6 @@ function ListarProductos({ show }) {
   const handleSearch = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-
-    let filtered = productos;
-    if (term) {
-      filtered = filtered.filter((producto) =>
-        (producto.nombre || '').toLowerCase().includes(term)
-        || (producto.descripcion || '').toLowerCase().includes(term)
-      );
-    }
-
-    setFilteredProductos(filtered);
   };
 
   const formatMoneda = (valor) => {
@@ -138,6 +137,19 @@ function ListarProductos({ show }) {
               borderRadius: '4px'
             }}
           />
+          <label htmlFor="estado-productos" style={{ display: 'block', marginTop: '10px' }}>
+            <strong>Filtrar por estado</strong>
+          </label>
+          <select
+            id="estado-productos"
+            value={estadoFiltro}
+            onChange={(event) => setEstadoFiltro(event.target.value)}
+            style={{ width: '100%', marginTop: '8px', padding: '8px 10px' }}
+          >
+            <option value="todos">Todos</option>
+            <option value="activos">Activos</option>
+            <option value="inactivos">No activos</option>
+          </select>
         </div>
 
         <div style={{ overflowX: 'auto', marginTop: '15px' }}>

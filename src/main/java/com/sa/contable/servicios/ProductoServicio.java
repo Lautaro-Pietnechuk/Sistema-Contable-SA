@@ -64,7 +64,10 @@ public class ProductoServicio {
     }
 
     @Transactional
-    public ProductoDTO crearProducto(ProductoDTO productoDTO, Long usuarioId, Long id, BigDecimal costoTotalCompra) {
+    public ProductoDTO crearProducto(ProductoDTO productoDTO, Long usuarioId, BigDecimal costoTotalCompra) {
+        logger.info("Iniciando creación de producto: nombre={}, usuarioId={}, tipoDePago={}, costoTotalCompra={}",
+            productoDTO.getNombre(), usuarioId, productoDTO.getTipoDePago(), costoTotalCompra);
+
         Producto producto = convertirAEntidad(productoDTO);
         producto.setActivo(true);
 
@@ -92,6 +95,8 @@ public class ProductoServicio {
                 movimientoHaber.setCuentaCodigo(cuentaHaberCuentaCorriente);
                 break;
             default:
+                logger.warn("Tipo de pago no válido al crear producto: {}, producto={}",
+                        productoDTO.getTipoDePago(), productoDTO.getNombre());
                 throw new RuntimeException("Tipo de pago no válido. Debe ser: EFECTIVO, DEBITO o CUENTA_CORRIENTE");
         }
         movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
@@ -99,9 +104,13 @@ public class ProductoServicio {
 
         asientoDTO.setMovimientos(List.of(movimientoDebe, movimientoHaber));
         asientoServicio.crearAsiento(asientoDTO, usuarioId);
+    logger.info("Asiento contable creado para la compra del producto: nombre={}, usuarioId={}, costoTotalCompra={}",
+        producto.getNombre(), usuarioId, costoTotalCompra);
 
         
         Producto productoGuardado = productoRepositorio.save(producto);
+    logger.info("Producto creado correctamente: productoId={}, nombre={}, stock={}",
+        productoGuardado.getId(), productoGuardado.getNombre(), productoGuardado.getStock());
         return convertirADTO(productoGuardado);
     }
 
@@ -161,11 +170,14 @@ public class ProductoServicio {
         return convertirADTO(productoActualizado);
     }
 
-    public void eliminarProducto(Long id) {
+    public Producto cambiarEstado(Long id) {
         Producto producto = productoRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
-        producto.setActivo(false);
-        productoRepositorio.save(producto);
+        producto.setActivo(!Boolean.TRUE.equals(producto.getActivo()));
+        Producto productoActualizado = productoRepositorio.save(producto);
+        logger.info("Estado del producto cambiado: productoId={}, activo={}",
+                productoActualizado.getId(), productoActualizado.getActivo());
+        return productoActualizado;
     }
 
     public void eliminarProductoDefinitivo(Long id) {

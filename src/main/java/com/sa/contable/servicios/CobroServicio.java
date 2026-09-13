@@ -43,9 +43,10 @@ public class CobroServicio {
     private AsientoServicio asientoServicio;
 
     @Transactional
-    public void registrarCobro(Long clienteId, Double montoCobrado, String metodoPago, Long usuarioId) {
+    public void registrarCobro(Long clienteId, Double montoCobrado, String metodoPago, Long ventaId, Long usuarioId) {
 
-        logger.info("Iniciando proceso de registro de cobro para el Cliente ID: {} por un monto de ${}", clienteId, montoCobrado);
+        logger.info("Iniciando proceso de registro de cobro para el Cliente ID: {} por un monto de ${}. Venta seleccionada: {}",
+                clienteId, montoCobrado, ventaId != null ? ventaId : "FIFO");
 
         // 0. Buscar al cliente en la base de datos
         Cliente cliente = clienteRepositorio.findById(clienteId)
@@ -68,9 +69,23 @@ public class CobroServicio {
         // 1.5 Crear asiento contable para el cobro
         crearAsientoCobro(cobro, metodoPago, montoCobrado, usuarioId);
 
-        // 2. Buscás las ventas que te debe ese cliente, de la más vieja a la más nueva
-        logger.debug("Buscando cuentas corrientes con saldo pendiente para el cliente: {}", cliente.getNombre());
-        List<Venta> deudas = ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(clienteId, "PENDIENTE");
+        // Sin venta seleccionada se conserva FIFO; con ventaId se imputa únicamente a esa venta.
+        List<Venta> deudas;
+        if (ventaId == null) {
+            logger.debug("Buscando cuentas corrientes con saldo pendiente para el cliente: {}", cliente.getNombre());
+            deudas = ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(clienteId, "PENDIENTE");
+        } else {
+            Venta ventaSeleccionada = ventaRepositorio.findById(ventaId)
+                    .orElseThrow(() -> new RuntimeException("Venta no encontrada con ID: " + ventaId));
+            if (!ventaSeleccionada.getCliente().getId().equals(clienteId)) {
+                throw new RuntimeException("La venta seleccionada no pertenece al cliente indicado.");
+            }
+            if (!"PENDIENTE".equals(ventaSeleccionada.getEstado()) || ventaSeleccionada.getSaldoPendiente() <= 0) {
+                throw new RuntimeException("La venta seleccionada no tiene saldo pendiente.");
+            }
+            deudas = List.of(ventaSeleccionada);
+            logger.info("Se seleccionó manualmente la Venta ID: {}", ventaId);
+        }
         logger.info("Se encontraron {} facturas pendientes de pago para este cliente", deudas.size());
 
         Double plataDisponible = montoCobrado;

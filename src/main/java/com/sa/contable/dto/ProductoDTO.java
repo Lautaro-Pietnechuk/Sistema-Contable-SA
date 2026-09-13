@@ -91,7 +91,9 @@ public class ProductoDTO {
     }
 
     public void setTipoDePago(String tipoDePago) {
-        tipoDePago = tipoDePago.toUpperCase();
+        if (tipoDePago != null) {
+            tipoDePago = tipoDePago.toUpperCase();
+        }
         if (tipoDePago != null && !tipoDePago.matches("EFECTIVO|DEBITO|CUENTA_CORRIENTE")) {
             throw new IllegalArgumentException("Tipo de pago inválido. Debe ser 'EFECTIVO', 'DEBITO' o 'CUENTA_CORRIENTE'.");
         }

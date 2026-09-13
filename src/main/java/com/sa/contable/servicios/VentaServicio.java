@@ -223,6 +223,7 @@ public class VentaServicio {
         dto.setObservaciones(venta.getObservaciones());
         dto.setEstado(venta.getEstado());
         dto.setTipoDePago(venta.getTipoDePago());
+        dto.setSaldoPendiente(venta.getSaldoPendiente());
 
         if (venta.getDetalles() != null) {
             List<DetalleVentaDTO> detallesDTO = venta.getDetalles()

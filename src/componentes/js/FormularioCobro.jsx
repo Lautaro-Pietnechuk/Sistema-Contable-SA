@@ -3,9 +3,11 @@ import axios from 'axios';
 
 const FormularioCobro = ({ onCobroExitoso }) => {
     const [clientes, setClientes] = useState([]);
+    const [ventasPendientes, setVentasPendientes] = useState([]);
     const [cobro, setCobro] = useState({
         clienteId: '',
         monto: '',
+        ventaId: '',
         metodoPago: 'EFECTIVO', 
         observaciones: ''
     });
@@ -27,8 +29,37 @@ const FormularioCobro = ({ onCobroExitoso }) => {
     }, []);
 
     const handleChange = (e) => {
-        setCobro({ ...cobro, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setCobro({ ...cobro, [name]: value });
+
+        if (name === 'clienteId') {
+            setCobro((estadoActual) => ({ ...estadoActual, clienteId: value, ventaId: '' }));
+            if (!value) {
+                setVentasPendientes([]);
+            }
+        }
     };
+
+    useEffect(() => {
+        if (!cobro.clienteId) {
+            return;
+        }
+
+        const obtenerVentasPendientes = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/ventas/cliente/${cobro.clienteId}`);
+                setVentasPendientes((response.data || []).filter((venta) =>
+                    venta.estado === 'PENDIENTE' && Number(venta.saldoPendiente) > 0
+                ));
+            } catch (err) {
+                console.error('Error al cargar ventas pendientes:', err);
+                setVentasPendientes([]);
+                setError('No se pudieron cargar las ventas pendientes del cliente.');
+            }
+        };
+
+        obtenerVentasPendientes();
+    }, [cobro.clienteId]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -46,13 +77,15 @@ const FormularioCobro = ({ onCobroExitoso }) => {
             await axios.post('http://localhost:8080/api/cobros', {
                 clienteId: parseInt(cobro.clienteId),
                 monto: parseFloat(cobro.monto),
+                ventaId: cobro.ventaId ? parseInt(cobro.ventaId) : null,
                 metodoPago: cobro.metodoPago,
                 observaciones: cobro.observaciones
             });
 
             // CORREGIDO: Se reemplaza el alert() por el mensaje de estado en línea
             setMensajeExito('Cobro registrado correctamente.');
-            setCobro({ clienteId: '', monto: '', metodoPago: 'EFECTIVO', observaciones: '' });
+            setCobro({ clienteId: '', monto: '', ventaId: '', metodoPago: 'EFECTIVO', observaciones: '' });
+            setVentasPendientes([]);
             
             if (onCobroExitoso) onCobroExitoso(); 
 
@@ -77,6 +110,18 @@ const FormularioCobro = ({ onCobroExitoso }) => {
             
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <div>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px', color: '#555' }}>Aplicar cobro a:</label>
+                    <select name="ventaId" value={cobro.ventaId} onChange={handleChange} disabled={!cobro.clienteId} style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', backgroundColor: '#fff' }}>
+                        <option value="">Automático (FIFO: venta más vieja primero)</option>
+                        {ventasPendientes.map((venta) => (
+                            <option key={venta.id} value={venta.id}>
+                                {venta.numeroComprobante} - {new Date(venta.fecha).toLocaleDateString('es-AR')} - Saldo: ${Number(venta.saldoPendiente).toFixed(2)}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px', color: '#555' }}>Cliente:</label>
                     <select name="clienteId" value={cobro.clienteId} onChange={handleChange} style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', backgroundColor: '#fff' }}>
                         <option value="">-- Seleccionar Cliente --</option>
@@ -96,7 +141,6 @@ const FormularioCobro = ({ onCobroExitoso }) => {
                     <select name="metodoPago" value={cobro.metodoPago} onChange={handleChange} style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', backgroundColor: '#fff' }}>
                         <option value="EFECTIVO">Efectivo</option>
                         <option value="DEBITO">Transferencia / Débito</option>
-                        <option value="CREDITO">Tarjeta de Crédito</option>
                     </select>
                 </div>
 
