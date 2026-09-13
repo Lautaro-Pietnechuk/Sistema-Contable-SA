@@ -327,6 +327,7 @@ function ListarVentas({ show, handleClose }) {
                 <th>Cliente</th>
                 <th>Fecha</th>
                 <th>Total</th>
+                <th>Saldo pendiente</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
@@ -338,6 +339,9 @@ function ListarVentas({ show, handleClose }) {
                   <td style={{ padding: '12px' }}>{venta.cliente?.nombre || venta.clienteNombre || '-'}</td>
                   <td style={{ padding: '12px' }}>{formatFecha(venta.fecha)}</td>
                   <td style={{ padding: '12px' }}>{formatMoneda(venta.total)}</td>
+                  <td style={{ padding: '12px', fontWeight: 'bold', color: Number(venta.saldoPendiente || 0) > 0 ? '#dc3545' : '#198754' }}>
+                    {formatMoneda(venta.saldoPendiente)}
+                  </td>
                   
                   <td style={{ padding: '12px', color: obtenerColorEstado(venta.estado), fontWeight: 'bold' }}>
                     {venta.estado === 'ANULADA' ? 'Cancelada' : venta.estado === 'PAGADA' ? 'Pagada' : 'Pendiente'}

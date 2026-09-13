@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,8 @@ import com.sa.contable.repositorios.VentaRepositorio;
 
 @Service
 public class VentaServicio {
+
+    private static final Logger logger = LoggerFactory.getLogger(VentaServicio.class);
 
     private static final Long cuentaDebeCuentaCorriente = 121L; // deudores por venta - cuenta corriente
     private static final Long cuentaDebeEfectivo = 111L; // caja - efectivo
@@ -94,17 +98,13 @@ public class VentaServicio {
         venta.setNumeroComprobante("TEMP");
         venta.setFecha(ventaDTO.getFecha() != null ? ventaDTO.getFecha() : LocalDateTime.now());
         venta.setCliente(cliente);
+        venta.setTipoDePago(ventaDTO.getTipoDePago());
         venta.setObservaciones(ventaDTO.getObservaciones());
-        if (ventaDTO.getTipoDePago() == "efectivo" || ventaDTO.getTipoDePago() == "debito") {
-            venta.setEstado("PAGADA");
-        } else {
-            venta.setEstado("PENDIENTE");
-        }
+        venta.setEstado("PENDIENTE");
         venta.setTotal(0.0);
         Venta ventaGuardada = ventaRepositorio.save(venta);
         String comprobanteReal = "V-" + String.format("%05d", ventaGuardada.getId());
-        venta.setNumeroComprobante("VENTA-" + venta.getId());
-        ventaGuardada.setNumeroComprobante(comprobanteReal);
+        venta.setNumeroComprobante(comprobanteReal);
 
         // Procesar detalles
         Double subtotalVenta = 0.0;
@@ -199,12 +199,23 @@ public class VentaServicio {
         asientoServicio.crearAsiento(asientoDTO_CMV, usuarioId);
 
         venta.setTotal(subtotalVenta);
-        if (venta.getEstado().equals("PENDIENTE")) {
-            venta.setSaldoPendiente(venta.getTotal());
+        if ("CUENTA_CORRIENTE".equals(ventaDTO.getTipoDePago())) {
+            Double saldoAFavor = cliente.getSaldoAFavor();
+            Double saldoUsado = Math.min(saldoAFavor, venta.getTotal());
+            Double saldoPendiente = venta.getTotal() - saldoUsado;
+
+            cliente.setSaldoAFavor(saldoAFavor - saldoUsado);
+            clienteRepository.save(cliente);
+            venta.setSaldoPendiente(saldoPendiente);
+            logger.info("Saldo a favor aplicado a la venta: clienteId={}, ventaId={}, usado={}, restanteCliente={}, saldoPendienteVenta={}",
+                    cliente.getId(), venta.getId(), saldoUsado, cliente.getSaldoAFavor(), venta.getSaldoPendiente());
         } else {
             venta.setSaldoPendiente(0.0);
         }
-        ventaGuardada = ventaRepositorio.save(ventaGuardada);
+        ventaGuardada = ventaRepositorio.saveAndFlush(venta);
+        logger.info("Venta guardada: ventaId={}, tipoDePago={}, total={}, saldoPendiente={}, estado={}",
+                ventaGuardada.getId(), ventaGuardada.getTipoDePago(), ventaGuardada.getTotal(),
+                ventaGuardada.getSaldoPendiente(), ventaGuardada.getEstado());
         return convertirADTO(ventaGuardada);
     }
 

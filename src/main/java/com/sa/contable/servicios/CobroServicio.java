@@ -118,7 +118,15 @@ public class CobroServicio {
             ventaRepositorio.save(venta);
         }
 
-        logger.info("Finalizado el proceso de imputación. Vuelto/Excedente no imputado: ${}", plataDisponible);
+        if (plataDisponible > 0) {
+            Double saldoAFavorActual = cliente.getSaldoAFavor() != null ? cliente.getSaldoAFavor() : 0.0;
+            cliente.setSaldoAFavor(saldoAFavorActual + plataDisponible);
+            clienteRepositorio.save(cliente);
+            logger.info("Excedente convertido en saldo a favor: clienteId={}, monto={}, saldoAFavor={}",
+                clienteId, plataDisponible, cliente.getSaldoAFavor());
+        }
+
+        logger.info("Finalizado el proceso de imputación. Excedente acreditado: ${}", plataDisponible);
     }
 
     private void crearAsientoCobro(Cobro cobro, String metodoPago, Double monto, Long usuarioId) {

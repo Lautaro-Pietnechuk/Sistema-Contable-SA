@@ -18,6 +18,9 @@ public class Cliente {
     private String mail;
     private String telefono;
 
+    @Column
+    private Double saldoAFavor = 0.0;
+
     // Constructores
     public Cliente() {}
 
@@ -48,6 +51,17 @@ public class Cliente {
     }
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public Double getSaldoAFavor() {
+        return saldoAFavor != null ? saldoAFavor : 0.0;
+    }
+
+    public void setSaldoAFavor(Double saldoAFavor) {
+        if (saldoAFavor == null || saldoAFavor < 0) {
+            throw new IllegalArgumentException("El saldo a favor no puede ser nulo ni negativo.");
+        }
+        this.saldoAFavor = saldoAFavor;
     }
 
 

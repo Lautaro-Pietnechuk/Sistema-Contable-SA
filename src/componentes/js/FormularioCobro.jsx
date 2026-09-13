@@ -112,7 +112,7 @@ const FormularioCobro = ({ onCobroExitoso }) => {
                 <div>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px', color: '#555' }}>Aplicar cobro a:</label>
                     <select name="ventaId" value={cobro.ventaId} onChange={handleChange} disabled={!cobro.clienteId} style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', backgroundColor: '#fff' }}>
-                        <option value="">Automático (FIFO: venta más vieja primero)</option>
+                        <option value="">Automático (Venta más vieja primero)</option>
                         {ventasPendientes.map((venta) => (
                             <option key={venta.id} value={venta.id}>
                                 {venta.numeroComprobante} - {new Date(venta.fecha).toLocaleDateString('es-AR')} - Saldo: ${Number(venta.saldoPendiente).toFixed(2)}

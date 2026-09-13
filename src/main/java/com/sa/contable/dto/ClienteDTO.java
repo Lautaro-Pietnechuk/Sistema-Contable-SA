@@ -3,6 +3,7 @@ package com.sa.contable.DTO;
 public class ClienteDTO {
     private Long id;
     private String nombre;
+    private Double saldoAFavor;
 
     public ClienteDTO() {}
 
@@ -25,6 +26,14 @@ public class ClienteDTO {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public Double getSaldoAFavor() {
+        return saldoAFavor;
+    }
+
+    public void setSaldoAFavor(Double saldoAFavor) {
+        this.saldoAFavor = saldoAFavor;
     }
     
 }

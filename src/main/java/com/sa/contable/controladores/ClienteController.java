@@ -58,4 +58,9 @@ public class ClienteController {
             @RequestParam(required = false) String hasta) {
         return clienteService.obtenerDeudasPorCliente(id, desde, hasta);
     }
+
+    @GetMapping("/{id}/saldoFavor")
+    public Double obtenerSaldoAFavor(@PathVariable Long id) {
+        return clienteService.obtenerSaldoAFavor(id);
+    }
 }
