@@ -21,6 +21,9 @@ public class Cliente {
     @Column
     private Double saldoAFavor = 0.0;
 
+    @Column
+    private Double saldoPendiente = 0.0;
+
     // Constructores
     public Cliente() {}
 
@@ -64,5 +67,31 @@ public class Cliente {
         this.saldoAFavor = saldoAFavor;
     }
 
+    public Double getSaldoPendiente() {
+        return saldoPendiente != null ? saldoPendiente : 0.0;
+    }
+
+    public void setSaldoPendiente(Double saldoPendiente) {
+        if (saldoPendiente == null || saldoPendiente < 0) {
+            throw new IllegalArgumentException("El saldo pendiente no puede ser nulo ni negativo.");
+        }
+        this.saldoPendiente = saldoPendiente;
+    }
+
+    public void aumentarSaldoPendiente(Double importe) {
+        validarImporte(importe);
+        this.saldoPendiente = getSaldoPendiente() + importe;
+    }
+
+    public void disminuirSaldoPendiente(Double importe) {
+        validarImporte(importe);
+        this.saldoPendiente = Math.max(0.0, getSaldoPendiente() - importe);
+    }
+
+    private void validarImporte(Double importe) {
+        if (importe == null || importe < 0) {
+            throw new IllegalArgumentException("El importe no puede ser nulo ni negativo.");
+        }
+    }
 
     } 

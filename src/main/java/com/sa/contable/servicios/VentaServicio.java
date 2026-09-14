@@ -205,10 +205,11 @@ public class VentaServicio {
             Double saldoPendiente = venta.getTotal() - saldoUsado;
 
             cliente.setSaldoAFavor(saldoAFavor - saldoUsado);
-            clienteRepository.save(cliente);
+            cliente.aumentarSaldoPendiente(saldoPendiente);
             venta.setSaldoPendiente(saldoPendiente);
             logger.info("Saldo a favor aplicado a la venta: clienteId={}, ventaId={}, usado={}, restanteCliente={}, saldoPendienteVenta={}",
                     cliente.getId(), venta.getId(), saldoUsado, cliente.getSaldoAFavor(), venta.getSaldoPendiente());
+            clienteRepository.save(cliente);
         } else {
             venta.setSaldoPendiente(0.0);
         }

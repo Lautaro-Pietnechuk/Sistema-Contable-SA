@@ -381,7 +381,11 @@ const ResumenCuentaCorriente = () => {
                       <td style={{ padding: "10px", border: "1px solid #ddd" }}>
                         {esCobro
                           ? `Recibo de Cobro Nro ${mov.id} (${mov.metodoPago || "EFECTIVO"})`
-                          : `Factura de Venta Nro ${mov.numeroComprobante || mov.id}`}
+                          : mov.tipo === "NOTA_DEBITO"
+                            ? mov.numeroComprobante
+                            : mov.tipo === "NOTA_CREDITO"
+                              ? mov.numeroComprobante
+                              : `Factura de Venta Nro ${mov.numeroComprobante || mov.id}`}
                         {mov.observaciones && (
                           <span
                             style={{

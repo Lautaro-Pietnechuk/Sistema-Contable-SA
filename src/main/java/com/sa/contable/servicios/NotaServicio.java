@@ -87,6 +87,7 @@ public class NotaServicio {
                 logger.info("Saldo a favor generado por nota de crédito: clienteId={}, monto={}, saldoAFavor={}",
                         cliente.getId(), saldoAFavorGenerado, cliente.getSaldoAFavor());
             }
+            cliente.disminuirSaldoPendiente(montoAplicado);
             venta.setSaldoPendiente(saldoPendiente - montoAplicado);
             venta.setEstado("ANULADA");
             ventasRepositorio.save(venta);
@@ -136,12 +137,15 @@ public class NotaServicio {
             Cliente cliente = venta.getCliente();
             double saldoAFavorActual = cliente.getSaldoAFavor();
             double saldoAFavorUsado = Math.min(saldoAFavorActual, nota.getMonto().doubleValue());
+            double saldoPendienteGenerado = nota.getMonto().doubleValue() - saldoAFavorUsado;
             if (saldoAFavorUsado > 0) {
                 cliente.setSaldoAFavor(saldoAFavorActual - saldoAFavorUsado);
                 clienteRepositorio.save(cliente);
                 logger.info("Saldo a favor aplicado por nota de débito: clienteId={}, monto={}, saldoAFavor={}",
                         cliente.getId(), saldoAFavorUsado, cliente.getSaldoAFavor());
             }
+            cliente.aumentarSaldoPendiente(saldoPendienteGenerado);
+            clienteRepositorio.save(cliente);
 
                 AsientoDTO asientoDTO = new AsientoDTO();
                 asientoDTO.setFecha(nota.getFecha());

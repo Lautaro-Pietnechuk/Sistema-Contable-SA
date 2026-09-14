@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 import com.sa.contable.DTO.ClienteDTO;
 import com.sa.contable.DTO.MovimientoCuentaDTO;
 import com.sa.contable.entidades.Cliente;
+import com.sa.contable.entidades.Nota;
 import com.sa.contable.entidades.Venta;
 import com.sa.contable.repositorios.ClienteRepository;
+import com.sa.contable.repositorios.NotaRepositorio;
 import com.sa.contable.repositorios.VentaRepositorio;
 
 @Service
@@ -24,6 +26,9 @@ public class ClienteService {
 
     @Autowired
     private VentaRepositorio ventaRepositorio;
+
+    @Autowired
+    private NotaRepositorio notaRepositorio;
 
     public List<ClienteDTO> obtenerTodos() {
         System.out.println("--- Petición recibida en obtenerTodos() ---");
@@ -102,7 +107,22 @@ public class ClienteService {
             ? LocalDate.parse(hastaStr).atTime(LocalTime.MAX) 
             : LocalDate.now().atTime(LocalTime.MAX);
 
-    return ventaRepositorio.findVentasPendientesByClienteId(id, desde, hasta);
+        List<MovimientoCuentaDTO> movimientos = new java.util.ArrayList<>(
+            ventaRepositorio.findVentasPendientesByClienteId(id, desde, hasta));
+
+        List<Nota> notas = notaRepositorio.findByClienteIdAndFechaBetween(
+            id, desde.toLocalDate(), hasta.toLocalDate());
+        notas.stream()
+            .map(nota -> new MovimientoCuentaDTO(
+                nota.getIdNota(),
+                nota.getFecha().atStartOfDay(),
+                "Nota " + (nota.getTipo() == 'D' ? "de Débito" : "de Crédito") + " - Venta " + nota.getIdVenta(),
+                nota.getMonto().doubleValue(),
+                nota.getTipo() == 'D' ? "NOTA_DEBITO" : "NOTA_CREDITO",
+                nota.getMotivo()))
+            .forEach(movimientos::add);
+
+        return movimientos;
     }
 
     

@@ -6,5 +6,11 @@ public record MovimientoCuentaDTO(
     Long id,
     LocalDateTime fecha,
     String numeroComprobante,
-    Double monto
-) {}
+    Double monto,
+    String tipo,
+    String motivo
+) {
+    public MovimientoCuentaDTO(Long id, LocalDateTime fecha, String numeroComprobante, Double monto) {
+        this(id, fecha, numeroComprobante, monto, "VENTA", null);
+    }
+}

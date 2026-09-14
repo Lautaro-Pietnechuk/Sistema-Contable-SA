@@ -122,13 +122,15 @@ public class CobroServicio {
         cobro.setSaldoAFavorGenerado(plataDisponible);
         cobroRepositorio.save(cobro);
 
+        Double saldoAFavorActual = cliente.getSaldoAFavor();
         if (plataDisponible > 0) {
-            Double saldoAFavorActual = cliente.getSaldoAFavor() != null ? cliente.getSaldoAFavor() : 0.0;
             cliente.setSaldoAFavor(saldoAFavorActual + plataDisponible);
-            clienteRepositorio.save(cliente);
             logger.info("Excedente convertido en saldo a favor: clienteId={}, monto={}, saldoAFavor={}",
                 clienteId, plataDisponible, cliente.getSaldoAFavor());
         }
+        // Persistir siempre el cliente deja confirmado el saldo actual en la base,
+        // incluso cuando el cobro se aplicó completamente a una deuda.
+        clienteRepositorio.saveAndFlush(cliente);
 
         logger.info("Finalizado el proceso de imputación. Excedente acreditado: ${}", plataDisponible);
     }
