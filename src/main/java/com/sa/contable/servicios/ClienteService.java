@@ -49,6 +49,12 @@ public class ClienteService {
         return clienteRepository.findById(id);
     }
 
+    public Double obtenerSaldoAFavor(Long id) {
+        return clienteRepository.findById(id)
+                .map(Cliente::getSaldoAFavor)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+    }
+
     public Cliente registrar(Cliente cliente) {
         clienteExistente(cliente.getMail(), cliente.getNombre(), cliente.getTelefono());
         return clienteRepository.save(cliente);

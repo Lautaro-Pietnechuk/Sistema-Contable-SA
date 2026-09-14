@@ -17,6 +17,12 @@ public class Cobro {
     private LocalDateTime fecha = LocalDateTime.now();
     private Double monto; // Los $500 que te trajo el cliente
 
+    @Column
+    private Double montoAplicado = 0.0;
+
+    @Column
+    private Double saldoAFavorGenerado = 0.0;
+
     @ManyToOne
     private Cliente cliente;
 
@@ -64,6 +70,23 @@ public class Cobro {
 
     public void setMonto(Double monto) {
         this.monto = monto;
+    }
+
+    public Double getMontoAplicado() {
+        // Los cobros creados antes de este campo se consideran totalmente imputados.
+        return montoAplicado != null ? montoAplicado : (monto != null ? monto : 0.0);
+    }
+
+    public void setMontoAplicado(Double montoAplicado) {
+        this.montoAplicado = montoAplicado;
+    }
+
+    public Double getSaldoAFavorGenerado() {
+        return saldoAFavorGenerado != null ? saldoAFavorGenerado : 0.0;
+    }
+
+    public void setSaldoAFavorGenerado(Double saldoAFavorGenerado) {
+        this.saldoAFavorGenerado = saldoAFavorGenerado;
     }
 
     public void setCliente(Cliente cliente) {

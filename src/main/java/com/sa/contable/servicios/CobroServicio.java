@@ -118,6 +118,10 @@ public class CobroServicio {
             ventaRepositorio.save(venta);
         }
 
+        cobro.setMontoAplicado(montoCobrado - plataDisponible);
+        cobro.setSaldoAFavorGenerado(plataDisponible);
+        cobroRepositorio.save(cobro);
+
         if (plataDisponible > 0) {
             Double saldoAFavorActual = cliente.getSaldoAFavor() != null ? cliente.getSaldoAFavor() : 0.0;
             cliente.setSaldoAFavor(saldoAFavorActual + plataDisponible);
@@ -204,9 +208,20 @@ public class CobroServicio {
         // Lógica para revertir la imputación del cobro en las ventas
         Long idDelCliente = cobro.getCliente().getId();
         logger.debug("Buscando facturas canceladas para el Cliente ID: {} para restablecer la deuda anterior", idDelCliente);
-        List<Venta> ventasImputadas = ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(idDelCliente, "PAGADA");
+        List<Venta> ventasImputadas = ventaRepositorio
+                .findByClienteIdAndEstadoAndTipoDePagoOrderByFechaAsc(
+                        idDelCliente, "PAGADA", "CUENTA_CORRIENTE");
 
-        Double montoARevertir = cobro.getMonto();
+        Cliente cliente = cobro.getCliente();
+        Double saldoAFavorGenerado = cobro.getSaldoAFavorGenerado();
+        if (saldoAFavorGenerado > 0) {
+            cliente.setSaldoAFavor(Math.max(0.0, cliente.getSaldoAFavor() - saldoAFavorGenerado));
+            clienteRepositorio.save(cliente);
+            logger.info("Saldo a favor revertido por anulación del cobro: clienteId={}, monto={}, saldoAFavor={}",
+                    cliente.getId(), saldoAFavorGenerado, cliente.getSaldoAFavor());
+        }
+
+        Double montoARevertir = cobro.getMontoAplicado();
         logger.info("Monto total a devolver a las cuentas corrientes: ${}", montoARevertir);
 
         for (Venta venta : ventasImputadas) {

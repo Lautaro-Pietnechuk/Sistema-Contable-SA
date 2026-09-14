@@ -12,10 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sa.contable.DTO.AsientoDTO;
 import com.sa.contable.DTO.CuentaAsientoDTO;
+import com.sa.contable.entidades.Cliente;
 import com.sa.contable.entidades.Nota;
 import com.sa.contable.entidades.Producto;
 import com.sa.contable.entidades.Venta;
 import com.sa.contable.repositorios.NotaRepositorio;
+import com.sa.contable.repositorios.ClienteRepository;
 import com.sa.contable.repositorios.ProductoRepositorio;
 import com.sa.contable.repositorios.VentaRepositorio;
 
@@ -24,6 +26,9 @@ public class NotaServicio {
 
     @Autowired
     private NotaRepositorio notaRepositorio;
+
+    @Autowired
+    private ClienteRepository clienteRepositorio;
 
     @Autowired
     private VentaRepositorio ventasRepositorio;
@@ -71,6 +76,21 @@ public class NotaServicio {
         if (nota.getTipo() == 'C') {
             logger.info("Procesando Nota de Crédito (Anulación de venta).");
 
+            Cliente cliente = venta.getCliente();
+            double saldoPendiente = venta.getSaldoPendiente();
+            double montoNota = nota.getMonto().doubleValue();
+            double montoAplicado = Math.min(montoNota, saldoPendiente);
+            double saldoAFavorGenerado = montoNota - montoAplicado;
+
+            if (saldoAFavorGenerado > 0) {
+                cliente.setSaldoAFavor(cliente.getSaldoAFavor() + saldoAFavorGenerado);
+                logger.info("Saldo a favor generado por nota de crédito: clienteId={}, monto={}, saldoAFavor={}",
+                        cliente.getId(), saldoAFavorGenerado, cliente.getSaldoAFavor());
+            }
+            venta.setSaldoPendiente(saldoPendiente - montoAplicado);
+            venta.setEstado("ANULADA");
+            ventasRepositorio.save(venta);
+
             AsientoDTO asientoDTO = new AsientoDTO();
             asientoDTO.setFecha(nota.getFecha());
             asientoDTO.setDescripcion("Contra asiento por nota de Credito para venta ID: " + nota.getIdVenta() + " - Motivo: " + nota.getMotivo());
@@ -93,13 +113,6 @@ public class NotaServicio {
             asientoServicio.crearAsiento(asientoDTO, usuarioId);
             logger.info("Contrasiento creado exitosamente.");
 
-            logger.debug("Buscando venta ID: {} para validación y anulación", nota.getIdVenta());
-
-            if (Boolean.TRUE.equals(venta.getEstado().equals("ANULADA"))) {
-                logger.warn("Intento rechazado: La venta ID {} ya se encontraba anulada previamente.", nota.getIdVenta());
-                throw new IllegalStateException("La venta ya se encuentra anulada.");
-            }
-
             logger.debug("Iniciando restauración de stock para los productos de la venta ID: {}", nota.getIdVenta());
             venta.getDetalles().forEach(detalle -> {
                 int cantidad = detalle.getCantidad();
@@ -113,12 +126,22 @@ public class NotaServicio {
             });
             logger.info("Stock de la venta ID {} restaurado exitosamente.", nota.getIdVenta());
 
-            venta.setEstado("ANULADA");
+            clienteRepositorio.save(cliente);
             ventasRepositorio.save(venta);
             logger.info("Venta ID {} marcada como anulada en la base de datos.", venta.getId());
 
         } else if (nota.getTipo() == 'D') {
             logger.info("Procesando Nota de Débito (Ajuste a la venta).");
+
+            Cliente cliente = venta.getCliente();
+            double saldoAFavorActual = cliente.getSaldoAFavor();
+            double saldoAFavorUsado = Math.min(saldoAFavorActual, nota.getMonto().doubleValue());
+            if (saldoAFavorUsado > 0) {
+                cliente.setSaldoAFavor(saldoAFavorActual - saldoAFavorUsado);
+                clienteRepositorio.save(cliente);
+                logger.info("Saldo a favor aplicado por nota de débito: clienteId={}, monto={}, saldoAFavor={}",
+                        cliente.getId(), saldoAFavorUsado, cliente.getSaldoAFavor());
+            }
 
                 AsientoDTO asientoDTO = new AsientoDTO();
                 asientoDTO.setFecha(nota.getFecha());

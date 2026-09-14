@@ -42,4 +42,7 @@ public interface VentaRepositorio extends JpaRepository<Venta, Long> {
             @Param("hasta") LocalDateTime hasta);       
 
     List<Venta> findByClienteIdAndEstadoOrderByFechaAsc(Long clienteId, String estado);
+
+    List<Venta> findByClienteIdAndEstadoAndTipoDePagoOrderByFechaAsc(
+            Long clienteId, String estado, String tipoDePago);
 }
