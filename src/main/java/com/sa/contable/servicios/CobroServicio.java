@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -43,12 +44,12 @@ public class CobroServicio {
     private AsientoServicio asientoServicio;
 
     @Transactional
-    public void registrarCobro(Long clienteId, Double montoCobrado, String metodoPago, Long ventaId, Long usuarioId) {
+    public List<Cobro> registrarCobro(Long clienteId, Double montoCobrado, String metodoPago, Long ventaId, Long usuarioId) {
 
         logger.info("Iniciando proceso de registro de cobro para el Cliente ID: {} por un monto de ${}. Venta seleccionada: {}",
                 clienteId, montoCobrado, ventaId != null ? ventaId : "FIFO");
 
-        // 0. Buscar al cliente en la base de datos
+        // Buscar al cliente en la base de datos.
         Cliente cliente = clienteRepositorio.findById(clienteId)
                 .orElseThrow(() -> {
                     logger.error("Error al registrar cobro: No se encontró al Cliente ID: {}", clienteId);
@@ -57,19 +58,11 @@ public class CobroServicio {
 
         logger.debug("Cliente identificado exitosamente: {}", cliente.getNombre());
 
-        // 1. Guardás el recibo de cobro en su tabla para la caja
-        Cobro cobro = new Cobro();
-        cobro.setMonto(montoCobrado);
-        cobro.setCliente(cliente);
-        cobro.setMetodoPago(metodoPago != null ? metodoPago.toUpperCase() : "EFECTIVO");
+        String metodoPagoNormalizado = metodoPago != null ? metodoPago.toUpperCase() : "EFECTIVO";
 
-        cobroRepositorio.save(cobro);
-        logger.info("Recibo de Cobro guardado en base de datos. ID asignado: {}, Método: {}", cobro.getId(), cobro.getMetodoPago());
-
-        // 1.5 Crear asiento contable para el cobro
-        crearAsientoCobro(cobro, metodoPago, montoCobrado, usuarioId);
-
-        // Sin venta seleccionada se conserva FIFO; con ventaId se imputa únicamente a esa venta.
+        // La venta seleccionada se procesa primero. Después se continúa con las
+        // demás ventas pendientes para aplicar el excedente antes de generar
+        // saldo a favor.
         List<Venta> deudas;
         if (ventaId == null) {
             logger.debug("Buscando cuentas corrientes con saldo pendiente para el cliente: {}", cliente.getNombre());
@@ -83,12 +76,18 @@ public class CobroServicio {
             if (!"PENDIENTE".equals(ventaSeleccionada.getEstado()) || ventaSeleccionada.getSaldoPendiente() <= 0) {
                 throw new RuntimeException("La venta seleccionada no tiene saldo pendiente.");
             }
-            deudas = List.of(ventaSeleccionada);
+                deudas = new ArrayList<>();
+                deudas.add(ventaSeleccionada);
+                ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(clienteId, "PENDIENTE")
+                    .stream()
+                    .filter(venta -> !venta.getId().equals(ventaId))
+                    .forEach(deudas::add);
             logger.info("Se seleccionó manualmente la Venta ID: {}", ventaId);
         }
         logger.info("Se encontraron {} facturas pendientes de pago para este cliente", deudas.size());
 
-        Double plataDisponible = montoCobrado;
+        double plataDisponible = montoCobrado;
+        List<Cobro> cobrosGenerados = new ArrayList<>();
 
         for (Venta venta : deudas) {
             if (plataDisponible <= 0) {
@@ -96,43 +95,65 @@ public class CobroServicio {
                 break;
             }
 
-            Double saldoDeLaFactura = venta.getSaldoPendiente();
+            double saldoDeLaFactura = venta.getSaldoPendiente();
+            double montoAplicado = Math.min(plataDisponible, saldoDeLaFactura);
             logger.debug("Procesando Venta ID: {} | Saldo pendiente actual: ${} | Plata restante en mano: ${}",
                     venta.getId(), saldoDeLaFactura, plataDisponible);
 
-            if (plataDisponible >= saldoDeLaFactura) {
-                // La plata alcanza para apagar esta factura entera
-                venta.setSaldoPendiente(0.0);
-                venta.setEstado("PAGADA");
-                plataDisponible -= saldoDeLaFactura;
+            // Cada venta recibe un Cobro independiente y una única referencia
+            // a esa venta.
+            Cobro cobroVenta = crearCobro(cliente, venta, montoAplicado, 0.0, metodoPagoNormalizado, usuarioId);
+            cobrosGenerados.add(cobroVenta);
 
-                logger.info("Venta ID: {} cubierta totalmente. Nuevo saldo: $0.0 | Estado: PAGADA", venta.getId());
-            } else {
-                // La plata no alcanza para toda la factura, es un pago parcial
-                venta.setSaldoPendiente(saldoDeLaFactura - plataDisponible);
-                logger.info("Venta ID: {} cubierta parcialmente. Cobrado: ${} | Queda un remanente de deuda de: ${}",
-                        venta.getId(), plataDisponible, venta.getSaldoPendiente());
-
-                plataDisponible = 0.0; // Se acabó la plata del cobro
-            }
+            venta.setSaldoPendiente(saldoDeLaFactura - montoAplicado);
             ventaRepositorio.save(venta);
+            plataDisponible -= montoAplicado;
+
+            logger.info("Venta ID: {} recibió ${}. Nuevo saldo: ${} | Estado: {}",
+                    venta.getId(), montoAplicado, venta.getSaldoPendiente(), venta.getEstado());
         }
 
-        cobro.setMontoAplicado(montoCobrado - plataDisponible);
-        cobro.setSaldoAFavorGenerado(plataDisponible);
-        cobroRepositorio.save(cobro);
-
-        Double saldoAFavorActual = cliente.getSaldoAFavor();
+        // El excedente se guarda como otro cobro, sin venta asociada.
         if (plataDisponible > 0) {
-            cliente.setSaldoAFavor(saldoAFavorActual + plataDisponible);
+                Cobro cobroSaldoAFavor = crearCobro(
+                    cliente, null, plataDisponible, plataDisponible, metodoPagoNormalizado, usuarioId);
+            cobrosGenerados.add(cobroSaldoAFavor);
+
+            cliente.setSaldoAFavor(cliente.getSaldoAFavor() + plataDisponible);
             logger.info("Excedente convertido en saldo a favor: clienteId={}, monto={}, saldoAFavor={}",
                 clienteId, plataDisponible, cliente.getSaldoAFavor());
         }
+
+        double montoAplicadoTotal = montoCobrado - plataDisponible;
+        if (montoAplicadoTotal > 0) {
+            cliente.setSaldoPendiente(Math.max(0.0, cliente.getSaldoPendiente() - montoAplicadoTotal));
+            logger.info("Saldo pendiente del cliente actualizado por cobro: clienteId={}, montoAplicado={}, saldoPendiente={}",
+                    clienteId, montoAplicadoTotal, cliente.getSaldoPendiente());
+        }
+
         // Persistir siempre el cliente deja confirmado el saldo actual en la base,
         // incluso cuando el cobro se aplicó completamente a una deuda.
         clienteRepositorio.saveAndFlush(cliente);
 
         logger.info("Finalizado el proceso de imputación. Excedente acreditado: ${}", plataDisponible);
+        return cobrosGenerados;
+    }
+
+    private Cobro crearCobro(Cliente cliente, Venta venta, double monto, double saldoAFavorGenerado,
+            String metodoPago, Long usuarioId) {
+        Cobro cobro = new Cobro();
+        cobro.setMonto(monto);
+        cobro.setMontoAplicado(venta != null ? monto : 0.0);
+        cobro.setSaldoAFavorGenerado(saldoAFavorGenerado);
+        cobro.setCliente(cliente);
+        cobro.setVenta(venta);
+        cobro.setMetodoPago(metodoPago);
+
+        cobroRepositorio.save(cobro);
+        crearAsientoCobro(cobro, metodoPago, monto, usuarioId);
+        logger.info("Cobro individual creado. ID: {}, ventaId: {}, monto: {}",
+                cobro.getId(), venta != null ? venta.getId() : null, monto);
+        return cobro;
     }
 
     private void crearAsientoCobro(Cobro cobro, String metodoPago, Double monto, Long usuarioId) {
@@ -200,56 +221,42 @@ public class CobroServicio {
             throw new RuntimeException("El cobro ya está anulado.");
         }
 
+        Venta ventaImputada = cobro.getVenta();
+
         cobro.setAnulado(true);
+        cobro.setVenta(null);
         cobroRepositorio.save(cobro);
         logger.warn("El estado del Cobro ID: {} ha sido cambiado a ANULADO con éxito. Motivo: {}", cobro.getId(), motivo);
 
         // Registrar asiento de reversa para anulación
         crearAsientoAnulacion(cobro, motivo, usuarioId);
 
-        // Lógica para revertir la imputación del cobro en las ventas
-        Long idDelCliente = cobro.getCliente().getId();
-        logger.debug("Buscando facturas canceladas para el Cliente ID: {} para restablecer la deuda anterior", idDelCliente);
-        List<Venta> ventasImputadas = ventaRepositorio
-                .findByClienteIdAndEstadoAndTipoDePagoOrderByFechaAsc(
-                        idDelCliente, "PAGADA", "CUENTA_CORRIENTE");
-
         Cliente cliente = cobro.getCliente();
         Double saldoAFavorGenerado = cobro.getSaldoAFavorGenerado();
         if (saldoAFavorGenerado > 0) {
             cliente.setSaldoAFavor(Math.max(0.0, cliente.getSaldoAFavor() - saldoAFavorGenerado));
-            clienteRepositorio.save(cliente);
             logger.info("Saldo a favor revertido por anulación del cobro: clienteId={}, monto={}, saldoAFavor={}",
                     cliente.getId(), saldoAFavorGenerado, cliente.getSaldoAFavor());
         }
 
+        Double montoAplicado = cobro.getMontoAplicado();
+        if (montoAplicado > 0) {
+            cliente.setSaldoPendiente(cliente.getSaldoPendiente() + montoAplicado);
+            logger.info("Saldo pendiente restaurado por anulación del cobro: clienteId={}, monto={}, saldoPendiente={}",
+                    cliente.getId(), montoAplicado, cliente.getSaldoPendiente());
+        }
+        clienteRepositorio.saveAndFlush(cliente);
+
         Double montoARevertir = cobro.getMontoAplicado();
-        logger.info("Monto total a devolver a las cuentas corrientes: ${}", montoARevertir);
+        logger.info("Monto total a devolver a la cuenta corriente: ${}", montoARevertir);
 
-        for (Venta venta : ventasImputadas) {
-            if (montoARevertir <= 0) {
-                break;
-            }
+        if (ventaImputada != null && montoARevertir > 0) {
+            ventaImputada.setSaldoPendiente(ventaImputada.getSaldoPendiente() + montoARevertir);
+            ventaImputada.setEstado("PENDIENTE");
+            ventaRepositorio.saveAndFlush(ventaImputada);
 
-            Double saldoActual = venta.getSaldoPendiente();
-
-            if (saldoActual == 0) {
-                // Esta factura estaba completamente pagada, ahora se vuelve pendiente
-                venta.setSaldoPendiente(montoARevertir);
-                venta.setEstado("PENDIENTE");
-
-                logger.info("Reversión aplicada a Venta ID: {}. Pasa de PAGADA a PENDIENTE con un saldo de ${}",
-                        venta.getId(), venta.getSaldoPendiente());
-                montoARevertir = 0.0;
-            } else {
-                // Esta factura ya tenía saldo pendiente, le sumamos el monto del cobro anulado
-                venta.setSaldoPendiente(saldoActual + montoARevertir);
-
-                logger.info("Reversión parcial aplicada a Venta ID: {}. Nuevo saldo acumulado de deuda: ${}",
-                        venta.getId(), venta.getSaldoPendiente());
-                montoARevertir = 0.0;
-            }
-            ventaRepositorio.save(venta);
+            logger.info("Reversión aplicada a Venta ID: {}. Nuevo saldo pendiente: ${}",
+                    ventaImputada.getId(), ventaImputada.getSaldoPendiente());
         }
 
         logger.info("Proceso de desimputación por anulación completado.");

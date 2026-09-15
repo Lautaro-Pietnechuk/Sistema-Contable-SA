@@ -44,9 +44,19 @@ public class CobroControlador {
             System.out.println("==================================================\n");
 
             // Ejecutamos la lógica de imputación en el servicio
-            cobroServicio.registrarCobro(request.getClienteId(), request.getMonto(), request.getMetodoPago(), request.getVentaId(), 1L);
-            
-            return ResponseEntity.ok().body("{\"message\": \"Cobro procesado e imputado con éxito.\"}");
+                var cobrosGenerados = cobroServicio.registrarCobro(
+                    request.getClienteId(),
+                    request.getMonto(),
+                    request.getMetodoPago(),
+                    request.getVentaId(),
+                    1L);
+
+                var respuesta = cobrosGenerados.stream()
+                    .map(c -> new CobroResponse(c.getId(), c.getFecha(), c.getMonto(),
+                        c.getMetodoPago(), c.getAnulado()))
+                    .toList();
+
+                return ResponseEntity.ok(respuesta);
             
         } catch (RuntimeException e) {
             System.out.println("❌ [ERROR COBRO] - No se pudo procesar: " + e.getMessage());

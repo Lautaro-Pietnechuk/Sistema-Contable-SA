@@ -57,7 +57,6 @@ com\sa\contable\DTO\SaldoDTO.class
 com\sa\contable\entidades\Nota.class
 com\sa\contable\Configuracion\JwtResponse.class
 com\sa\contable\Configuracion\JwtUtil.class
-com\sa\contable\servicios\CobroServicio.class
 com\sa\contable\DTO\DeudaClienteDTO.class
 com\sa\contable\entidades\Producto.class
 com\sa\contable\entidades\Usuario.class

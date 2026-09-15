@@ -13,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sa.contable.DTO.AsientoDTO;
 import com.sa.contable.DTO.CuentaAsientoDTO;
 import com.sa.contable.entidades.Cliente;
+import com.sa.contable.entidades.Cobro;
 import com.sa.contable.entidades.Nota;
 import com.sa.contable.entidades.Producto;
 import com.sa.contable.entidades.Venta;
+import com.sa.contable.repositorios.CobroRepositorio;
 import com.sa.contable.repositorios.NotaRepositorio;
 import com.sa.contable.repositorios.ClienteRepository;
 import com.sa.contable.repositorios.ProductoRepositorio;
@@ -32,6 +34,9 @@ public class NotaServicio {
 
     @Autowired
     private VentaRepositorio ventasRepositorio;
+
+    @Autowired
+    private CobroRepositorio cobroRepositorio;
 
     @Autowired
     private ProductoRepositorio productoRepositorio;
@@ -87,10 +92,31 @@ public class NotaServicio {
                 logger.info("Saldo a favor generado por nota de crédito: clienteId={}, monto={}, saldoAFavor={}",
                         cliente.getId(), saldoAFavorGenerado, cliente.getSaldoAFavor());
             }
-            cliente.disminuirSaldoPendiente(montoAplicado);
+            double saldoPendienteClienteAnterior = cliente.getSaldoPendiente();
+            cliente.setSaldoPendiente(Math.max(0.0, saldoPendienteClienteAnterior - montoAplicado));
+
+            List<Cobro> cobrosVinculados = cobroRepositorio.findByVentaIdAndMontoAplicadoGreaterThan(venta.getId(), 0.0);
+            double montoCobrosARevertir = 0.0;
+            for (Cobro cobro : cobrosVinculados) {
+                double montoARevertir = cobro.getMontoAplicado();
+                if (montoARevertir > 0) {
+                    cobro.setMontoAplicado(0.0);
+                    cobro.setVenta(null);
+                    montoCobrosARevertir += montoARevertir;
+                    cobroRepositorio.save(cobro);
+                    logger.info("Cobro ID {} desvinculado de la venta anulada. Monto aplicado revertido: {}",
+                            cobro.getId(), montoARevertir);
+                }
+            }
+            if (montoCobrosARevertir > 0) {
+                cliente.setSaldoAFavor(cliente.getSaldoAFavor() + montoCobrosARevertir);
+                logger.info("Saldo a favor restaurado por venta anulada: clienteId={}, monto={}, saldoAFavor={}",
+                        cliente.getId(), montoCobrosARevertir, cliente.getSaldoAFavor());
+            }
+
             venta.setSaldoPendiente(saldoPendiente - montoAplicado);
             venta.setEstado("ANULADA");
-            ventasRepositorio.save(venta);
+            ventasRepositorio.saveAndFlush(venta);
 
             AsientoDTO asientoDTO = new AsientoDTO();
             asientoDTO.setFecha(nota.getFecha());
@@ -127,23 +153,29 @@ public class NotaServicio {
             });
             logger.info("Stock de la venta ID {} restaurado exitosamente.", nota.getIdVenta());
 
-            clienteRepositorio.save(cliente);
-            ventasRepositorio.save(venta);
+            clienteRepositorio.saveAndFlush(cliente);
             logger.info("Venta ID {} marcada como anulada en la base de datos.", venta.getId());
 
         } else if (nota.getTipo() == 'D') {
             logger.info("Procesando Nota de Débito (Ajuste a la venta).");
 
             Cliente cliente = venta.getCliente();
+            double montoNota = nota.getMonto().doubleValue();
             double saldoAFavorActual = cliente.getSaldoAFavor();
-            double saldoAFavorUsado = Math.min(saldoAFavorActual, nota.getMonto().doubleValue());
-            double saldoPendienteGenerado = nota.getMonto().doubleValue() - saldoAFavorUsado;
+            double saldoAFavorUsado = Math.min(saldoAFavorActual, montoNota);
+            double saldoPendienteGenerado = montoNota - saldoAFavorUsado;
             if (saldoAFavorUsado > 0) {
                 cliente.setSaldoAFavor(saldoAFavorActual - saldoAFavorUsado);
-                clienteRepositorio.save(cliente);
                 logger.info("Saldo a favor aplicado por nota de débito: clienteId={}, monto={}, saldoAFavor={}",
                         cliente.getId(), saldoAFavorUsado, cliente.getSaldoAFavor());
             }
+
+            venta.setTotal(venta.getTotal() + montoNota);
+            venta.setSaldoPendiente(venta.getSaldoPendiente() + saldoPendienteGenerado);
+            ventasRepositorio.save(venta);
+            logger.info("Venta actualizada por nota de débito: ventaId={}, total={}, saldoPendiente={}",
+                    venta.getId(), venta.getTotal(), venta.getSaldoPendiente());
+
             cliente.aumentarSaldoPendiente(saldoPendienteGenerado);
             clienteRepositorio.save(cliente);
 

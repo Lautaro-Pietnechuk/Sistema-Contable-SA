@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.sa.contable.CuentaServicioTest" time="0.078" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.sa.contable.CobroServicioTest" time="1.741" tests="2" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -10,7 +10,6 @@
     <property name="user.variant" value=""/>
     <property name="java.vendor.url" value="https://adoptium.net/"/>
     <property name="user.timezone" value="America/Buenos_Aires"/>
-    <property name="org.jboss.logging.provider" value="slf4j"/>
     <property name="os.name" value="Windows 10"/>
     <property name="java.vm.specification.version" value="21"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
@@ -31,8 +30,6 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="FILE_LOG_CHARSET" value="UTF-8"/>
-    <property name="java.awt.headless" value="true"/>
     <property name="surefire.real.class.path" value="C:\Users\Rama\AppData\Local\Temp\surefire8008824656417648156\surefirebooter-20260914204335363_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
@@ -48,14 +45,11 @@
     <property name="localRepository" value="C:\Users\Rama\.m2\repository"/>
     <property name="java.vendor.url.bug" value="https://github.com/adoptium/adoptium-support/issues"/>
     <property name="java.io.tmpdir" value="C:\Users\Rama\AppData\Local\Temp\"/>
-    <property name="com.zaxxer.hikari.pool_number" value="1"/>
     <property name="java.version" value="21.0.12"/>
     <property name="user.dir" value="C:\Users\Rama\Documents\GitHub\Sistema-Contable-SA.worktrees\update-client-balance-on-modification"/>
     <property name="os.arch" value="amd64"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="PID" value="4424"/>
     <property name="sun.os.patch.level" value=""/>
-    <property name="CONSOLE_LOG_CHARSET" value="UTF-8"/>
     <property name="native.encoding" value="Cp1252"/>
     <property name="java.library.path" value="C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;c:\Users\Rama\AppData\Roaming\Code\User\globalStorage\github.copilot-chat\debugCommand;c:\Users\Rama\AppData\Roaming\Code\User\globalStorage\github.copilot-chat\copilotCli;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files\Eclipse Adoptium\jdk-25.0.4.101-hotspot\bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.8-hotspot\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Program Files\Go\bin;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;d:\iracing\d3dgear;D:\Aplicaciones\Process Lasso\;;C:\Program Files\nodejs\;C:\Users\Rama\AppData\Local\Microsoft\WindowsApps;C:\Users\Rama\go\bin;C:\Users\Rama\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Rama\AppData\Local\GitHubDesktop\bin;C:\ProgramData\Rama\GitHubDesktop\bin;C:\Users\Rama\AppData\Roaming\npm;c:\Users\Rama\.vscode\extensions\vscjava.vscode-java-debug-0.59.0\bundled\scripts\noConfigScripts;."/>
     <property name="java.vm.info" value="mixed mode, sharing"/>
@@ -64,7 +58,38 @@
     <property name="java.vm.version" value="21.0.12+8-LTS"/>
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
-    <property name="LOGGED_APPLICATION_NAME" value="[contable] "/>
   </properties>
-  <testcase name="testCrearCuenta" classname="com.sa.contable.CuentaServicioTest" time="0.077"/>
+  <testcase name="registrarCobroDebeCrearUnCobroPorVentaYOtroPorSaldoAFavor" classname="com.sa.contable.CobroServicioTest" time="1.685">
+    <system-out><![CDATA[20:43:37.765 [main] INFO com.sa.contable.servicios.CobroServicio -- Iniciando proceso de registro de cobro para el Cliente ID: 1 por un monto de $5000.0. Venta seleccionada: 10
+20:43:37.777 [main] INFO com.sa.contable.servicios.CobroServicio -- Se seleccionó manualmente la Venta ID: 10
+20:43:37.777 [main] INFO com.sa.contable.servicios.CobroServicio -- Se encontraron 2 facturas pendientes de pago para este cliente
+20:43:37.783 [main] INFO com.sa.contable.servicios.CobroServicio -- Asiento de cobro creado para cobro ID: null
+20:43:37.784 [main] INFO com.sa.contable.servicios.CobroServicio -- Cobro individual creado. ID: null, ventaId: 10, monto: 2000.0
+20:43:37.784 [main] INFO com.sa.contable.servicios.CobroServicio -- Venta ID: 10 recibió $2000.0. Nuevo saldo: $0.0 | Estado: PAGADA
+20:43:37.784 [main] INFO com.sa.contable.servicios.CobroServicio -- Asiento de cobro creado para cobro ID: null
+20:43:37.784 [main] INFO com.sa.contable.servicios.CobroServicio -- Cobro individual creado. ID: null, ventaId: 20, monto: 2000.0
+20:43:37.785 [main] INFO com.sa.contable.servicios.CobroServicio -- Venta ID: 20 recibió $2000.0. Nuevo saldo: $0.0 | Estado: PAGADA
+20:43:37.785 [main] INFO com.sa.contable.servicios.CobroServicio -- Asiento de cobro creado para cobro ID: null
+20:43:37.785 [main] INFO com.sa.contable.servicios.CobroServicio -- Cobro individual creado. ID: null, ventaId: null, monto: 1000.0
+20:43:37.785 [main] INFO com.sa.contable.servicios.CobroServicio -- Excedente convertido en saldo a favor: clienteId=1, monto=1000.0, saldoAFavor=1000.0
+20:43:37.785 [main] INFO com.sa.contable.servicios.CobroServicio -- Saldo pendiente del cliente actualizado por cobro: clienteId=1, montoAplicado=4000.0, saldoPendiente=0.0
+20:43:37.785 [main] INFO com.sa.contable.servicios.CobroServicio -- Finalizado el proceso de imputación. Excedente acreditado: $1000.0
+]]></system-out>
+    <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\Rama\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.19\byte-buddy-agent-1.14.19.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+  </testcase>
+  <testcase name="anularCobroDebeRestaurarSaldoAFavorYSaldoPendienteDelCliente" classname="com.sa.contable.CobroServicioTest" time="0.013">
+    <system-out><![CDATA[20:43:37.840 [main] WARN com.sa.contable.servicios.CobroServicio -- Iniciando solicitud de ANULACIÓN para el Cobro ID: 1 - Motivo: Cobro incorrecto
+20:43:37.841 [main] WARN com.sa.contable.servicios.CobroServicio -- El estado del Cobro ID: 1 ha sido cambiado a ANULADO con éxito. Motivo: Cobro incorrecto
+20:43:37.844 [main] INFO com.sa.contable.servicios.CobroServicio -- Asiento de anulación creado para cobro ID: 1
+20:43:37.844 [main] INFO com.sa.contable.servicios.CobroServicio -- Saldo a favor revertido por anulación del cobro: clienteId=1, monto=30.0, saldoAFavor=20.0
+20:43:37.844 [main] INFO com.sa.contable.servicios.CobroServicio -- Saldo pendiente restaurado por anulación del cobro: clienteId=1, monto=90.0, saldoPendiente=190.0
+20:43:37.844 [main] INFO com.sa.contable.servicios.CobroServicio -- Monto total a devolver a la cuenta corriente: $90.0
+20:43:37.844 [main] INFO com.sa.contable.servicios.CobroServicio -- Reversión aplicada a Venta ID: 10. Nuevo saldo pendiente: $90.0
+20:43:37.845 [main] INFO com.sa.contable.servicios.CobroServicio -- Proceso de desimputación por anulación completado.
+]]></system-out>
+  </testcase>
 </testsuite>

@@ -35,8 +35,11 @@ public interface VentaRepositorio extends JpaRepository<Venta, Long> {
 // Cambiamos el tipo de retorno a List<MovimientoCuentaDTO>
     @Query("SELECT new com.sa.contable.DTO.MovimientoCuentaDTO(v.id, v.fecha, v.numeroComprobante, v.total) "
             + "FROM Venta v "
-            + "WHERE v.cliente.id = :clienteId AND v.estado = 'PENDIENTE' AND v.fecha BETWEEN :desde AND :hasta")
-    List<MovimientoCuentaDTO> findVentasPendientesByClienteId(
+            + "WHERE v.cliente.id = :clienteId "
+            + "AND v.tipoDePago = 'CUENTA_CORRIENTE' "
+            + "AND v.estado <> 'ANULADA' "
+            + "AND v.fecha BETWEEN :desde AND :hasta")
+    List<MovimientoCuentaDTO> findVentasCuentaCorrienteByClienteId(
             @Param("clienteId") Long clienteId,
             @Param("desde") LocalDateTime desde,
             @Param("hasta") LocalDateTime hasta);       

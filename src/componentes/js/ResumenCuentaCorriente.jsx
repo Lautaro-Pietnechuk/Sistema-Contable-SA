@@ -51,7 +51,9 @@ const ResumenCuentaCorriente = () => {
       ]);
 
       const movimientos = [
-        ...respuestaDeudas.data.filter(mov => mov.estado !== "ANULADA"),
+        ...respuestaDeudas.data.filter(
+          mov => mov.estado !== "ANULADA" && mov.tipo !== "NOTA_DEBITO"
+        ),
         ...respuestaCobros.data
           .filter(cobro => !cobro.anulado)
           .map(cobro => ({

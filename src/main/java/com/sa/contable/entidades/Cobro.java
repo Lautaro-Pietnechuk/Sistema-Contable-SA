@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 
@@ -17,14 +18,18 @@ public class Cobro {
     private LocalDateTime fecha = LocalDateTime.now();
     private Double monto; // Los $500 que te trajo el cliente
 
-    @Column
+    @Column // Monto que se aplicó a las ventas pendientes del cliente. Si el cliente trajo $500 y tenía $400 de deuda, este campo será $400 y el otro $100 se guardará como saldo a favor.
     private Double montoAplicado = 0.0;
 
-    @Column
+    @Column // Saldo a favor generado por este cobro. Si el cliente trajo $500 y tenía $400 de deuda, este campo será $100 y el otro $400 se aplicará a la deuda.
     private Double saldoAFavorGenerado = 0.0;
 
     @ManyToOne
     private Cliente cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "venta_id")
+    private Venta venta;
 
     private String metodoPago; // "EFECTIVO", "TRANSFERENCIA"
 
@@ -91,6 +96,14 @@ public class Cobro {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public Venta getVenta() {
+        return venta;
+    }
+
+    public void setVenta(Venta venta) {
+        this.venta = venta;
     }
 
     public void setMetodoPago(String metodoPago) {

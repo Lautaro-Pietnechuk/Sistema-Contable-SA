@@ -26,7 +26,12 @@ function DetallesClientes({ show, handleClose, cliente }) {
 
 			try {
 				const response = await axios.get(`http://localhost:8080/api/ventas/cliente/${cliente.id}`);
-				const ventasCliente = Array.isArray(response.data) ? response.data : [];
+				const ventasCliente = Array.isArray(response.data)
+					? response.data.filter((venta) => {
+						const estado = String(venta.estado || '').trim().toUpperCase();
+						return estado !== 'ANULADA' && estado !== 'CANCELADA';
+					})
+					: [];
 				setVentas(ventasCliente);
 			} catch (error) {
 				console.error('Error al obtener ventas del cliente:', error);
@@ -42,6 +47,20 @@ function DetallesClientes({ show, handleClose, cliente }) {
 	const totalAcumulado = useMemo(() => {
 		return ventas.reduce((acc, venta) => acc + Number(venta.total || 0), 0);
 	}, [ventas]);
+
+	const saldoPendiente = useMemo(() => {
+		return ventas.reduce((acc, venta) => acc + Number(venta.saldoPendiente || 0), 0);
+	}, [ventas]);
+
+	const posicionCuenta = useMemo(() => {
+		const saldoAFavor = Number(cliente?.saldoAFavor || 0);
+		const diferencia = saldoPendiente - saldoAFavor;
+
+		return {
+			saldoPendiente: Math.max(diferencia, 0),
+			saldoAFavor: Math.max(-diferencia, 0)
+		};
+	}, [cliente?.saldoAFavor, saldoPendiente]);
 
 	const toggleVentaExpandida = (ventaId) => {
 		setVentasExpandidas((prev) => ({
@@ -108,6 +127,13 @@ function DetallesClientes({ show, handleClose, cliente }) {
 
 				<h3 style={{ marginTop: '20px', marginBottom: '8px' }}>Ventas del cliente</h3>
 				<div style={campo}><strong>Total vendido acumulado:</strong> {formatMoneda(totalAcumulado)}</div>
+				{posicionCuenta.saldoPendiente > 0 ? (
+					<div style={campo}><strong>Saldo pendiente a pagar:</strong> {formatMoneda(posicionCuenta.saldoPendiente)}</div>
+				) : posicionCuenta.saldoAFavor > 0 ? (
+					<div style={campo}><strong>Saldo a favor:</strong> {formatMoneda(posicionCuenta.saldoAFavor)}</div>
+				) : (
+					<div style={campo}><strong>Saldo:</strong> $0,00</div>
+				)}
 
 				{loadingVentas && <p style={{ margin: '8px 0' }}>Cargando ventas...</p>}
 				{errorVentas && <p style={{ margin: '8px 0', color: '#842029' }}>{errorVentas}</p>}

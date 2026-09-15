@@ -20,5 +20,7 @@ public interface CobroRepositorio extends JpaRepository<Cobro, Long> {
     // Agregá esta línea adentro de tu VentaRepositorio.java
     List<Venta> findByClienteIdAndAnuladoOrderByFechaAsc(Long clienteId, Boolean anulado);
 
+    List<Cobro> findByVentaIdAndMontoAplicadoGreaterThan(Long ventaId, Double montoAplicado);
+
     List<Cobro> findByClienteIdAndFechaBetweenOrderByFechaDesc(Long clienteId, LocalDateTime desde, LocalDateTime hasta);
 }

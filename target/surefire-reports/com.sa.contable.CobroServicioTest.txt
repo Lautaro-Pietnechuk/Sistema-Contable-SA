@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
-Test set: com.sa.contable.CuentaServicioTest
+Test set: com.sa.contable.CobroServicioTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.078 s -- in com.sa.contable.CuentaServicioTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.741 s -- in com.sa.contable.CobroServicioTest

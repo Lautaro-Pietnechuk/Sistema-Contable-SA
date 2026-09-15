@@ -108,7 +108,7 @@ public class ClienteService {
             : LocalDate.now().atTime(LocalTime.MAX);
 
         List<MovimientoCuentaDTO> movimientos = new java.util.ArrayList<>(
-            ventaRepositorio.findVentasPendientesByClienteId(id, desde, hasta));
+            ventaRepositorio.findVentasCuentaCorrienteByClienteId(id, desde, hasta));
 
         List<Nota> notas = notaRepositorio.findByClienteIdAndFechaBetween(
             id, desde.toLocalDate(), hasta.toLocalDate());
