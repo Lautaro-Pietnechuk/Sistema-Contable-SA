@@ -15,7 +15,7 @@ public class VentaDTO {
     private Double iva;
     private Double total;
     private String observaciones;
-    private String tipoDePago; // "EFECTIVO", "DEBITO" o "CUENTA_CORRIENTE"
+    private String tipoDePago; // "EFECTIVO", "DEBITO", "TRANSFERENCIA" o "CUENTA_CORRIENTE"
     private String estado = "PENDIENTE"; 
     private Double saldoPendiente;
 
@@ -125,8 +125,8 @@ public class VentaDTO {
         }
         
         String limpio = tipoDePago.trim().toUpperCase();
-        if (!limpio.matches("EFECTIVO|DEBITO|CUENTA_CORRIENTE")) {
-            throw new IllegalArgumentException("Tipo de pago inválido. Debe ser 'EFECTIVO', 'DEBITO' o 'CUENTA_CORRIENTE'.");
+        if (!limpio.matches("EFECTIVO|DEBITO|TRANSFERENCIA|CUENTA_CORRIENTE")) {
+            throw new IllegalArgumentException("Tipo de pago inválido. Debe ser 'EFECTIVO', 'DEBITO', 'TRANSFERENCIA' o 'CUENTA_CORRIENTE'.");
         }
         this.tipoDePago = limpio;
     }

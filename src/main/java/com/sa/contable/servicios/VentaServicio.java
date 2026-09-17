@@ -158,6 +158,7 @@ public class VentaServicio {
                 movimientoDebeVENTA.setCuentaCodigo(cuentaDebeEfectivo);
                 break;
             case "DEBITO":
+            case "TRANSFERENCIA":
                 movimientoDebeVENTA.setCuentaCodigo(cuentaDebeDebito);
                 break;
             case "CUENTA_CORRIENTE":
@@ -199,7 +200,9 @@ public class VentaServicio {
         asientoServicio.crearAsiento(asientoDTO_CMV, usuarioId);
 
         venta.setTotal(subtotalVenta);
-        if ("CUENTA_CORRIENTE".equals(ventaDTO.getTipoDePago())) {
+        boolean ventaEnCuentaCorriente = "CUENTA_CORRIENTE".equals(venta.getTipoDePago());
+        if (ventaEnCuentaCorriente) {
+            venta.setTotalDeudaCorriente(subtotalVenta);
             Double saldoAFavor = cliente.getSaldoAFavor();
             Double saldoUsado = Math.min(saldoAFavor, venta.getTotal());
             Double saldoPendiente = venta.getTotal() - saldoUsado;
@@ -211,6 +214,7 @@ public class VentaServicio {
                     cliente.getId(), venta.getId(), saldoUsado, cliente.getSaldoAFavor(), venta.getSaldoPendiente());
             clienteRepository.save(cliente);
         } else {
+            // Los medios cobrados al momento no generan deuda de cliente.
             venta.setSaldoPendiente(0.0);
         }
         ventaGuardada = ventaRepositorio.saveAndFlush(venta);
@@ -233,9 +237,12 @@ public class VentaServicio {
         dto.setClienteNombre(venta.getCliente().getNombre());
         dto.setTotal(venta.getTotal());
         dto.setObservaciones(venta.getObservaciones());
-        dto.setEstado(venta.getEstado());
         dto.setTipoDePago(venta.getTipoDePago());
-        dto.setSaldoPendiente(venta.getSaldoPendiente());
+
+        // Solo las ventas en cuenta corriente pueden conservar deuda pendiente.
+        boolean ventaEnCuentaCorriente = "CUENTA_CORRIENTE".equals(venta.getTipoDePago());
+        dto.setEstado(ventaEnCuentaCorriente ? venta.getEstado() : "PAGADA");
+        dto.setSaldoPendiente(ventaEnCuentaCorriente ? venta.getSaldoPendiente() : 0.0);
 
         if (venta.getDetalles() != null) {
             List<DetalleVentaDTO> detallesDTO = venta.getDetalles()

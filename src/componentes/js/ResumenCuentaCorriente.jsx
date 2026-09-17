@@ -76,11 +76,17 @@ const ResumenCuentaCorriente = () => {
     clientes.find((c) => String(c.id) === String(clienteSeleccionado))
       ?.nombre || "";
 
+  const obtenerMontoDeuda = (movimiento) => (
+    movimiento.tipo === "VENTA"
+      ? Number(movimiento.totalDeudaCorriente ?? movimiento.monto ?? 0)
+      : Number(movimiento.monto ?? 0)
+  );
+
   // Cálculo de deudas, cobros y saldo neto
   const deudas = cuenta
     ? cuenta
         .filter((mov) => mov.tipo !== "COBRO")
-        .reduce((total, mov) => total + mov.monto, 0)
+        .reduce((total, mov) => total + obtenerMontoDeuda(mov), 0)
     : 0;
 
   const cobrosPagados = cuenta
@@ -410,7 +416,7 @@ const ResumenCuentaCorriente = () => {
                           fontWeight: !esCobro ? "bold" : "normal",
                         }}
                       >
-                        {!esCobro ? `$${mov.monto.toFixed(2)}` : "-"}
+                        {!esCobro ? `$${obtenerMontoDeuda(mov).toFixed(2)}` : "-"}
                       </td>
                       <td
                         style={{

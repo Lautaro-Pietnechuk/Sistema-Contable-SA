@@ -13,17 +13,24 @@ const Asientos = () => {
     const [fechaFin, setFechaFin] = useState('');
     const [paginaActual, setPaginaActual] = useState(1);
     const [totalPaginas, setTotalPaginas] = useState(0);
+    const [orden, setOrden] = useState('DESC');
     const tamañoPorPagina = 5;
 
-    // Set fechas por defecto cuando el componente se monta
+    // Mostrar por defecto los asientos del último mes.
     useEffect(() => {
         const hoy = new Date();
-        const hace30Dias = new Date();
-        hace30Dias.setDate(hoy.getDate() - 30);
-        setFechaInicio(hace30Dias.toISOString().split('T')[0]); // Hace 30 días
+        const haceUnMes = new Date(hoy);
+        haceUnMes.setMonth(haceUnMes.getMonth() - 1);
 
-        hoy.setDate(hoy.getDate() + 1); // Mañana
-        setFechaFin(hoy.toISOString().split('T')[0]);
+        const formatearFecha = (fecha) => {
+            const año = fecha.getFullYear();
+            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+            const día = String(fecha.getDate()).padStart(2, '0');
+            return `${año}-${mes}-${día}`;
+        };
+
+        setFechaInicio(formatearFecha(haceUnMes));
+        setFechaFin(formatearFecha(hoy));
     }, []);
 
     // Llama a la API cada vez que cambian las fechas o la página
@@ -46,13 +53,18 @@ const Asientos = () => {
                         fechaFin,
                         page: paginaActual - 1,
                         size: tamañoPorPagina,
+                        orden,
                     },
                     headers: { Authorization: `Bearer ${storedToken}` },
                 });
 
                 const { asientos: asientosData, totalElementos } = response.data;
                 if (asientosData && asientosData.length > 0) {
-                    setAsientos(asientosData);
+                    const asientosOrdenados = [...asientosData].sort((a, b) => {
+                        const factor = orden === 'ASC' ? 1 : -1;
+                        return factor * (Number(a.id || 0) - Number(b.id || 0));
+                    });
+                    setAsientos(asientosOrdenados);
                     setTotalPaginas(Math.ceil(totalElementos / tamañoPorPagina));
                 } else {
                     setAsientos([]); // Asegura que el estado 'asientos' se vacíe si no hay datos
@@ -67,7 +79,7 @@ const Asientos = () => {
         };
 
         if (fechaInicio && fechaFin) fetchAsientos();
-    }, [fechaInicio, fechaFin, paginaActual]); // Dependencias para actualizar cada vez que cambien
+    }, [fechaInicio, fechaFin, paginaActual, orden]); // Dependencias para actualizar cada vez que cambien
 
     // Manejo de los cambios en las fechas
     const handleFechaInicioChange = (e) => {
@@ -78,6 +90,11 @@ const Asientos = () => {
     const handleFechaFinChange = (e) => {
         setFechaFin(e.target.value);
         setPaginaActual(1); // Resetear la página a la primera cuando cambian las fechas
+    };
+
+    const handleOrdenChange = (e) => {
+        setOrden(e.target.value);
+        setPaginaActual(1);
     };
 
     const cambiarPagina = (nuevaPagina) => {
@@ -142,6 +159,11 @@ const Asientos = () => {
             </div>
 
             {/* Muestra el error, pero el resto del contenido sigue visible */}
+                <label htmlFor="ordenAsientos">Orden:</label>
+                <select id="ordenAsientos" value={orden} onChange={handleOrdenChange}>
+                    <option value="DESC">Más nuevos primero</option>
+                    <option value="ASC">Más antiguos primero</option>
+                </select>
             {error && (
                 <div style={{ color: 'red', marginBottom: '20px' }}>
                     <p>{error}</p>

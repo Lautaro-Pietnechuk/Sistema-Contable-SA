@@ -43,14 +43,15 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
     }
 
     try {
-      // 3. Enviamos el DTO en el body (incluyendo metodoPago) y el costoTotalCompra como parámetro URL
+      // 3. Enviamos el DTO en el body y el costoTotalCompra como parámetro URL
       await axios.put(`http://localhost:8080/api/productos/${producto.id}?costoTotalCompra=${costoTotalCompra}`, {
         nombre,
         descripcion,
         precio: Number(precio),
         stock: stockIngresado,
         activo: producto.activo,
-        metodoPago: estaAgregandoStock ? metodoPago : null // Mandamos el método de pago solo si hubo compra
+        // CORRECCIÓN AQUÍ: Cambiamos 'metodoPago' por 'tipoDePago' para que coincida con el backend
+        tipoDePago: estaAgregandoStock ? metodoPago : null 
       });
 
       if (typeof onProductoUpdated === 'function') {
@@ -210,7 +211,8 @@ function EditarProducto({ show, handleClose, producto, onProductoUpdated }) {
                 }}
               >
                 <option value="EFECTIVO">Efectivo</option>
-                <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+                {/* CORRECCIÓN AQUÍ: Cambiamos TRANSFERENCIA por DEBITO para mapear con el backend */}
+                <option value="DEBITO">Débito / Transferencia</option>
                 <option value="CUENTA_CORRIENTE">Cuenta Corriente</option>
               </select>
             </div>

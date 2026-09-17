@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../axiosConfig';
-import { jsPDF } from 'jspdf'; // IMPORTANTE: Agregamos la importación
-import autoTable from 'jspdf-autotable'; // IMPORTANTE: Agregamos la importación
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
-// Reutilizamos el estilo de fila para mantener la coherencia visual
 const filaInfo = {
     margin: '8px 0',
     padding: '10px 12px',
@@ -12,10 +11,17 @@ const filaInfo = {
     border: '1px solid #dee2e6'
 };
 
+const MOTIVOS_LABELS = {
+    INTERESES: 'Intereses por mora',
+    FLETE: 'Gasto de envío / Flete',
+    ERROR_FACTURACION: 'Faltante en facturación',
+    OTROS: 'Otros cargos'
+};
+
 function NotaDebito({ show, handleClose, ventaSeleccionada }) {
     const [motivo, setMotivo] = useState('INTERESES');
     const [monto, setMonto] = useState('');
-    const [tipoDePago, setTipoDePago] = useState('Cuenta Corriente');
+    const [tipoDePago, setTipoDePago] = useState('CUENTA_CORRIENTE');
     const [observaciones, setObservaciones] = useState('');
     
     const [mensajeExito, setMensajeExito] = useState('');
@@ -23,72 +29,82 @@ function NotaDebito({ show, handleClose, ventaSeleccionada }) {
 
     useEffect(() => {
         if (show && ventaSeleccionada) {
+            const nroOrigen = ventaSeleccionada.numeroComprobante || ventaSeleccionada.id;
             setMotivo('INTERESES');
             setMonto('');
-            setTipoDePago('Cuenta Corriente');
-            setObservaciones(`Ref: Ajuste sobre Venta Comprobante N° ${ventaSeleccionada.numeroComprobante || ventaSeleccionada.id}`);
+            setTipoDePago('CUENTA_CORRIENTE');
+            setObservaciones(`Ajuste sobre Venta Comprobante N° ${nroOrigen}`);
             setMensajeExito('');
             setMensajeError('');
         }
     }, [show, ventaSeleccionada]);
 
-    // Función para crear el PDF. Recibe los datos que devuelve tu backend.
     const generarPDFNotaDebito = (notaCreada) => {
         try {
             const doc = new jsPDF();
             
-            // Título
+            const nroComprobante = notaCreada?.numeroComprobante 
+                || notaCreada?.numero 
+                || (notaCreada?.id ? `ND-${notaCreada.id}` : 'S/N');
+
+            const comprobanteOrigen = ventaSeleccionada?.numeroComprobante 
+                || ventaSeleccionada?.id 
+                || '-';
+
+            const fechaEmision = notaCreada?.fecha 
+                ? new Date(notaCreada.fecha).toLocaleDateString() 
+                : new Date().toLocaleDateString();
+
+            const clienteNombre = notaCreada?.clienteNombre 
+                || ventaSeleccionada?.clienteNombre 
+                || '-';
+
+            const metodoPago = notaCreada?.tipoDePago || tipoDePago;
+
+            // Encabezado
             doc.setFont('helvetica', 'bold');
             doc.text('NOTA DE DÉBITO', 14, 20);
 
-            // Cabecera
+            // Metadatos
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(10);
-            
-            // Si el backend te devuelve un número autogenerado lo usamos, si no, usamos el ID
-            const numeroIdentificador = notaCreada?.numeroComprobante || notaCreada?.id || 'S/N';
-            // Usamos la fecha que mandó el backend, o la fecha actual por defecto
-            const fechaAlta = notaCreada?.fecha ? new Date(notaCreada.fecha).toLocaleDateString('es-AR') : new Date().toLocaleDateString('es-AR');
+            doc.text(`Comprobante: ${nroComprobante}`, 14, 30);
+            doc.text(`Fecha: ${fechaEmision}`, 14, 37);
+            doc.text(`Cliente: ${clienteNombre}`, 14, 44);
+            doc.text(`Comprobante Asociado: ${comprobanteOrigen}`, 14, 51);
 
-            doc.text(`Comprobante: ND-${numeroIdentificador}`, 14, 30);
-            doc.text(`Fecha: ${fechaAlta}`, 14, 37);
-            doc.text(`Cliente: ${ventaSeleccionada.clienteNombre || '-'}`, 14, 44);
-            doc.text(`Comprobante Original: ${ventaSeleccionada.numeroComprobante || ventaSeleccionada.id}`, 14, 51);
-            doc.text(`Método de Pago: ${tipoDePago}`, 14, 58); 
+            const importeTotal = Number(notaCreada?.monto || monto || 0);
+            const conceptoDetalle = MOTIVOS_LABELS[motivo] || motivo;
 
-            // Como es una nota de débito, armamos una sola fila con el motivo y el monto total
             const detalles = [
                 [
-                    motivo, // Producto/Concepto
-                    1,      // Cantidad
-                    `$${Number(monto).toFixed(2)}`, // Precio Unit.
-                    `$${Number(monto).toFixed(2)}`  // Subtotal
+                    conceptoDetalle,
+                    metodoPago,
+                    `$${importeTotal.toFixed(2)}`
                 ]
             ];
 
-            // Tabla (con color rojizo para diferenciar de las facturas)
             autoTable(doc, {
-                head: [['Concepto / Motivo', 'Cantidad', 'Importe', 'Subtotal']],
+                head: [['Concepto / Motivo', 'Método de Pago', 'Total']],
                 body: detalles,
                 startY: 65,
                 margin: { left: 14, right: 14 },
                 styles: { fontSize: 10 },
-                headStyles: { fillColor: [220, 53, 69] } // Un color rojizo/carmesí
+                headStyles: { fillColor: [220, 53, 69] }
             });
 
-            // Totales
             const finalY = doc.lastAutoTable.finalY || 100;
             doc.setFont('helvetica', 'bold');
-            doc.text(`Total a Pagar: $${Number(monto).toFixed(2)}`, 14, finalY + 10);
+            doc.text(`Total: $${importeTotal.toFixed(2)}`, 14, finalY + 10);
 
-            if (observaciones) {
+            const notasAdicionales = notaCreada?.observaciones || observaciones;
+            if (notasAdicionales) {
                 doc.setFont('helvetica', 'normal');
                 doc.setFontSize(9);
-                doc.text(`Observaciones: ${observaciones}`, 14, finalY + 20);
+                doc.text(`Observaciones: ${notasAdicionales}`, 14, finalY + 20);
             }
 
-            // Descarga automática
-            doc.save(`Nota_Debito_${numeroIdentificador}.pdf`);
+            doc.save(`Nota_Debito_${nroComprobante}.pdf`);
         } catch (error) {
             console.error('Error al generar el PDF:', error);
         }
@@ -102,10 +118,15 @@ function NotaDebito({ show, handleClose, ventaSeleccionada }) {
             return;
         }
 
+        const storedToken = localStorage.getItem('token');
+        const config = storedToken ? {
+            headers: { Authorization: `Bearer ${storedToken}` }
+        } : {};
+
         const payload = {
             tipo: 'D',
             idVenta: ventaSeleccionada.id,
-            clienteId: ventaSeleccionada.clienteId, 
+            clienteId: ventaSeleccionada.clienteId || ventaSeleccionada.cliente?.id, 
             motivo: motivo,
             monto: Number(monto),
             tipoDePago: tipoDePago,
@@ -113,13 +134,12 @@ function NotaDebito({ show, handleClose, ventaSeleccionada }) {
         };
 
         try {
-            // Guardamos la respuesta del backend en una variable
-            const response = await axios.post('/api/notas', payload);
+            const response = await axios.post('http://localhost:8080/api/notas', payload, config);
+            const notaCreada = response.data;
 
-            // ¡Acá disparamos el PDF enviando lo que nos devolvió Java!
-            generarPDFNotaDebito(response.data);
+            generarPDFNotaDebito(notaCreada);
 
-            setMensajeExito('Nota de Débito generada con éxito.');
+            setMensajeExito('Nota de Débito generada y comprobante descargado con éxito.');
             setMensajeError('');
             
             setTimeout(() => {
@@ -179,13 +199,13 @@ function NotaDebito({ show, handleClose, ventaSeleccionada }) {
 
                 <div style={{ marginBottom: '20px' }}>
                     <div style={filaInfo}>
-                        <strong>Cliente:</strong> {ventaSeleccionada.clienteNombre}
+                        <strong>Cliente:</strong> {ventaSeleccionada.clienteNombre || ventaSeleccionada.cliente?.nombre || '-'}
                     </div>
                     <div style={filaInfo}>
-                        <strong>Venta Original:</strong> {ventaSeleccionada.numeroComprobante || ventaSeleccionada.id}
+                        <strong>Comprobante Original:</strong> {ventaSeleccionada.numeroComprobante || ventaSeleccionada.id}
                     </div>
                     <div style={filaInfo}>
-                        <strong>Total Venta:</strong> ${Number(ventaSeleccionada.total).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                        <strong>Total Venta Original:</strong> ${Number(ventaSeleccionada.total || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                     </div>
                 </div>
 
@@ -228,9 +248,9 @@ function NotaDebito({ show, handleClose, ventaSeleccionada }) {
                             required
                             style={{ width: '100%', padding: '10px', boxSizing: 'border-box', borderRadius: '6px', border: '1px solid #ccc' }}
                         >
-                            <option value="Cuenta Corriente">Sumar a Cuenta Corriente</option>
+                            <option value="CUENTA_CORRIENTE">Sumar a Cuenta Corriente</option>
                             <option value="EFECTIVO">Efectivo</option>
-                            <option value="TRANSFERENCIA">Transferencia</option>
+                            <option value="DEBITO">Transferencia / Débito</option>
                         </select>
                     </div>
 
@@ -250,10 +270,17 @@ function NotaDebito({ show, handleClose, ventaSeleccionada }) {
                     {mensajeExito && <div style={{ color: '#0f5132', backgroundColor: '#d1e7dd', padding: '10px', borderRadius: '6px', marginBottom: '15px', border: '1px solid #badbcc' }}>{mensajeExito}</div>}
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '14px' }}>
-                        <button type="button" onClick={handleClose}>
+                        <button 
+                            type="button" 
+                            onClick={handleClose}
+                            style={{ padding: '10px 16px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                        >
                             Cancelar
                         </button>
-                        <button type="submit">
+                        <button 
+                            type="submit"
+                            style={{ padding: '10px 16px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                        >
                             Generar Débito
                         </button>
                     </div>

@@ -11,8 +11,8 @@ function ListarClientes({ show, handleClose }) {
   const [clienteToDelete, setClienteToDelete] = useState(null);
   const [clienteToEdit, setClienteToEdit] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [clienteToView, setClienteToView] = useState(null); // Estado para el cliente a ver detalles
-  const [showDetailsModal, setShowDetailsModal] = useState(false); // Estado para mostrar el modal de detalles
+  const [clienteToView, setClienteToView] = useState(null); 
+  const [showDetailsModal, setShowDetailsModal] = useState(false); 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [mensajeExito, setMensajeExito] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -39,6 +39,8 @@ function ListarClientes({ show, handleClose }) {
     } catch (error) {
       console.error('Error al obtener los clientes:', error);
       setErrorMessage('No se pudieron cargar los clientes.');
+      // Limpiar mensaje de error después de 4 segundos
+      setTimeout(() => setErrorMessage(''), 4000);
     }
   }, []);
 
@@ -62,17 +64,44 @@ function ListarClientes({ show, handleClose }) {
 
     try {
       await axios.delete(`http://localhost:8080/api/clientes/${clienteToDelete.id}`);
+      
       setShowDeleteConfirm(false);
       setClienteToDelete(null);
       fetchClientes(); // Refrescar la lista de clientes después de eliminar
+      
       setShowSuccessMessage(true);
       setMensajeExito('Cliente eliminado con éxito');
+      
       setTimeout(() => {
         setShowSuccessMessage(false);
       }, 3000);
+
     } catch (error) {
-      console.error('Error al eliminar el cliente:', error);
-      setErrorMessage('Error al eliminar el cliente');
+      console.error('Error completo al eliminar el cliente:', error);
+      
+      let mensajeAmostrar = 'Error al eliminar el cliente';
+
+      // ==========================================
+      // NUEVO: Lógica para atrapar el error del Backend
+      // ==========================================
+      if (error.response && error.response.data) {
+        if (typeof error.response.data === 'string') {
+            mensajeAmostrar = error.response.data;
+        } else if (error.response.data.message) {
+            mensajeAmostrar = error.response.data.message;
+        }
+      }
+
+      setErrorMessage(mensajeAmostrar);
+      
+      // Cerramos el modal de confirmación de todas formas
+      setShowDeleteConfirm(false);
+      setClienteToDelete(null);
+
+      // Ocultamos el cartel de error después de 5 segundos
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 5000);
     }
   };
 

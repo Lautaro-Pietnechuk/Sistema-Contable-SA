@@ -50,7 +50,6 @@ com\sa\contable\controladores\NotaControlador.class
 com\sa\contable\controladores\PublicController.class
 com\sa\contable\repositorios\CobroRepositorio.class
 com\sa\contable\repositorios\RolRepositorio.class
-com\sa\contable\servicios\NotaServicio.class
 com\sa\contable\servicios\LibroMayorServicio.class
 com\sa\contable\DTO\ClienteDTO.class
 com\sa\contable\DTO\SaldoDTO.class

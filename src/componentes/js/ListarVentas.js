@@ -4,6 +4,7 @@ import DetallesVenta from './DetallesVenta';
 import NotaDebito from './NotaDebito'; 
 import { jsPDF } from 'jspdf'; 
 import autoTable from 'jspdf-autotable'; 
+import { jwtDecode } from 'jwt-decode';
 
 function ListarVentas({ show, handleClose }) {
   const [ventas, setVentas] = useState([]);
@@ -18,12 +19,35 @@ function ListarVentas({ show, handleClose }) {
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
   const [clienteSeleccionado, setClienteSeleccionado] = useState('');
-  const [filtroEstado, setFiltroEstado] = useState('todas');
+  const [filtroEstado, setFiltroEstado] = useState('vigentes');
   const [searchTerm, setSearchTerm] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showInformeConfig, setShowInformeConfig] = useState(false);
+  const [informeConfig, setInformeConfig] = useState({
+    titulo: 'Informe de Ventas',
+    fechaInicio: '',
+    fechaFin: '',
+    tipoInforme: 'ventas',
+    clienteId: '',
+    estado: 'vigentes'
+  });
 
   const [showNotaDebito, setShowNotaDebito] = useState(false);
   const [ventaParaNotaDebito, setVentaParaNotaDebito] = useState(null);
+
+  let rolUsuario = String(localStorage.getItem('role') || '')
+    .replace(/[\[\]"]/g, '')
+    .trim()
+    .toUpperCase();
+  if (!rolUsuario) {
+    try {
+      const token = localStorage.getItem('token');
+      rolUsuario = String(jwtDecode(token)?.rol || '').trim().toUpperCase();
+    } catch (error) {
+      rolUsuario = '';
+    }
+  }
+  const esAdministrador = rolUsuario === 'ADMINISTRADOR' || rolUsuario === 'ROLE_ADMINISTRADOR';
 
   const esAnulada = (estado) => {
     return estado === "ANULADA";
@@ -97,6 +121,11 @@ function ListarVentas({ show, handleClose }) {
 
   const handleCancelVenta = async () => {
     if (!ventaToCancel?.id) return;
+
+    if (!esAdministrador) {
+      setErrorMessage('Necesitas permisos de administrador para cancelar una venta.');
+      return;
+    }
 
     const motivo = motivoCancelacion.trim();
     if (!motivo) {
@@ -174,6 +203,117 @@ function ListarVentas({ show, handleClose }) {
       doc.save(`Factura_${ventaData.numeroComprobante || ventaData.id}.pdf`);
     } catch (error) {
       console.error('Error al generar el PDF:', error);
+    }
+  };
+
+  const generarInformePDF = () => {
+    try {
+      if (informeConfig.fechaInicio && informeConfig.fechaFin
+        && informeConfig.fechaInicio > informeConfig.fechaFin) {
+        setErrorMessage('La fecha Desde no puede ser posterior a la fecha Hasta.');
+        return;
+      }
+
+      const doc = new jsPDF({ orientation: 'landscape' });
+      const inicio = informeConfig.fechaInicio
+        ? new Date(`${informeConfig.fechaInicio}T00:00:00`)
+        : null;
+      const fin = informeConfig.fechaFin
+        ? new Date(`${informeConfig.fechaFin}T23:59:59`)
+        : null;
+      const ventasInforme = ventas.filter((venta) => {
+        const fechaVenta = venta.fecha ? new Date(venta.fecha) : null;
+        const cumpleInicio = !inicio || (fechaVenta && fechaVenta >= inicio);
+        const cumpleFin = !fin || (fechaVenta && fechaVenta <= fin);
+        const cumpleCliente = !informeConfig.clienteId
+          || String(venta.cliente?.id || venta.clienteId) === String(informeConfig.clienteId);
+        const ventaEstaAnulada = esAnulada(venta.estado);
+        const cumpleEstado = informeConfig.estado === 'todas'
+          || (informeConfig.estado === 'vigentes' && !ventaEstaAnulada)
+          || (informeConfig.estado === 'canceladas' && ventaEstaAnulada);
+        return cumpleInicio && cumpleFin && cumpleCliente && cumpleEstado;
+      });
+
+      const nombreApartado = informeConfig.tipoInforme === 'productos'
+        ? 'Productos'
+        : informeConfig.tipoInforme === 'clientes' ? 'Clientes' : 'Ventas';
+
+      let encabezados;
+      let filas;
+      if (informeConfig.tipoInforme === 'productos') {
+        const productos = new Map();
+        ventasInforme.forEach((venta) => {
+          (venta.detalles || []).forEach((detalle) => {
+            const nombre = detalle.productoNombre || 'Producto sin nombre';
+            const producto = productos.get(nombre) || { cantidad: 0, total: 0 };
+            producto.cantidad += Number(detalle.cantidad || 0);
+            producto.total += Number(detalle.subtotal || 0);
+            productos.set(nombre, producto);
+          });
+        });
+        encabezados = ['Producto', 'Cantidad vendida', 'Total vendido'];
+        filas = Array.from(productos.entries()).map(([nombre, producto]) => [
+          nombre,
+          producto.cantidad,
+          formatMoneda(producto.total)
+        ]);
+      } else if (informeConfig.tipoInforme === 'clientes') {
+        const clientesInforme = new Map();
+        ventasInforme.forEach((venta) => {
+          const nombre = venta.cliente?.nombre || venta.clienteNombre || 'Cliente sin nombre';
+          const cliente = clientesInforme.get(nombre) || { cantidad: 0, total: 0, saldo: 0 };
+          cliente.cantidad += 1;
+          cliente.total += Number(venta.total || 0);
+          cliente.saldo += Number(venta.saldoPendiente || 0);
+          clientesInforme.set(nombre, cliente);
+        });
+        encabezados = ['Cliente', 'Cantidad de ventas', 'Total vendido', 'Saldo pendiente'];
+        filas = Array.from(clientesInforme.entries()).map(([nombre, cliente]) => [
+          nombre,
+          cliente.cantidad,
+          formatMoneda(cliente.total),
+          formatMoneda(cliente.saldo)
+        ]);
+      } else {
+        encabezados = ['Comprobante', 'Cliente', 'Fecha', 'Total', 'Saldo pendiente', 'Estado'];
+        filas = ventasInforme.map((venta) => [
+          venta.numeroComprobante || venta.id || '-',
+          venta.cliente?.nombre || venta.clienteNombre || '-',
+          formatFecha(venta.fecha),
+          formatMoneda(venta.total),
+          formatMoneda(venta.saldoPendiente),
+          venta.estado === 'ANULADA' ? 'Cancelada' : venta.estado === 'PAGADA' ? 'Pagada' : 'Pendiente'
+        ]);
+      }
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text(informeConfig.titulo.trim() || 'Informe de Ventas', 14, 18);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text(`Generado: ${formatFecha(new Date().toISOString())}`, 14, 25);
+      doc.text(`Apartado: ${nombreApartado}   |   Desde: ${informeConfig.fechaInicio || 'Inicio'}   |   Hasta: ${informeConfig.fechaFin || 'Actualidad'}`, 14, 31);
+      doc.text(`Registros: ${filas.length}`, 14, 37);
+
+      const totalVentas = ventasInforme.reduce((total, venta) => total + Number(venta.total || 0), 0);
+      const saldoPendiente = ventasInforme.reduce((total, venta) => total + Number(venta.saldoPendiente || 0), 0);
+      doc.text(`Total vendido: ${formatMoneda(totalVentas)}   |   Saldo pendiente: ${formatMoneda(saldoPendiente)}`, 14, 43);
+
+      const inicioTabla = 50;
+      autoTable(doc, {
+        head: [encabezados],
+        body: filas,
+        startY: inicioTabla,
+        margin: { left: 14, right: 14 },
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [41, 128, 185] }
+      });
+
+      doc.save('Informe_Ventas.pdf');
+      setShowInformeConfig(false);
+    } catch (error) {
+      console.error('Error al generar el informe:', error);
+      setErrorMessage('No se pudo generar el informe.');
     }
   };
 
@@ -317,6 +457,16 @@ function ListarVentas({ show, handleClose }) {
           </div>
         </div>
 
+        <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '22px' }}>
+          <button
+            type="button"
+            onClick={() => setShowInformeConfig(true)}
+            className="sistema-blue-btn"
+          >
+            Imprimir informe
+          </button>
+        </div>
+
         {/* Tabla principal */}
         <div style={{ overflowX: 'auto', marginTop: '25px' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -379,7 +529,8 @@ function ListarVentas({ show, handleClose }) {
                     <button
                       type="button"
                       onClick={() => confirmCancelVenta(venta)}
-                      disabled={esAnulada(venta.estado)}
+                      disabled={esAnulada(venta.estado) || !esAdministrador}
+                      title={!esAdministrador ? 'Solo un administrador puede cancelar ventas' : undefined}
                       className="sistema-blue-btn"
                       style={{ marginLeft: '6px' }}
                     >
@@ -392,6 +543,123 @@ function ListarVentas({ show, handleClose }) {
           </table>
         </div>
       </div>
+
+      {showInformeConfig && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1200
+          }}
+          onClick={() => setShowInformeConfig(false)}
+        >
+          <div
+            style={{
+              backgroundColor: '#fff',
+              width: '90%',
+              maxWidth: '520px',
+              padding: '22px',
+              borderRadius: '8px',
+              boxShadow: '0 12px 30px rgba(0, 0, 0, 0.2)'
+            }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 style={{ marginTop: 0 }}>Configurar informe de ventas</h3>
+            <p style={{ color: '#666', marginTop: 0 }}>
+              Configurá el período y el apartado que querés incluir en el PDF.
+            </p>
+
+            <label htmlFor="titulo-informe"><strong>Título del informe</strong></label>
+            <input
+              id="titulo-informe"
+              type="text"
+              value={informeConfig.titulo}
+              onChange={(event) => setInformeConfig({ ...informeConfig, titulo: event.target.value })}
+              style={{ width: '100%', marginTop: '8px', padding: '9px', boxSizing: 'border-box' }}
+            />
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px' }}>
+              <div>
+                <label htmlFor="informe-fecha-inicio"><strong>Desde</strong></label>
+                <input
+                  id="informe-fecha-inicio"
+                  type="date"
+                  value={informeConfig.fechaInicio}
+                  onChange={(event) => setInformeConfig({ ...informeConfig, fechaInicio: event.target.value })}
+                  style={{ width: '100%', marginTop: '8px', padding: '9px', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div>
+                <label htmlFor="informe-fecha-fin"><strong>Hasta</strong></label>
+                <input
+                  id="informe-fecha-fin"
+                  type="date"
+                  value={informeConfig.fechaFin}
+                  onChange={(event) => setInformeConfig({ ...informeConfig, fechaFin: event.target.value })}
+                  style={{ width: '100%', marginTop: '8px', padding: '9px', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+
+            <label htmlFor="tipo-informe" style={{ display: 'block', marginTop: '16px' }}>
+              <strong>Apartado del informe</strong>
+            </label>
+            <select
+              id="tipo-informe"
+              value={informeConfig.tipoInforme}
+              onChange={(event) => setInformeConfig({ ...informeConfig, tipoInforme: event.target.value })}
+              style={{ width: '100%', marginTop: '8px', padding: '9px' }}
+            >
+              <option value="ventas">Ventas</option>
+              <option value="productos">Productos</option>
+              <option value="clientes">Clientes</option>
+            </select>
+
+            <label htmlFor="cliente-informe" style={{ display: 'block', marginTop: '16px' }}>
+              <strong>Cliente (opcional)</strong>
+            </label>
+            <select
+              id="cliente-informe"
+              value={informeConfig.clienteId}
+              onChange={(event) => setInformeConfig({ ...informeConfig, clienteId: event.target.value })}
+              style={{ width: '100%', marginTop: '8px', padding: '9px' }}
+            >
+              <option value="">Todos los clientes</option>
+              {clientes.map((cliente) => (
+                <option key={cliente.id} value={cliente.id}>{cliente.nombre}</option>
+              ))}
+            </select>
+
+            <label htmlFor="estado-informe" style={{ display: 'block', marginTop: '16px' }}>
+              <strong>Estado de las ventas</strong>
+            </label>
+            <select
+              id="estado-informe"
+              value={informeConfig.estado}
+              onChange={(event) => setInformeConfig({ ...informeConfig, estado: event.target.value })}
+              style={{ width: '100%', marginTop: '8px', padding: '9px' }}
+            >
+              <option value="todas">Todas las ventas</option>
+              <option value="vigentes">Solo ventas vigentes</option>
+              <option value="canceladas">Solo ventas canceladas</option>
+            </select>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '24px' }}>
+              <button type="button" onClick={() => setShowInformeConfig(false)}>Cancelar</button>
+              <button type="button" onClick={generarInformePDF} className="sistema-blue-btn">
+                Generar PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de Detalles de Venta */}
       {ventaSeleccionada && (

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,20 +67,26 @@ public class CobroServicio {
         List<Venta> deudas;
         if (ventaId == null) {
             logger.debug("Buscando cuentas corrientes con saldo pendiente para el cliente: {}", cliente.getNombre());
-            deudas = ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(clienteId, "PENDIENTE");
+                    deudas = ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(clienteId, "PENDIENTE")
+                        .stream()
+                        .filter(venta -> "CUENTA_CORRIENTE".equals(venta.getTipoDePago()))
+                        .collect(Collectors.toList());
         } else {
             Venta ventaSeleccionada = ventaRepositorio.findById(ventaId)
                     .orElseThrow(() -> new RuntimeException("Venta no encontrada con ID: " + ventaId));
             if (!ventaSeleccionada.getCliente().getId().equals(clienteId)) {
                 throw new RuntimeException("La venta seleccionada no pertenece al cliente indicado.");
             }
-            if (!"PENDIENTE".equals(ventaSeleccionada.getEstado()) || ventaSeleccionada.getSaldoPendiente() <= 0) {
+                if (!"PENDIENTE".equals(ventaSeleccionada.getEstado())
+                    || !"CUENTA_CORRIENTE".equals(ventaSeleccionada.getTipoDePago())
+                    || ventaSeleccionada.getSaldoPendiente() <= 0) {
                 throw new RuntimeException("La venta seleccionada no tiene saldo pendiente.");
             }
                 deudas = new ArrayList<>();
                 deudas.add(ventaSeleccionada);
                 ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(clienteId, "PENDIENTE")
                     .stream()
+                    .filter(venta -> "CUENTA_CORRIENTE".equals(venta.getTipoDePago()))
                     .filter(venta -> !venta.getId().equals(ventaId))
                     .forEach(deudas::add);
             logger.info("Se seleccionó manualmente la Venta ID: {}", ventaId);
@@ -222,6 +229,19 @@ public class CobroServicio {
         }
 
         Venta ventaImputada = cobro.getVenta();
+        double montoAplicado = Math.max(0.0, cobro.getMontoAplicado());
+
+        if (ventaImputada != null && montoAplicado > 0) {
+            double saldoPendienteActual = ventaImputada.getSaldoPendiente() != null
+                ? ventaImputada.getSaldoPendiente()
+                : 0.0;
+            ventaImputada.setSaldoPendiente(saldoPendienteActual + montoAplicado);
+            ventaImputada.setEstado("PENDIENTE");
+            ventaRepositorio.saveAndFlush(ventaImputada);
+
+            logger.info("Saldo pendiente restaurado por anulación del cobro: ventaId={}, monto={}, saldoPendiente={}"
+                , ventaImputada.getId(), montoAplicado, ventaImputada.getSaldoPendiente());
+        }
 
         cobro.setAnulado(true);
         cobro.setVenta(null);
@@ -239,7 +259,6 @@ public class CobroServicio {
                     cliente.getId(), saldoAFavorGenerado, cliente.getSaldoAFavor());
         }
 
-        Double montoAplicado = cobro.getMontoAplicado();
         if (montoAplicado > 0) {
             cliente.setSaldoPendiente(cliente.getSaldoPendiente() + montoAplicado);
             logger.info("Saldo pendiente restaurado por anulación del cobro: clienteId={}, monto={}, saldoPendiente={}",
@@ -247,17 +266,7 @@ public class CobroServicio {
         }
         clienteRepositorio.saveAndFlush(cliente);
 
-        Double montoARevertir = cobro.getMontoAplicado();
-        logger.info("Monto total a devolver a la cuenta corriente: ${}", montoARevertir);
-
-        if (ventaImputada != null && montoARevertir > 0) {
-            ventaImputada.setSaldoPendiente(ventaImputada.getSaldoPendiente() + montoARevertir);
-            ventaImputada.setEstado("PENDIENTE");
-            ventaRepositorio.saveAndFlush(ventaImputada);
-
-            logger.info("Reversión aplicada a Venta ID: {}. Nuevo saldo pendiente: ${}",
-                    ventaImputada.getId(), ventaImputada.getSaldoPendiente());
-        }
+        logger.info("Monto total a devolver a la cuenta corriente: ${}", montoAplicado);
 
         logger.info("Proceso de desimputación por anulación completado.");
     }

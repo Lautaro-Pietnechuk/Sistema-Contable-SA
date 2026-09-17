@@ -60,10 +60,29 @@ public class NotaControlador {
     }
 
     @PostMapping
-    public ResponseEntity<Nota> crearNota(@RequestBody Nota nota) {
-        
+    public ResponseEntity<?> crearNota(@RequestBody Nota nota) {
+        if (nota.getTipo() == 'C' && !esAdministrador()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Necesitas permisos de administrador para cancelar una venta.");
+        }
+
         Long usuarioId = obtenerUsuarioIdDesdeToken();
         Nota nuevaNota = notaServicio.crearNota(nota, usuarioId);
         return new ResponseEntity<>(nuevaNota, HttpStatus.CREATED);
+    }
+
+    private boolean esAdministrador() {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return false;
+        }
+
+        String token = authHeader.substring(7);
+        if (!jwtUtil.esTokenValido(token)) {
+            return false;
+        }
+
+        String rol = jwtUtil.obtenerRolDelToken(token);
+        return "ADMINISTRADOR".equals(rol) || "ROLE_ADMINISTRADOR".equals(rol);
     }
 }

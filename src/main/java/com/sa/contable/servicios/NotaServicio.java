@@ -50,6 +50,8 @@ public class NotaServicio {
     private static final Long CUENTA_DEBE_CREDITO = 411L;
     private static final Long CUENTA_HABER_DEBITO = 411L;
     private static final Long CUENTA_DEBE_DEBITO = 121L;
+    private static final Long CUENTA_DEBE_EFECTIVO = 111L;
+    private static final Long CUENTA_DEBE_TRANSFERENCIA = 113L;
 
     public List<Nota> obtenerTodas() {
         return notaRepositorio.findAll();
@@ -68,15 +70,35 @@ public class NotaServicio {
             logger.debug("La fecha de la nota es nula. Asignando fecha actual.");
             nota.setFecha(LocalDate.now());
         }
-        Venta venta = ventasRepositorio.findById(nota.getIdVenta())
+        
+        final Long idVenta = nota.getIdVenta();
+        Venta venta = ventasRepositorio.findById(idVenta)
             .orElseThrow(() -> {
-                logger.error("Fallo al crear nota: Venta no encontrada con id {}", nota.getIdVenta());
-                return new RuntimeException("Venta no encontrada con id: " + nota.getIdVenta());
+                logger.error("Fallo al crear nota: Venta no encontrada con id {}", idVenta);
+                return new RuntimeException("Venta no encontrada con id: " + idVenta);
             });
+
+        if (nota.getTipoDePago() == null || nota.getTipoDePago().isBlank()) {
+            nota.setTipoDePago(venta.getTipoDePago());
+        }
+            
         if (venta.getEstado().equals("ANULADA")) {
             logger.warn("Intento de crear nota para una venta ya anulada. Venta ID: {}", nota.getIdVenta());
             throw new IllegalStateException("No se pueden crear notas para una venta anulada.");
         }
+
+        // ==========================================
+        // GENERACIÓN DE NÚMERO DE COMPROBANTE
+        // ==========================================
+        nota.setNumeroComprobante("TEMP");
+        // Guardamos en la base de datos para generar el idNota autoincremental
+        nota = notaRepositorio.save(nota); 
+        
+        // Creamos el comprobante real: ND-00001 (Débito) o NC-00001 (Crédito)
+        String prefijo = (nota.getTipo() == 'D') ? "ND" : "NC";
+        String comprobanteReal = prefijo + "-" + String.format("%05d", nota.getIdNota());
+        nota.setNumeroComprobante(comprobanteReal);
+        // ==========================================
 
         if (nota.getTipo() == 'C') {
             logger.info("Procesando Nota de Crédito (Anulación de venta).");
@@ -123,7 +145,6 @@ public class NotaServicio {
             asientoDTO.setDescripcion("Contra asiento por nota de Credito para venta ID: " + nota.getIdVenta() + " - Motivo: " + nota.getMotivo());
             asientoDTO.setNombreUsuario("UsuarioID: " + usuarioId); 
         
-            // CORRECCIÓN APLICADA: Cruzamos las cuentas para el contrasiento
             CuentaAsientoDTO movimientoDebe = new CuentaAsientoDTO();
             movimientoDebe.setCuentaCodigo(CUENTA_DEBE_CREDITO); // El Debe usa la cuenta de Ventas
             movimientoDebe.setDebe(nota.getMonto());
@@ -145,7 +166,6 @@ public class NotaServicio {
                 int cantidad = detalle.getCantidad();
                 Producto producto = detalle.getProducto();
             
-                // logger a nivel TRACE o DEBUG para no inundar la consola si la venta tiene muchos items
                 logger.debug("Restaurando {} unidades al producto ID: {} (Stock anterior: {})", cantidad, producto.getId(), producto.getStock());
             
                 producto.setStock(producto.getStock() + cantidad);
@@ -161,13 +181,20 @@ public class NotaServicio {
 
             Cliente cliente = venta.getCliente();
             double montoNota = nota.getMonto().doubleValue();
-            double saldoAFavorActual = cliente.getSaldoAFavor();
-            double saldoAFavorUsado = Math.min(saldoAFavorActual, montoNota);
-            double saldoPendienteGenerado = montoNota - saldoAFavorUsado;
-            if (saldoAFavorUsado > 0) {
-                cliente.setSaldoAFavor(saldoAFavorActual - saldoAFavorUsado);
-                logger.info("Saldo a favor aplicado por nota de débito: clienteId={}, monto={}, saldoAFavor={}",
-                        cliente.getId(), saldoAFavorUsado, cliente.getSaldoAFavor());
+            boolean notaEnCuentaCorriente = "CUENTA_CORRIENTE".equals(nota.getTipoDePago());
+            double saldoPendienteGenerado = 0.0;
+
+            if (notaEnCuentaCorriente) {
+                venta.setTotalDeudaCorriente(venta.getTotalDeudaCorriente() + montoNota);
+                double saldoAFavorActual = cliente.getSaldoAFavor();
+                double saldoAFavorUsado = Math.min(saldoAFavorActual, montoNota);
+                saldoPendienteGenerado = montoNota - saldoAFavorUsado;
+
+                if (saldoAFavorUsado > 0) {
+                    cliente.setSaldoAFavor(saldoAFavorActual - saldoAFavorUsado);
+                    logger.info("Saldo a favor aplicado por nota de débito: clienteId={}, monto={}, saldoAFavor={}",
+                            cliente.getId(), saldoAFavorUsado, cliente.getSaldoAFavor());
+                }
             }
 
             venta.setTotal(venta.getTotal() + montoNota);
@@ -179,30 +206,36 @@ public class NotaServicio {
             cliente.aumentarSaldoPendiente(saldoPendienteGenerado);
             clienteRepositorio.save(cliente);
 
-                AsientoDTO asientoDTO = new AsientoDTO();
-                asientoDTO.setFecha(nota.getFecha());
-                asientoDTO.setDescripcion("Asiento por nota de Débito para venta ID: " + nota.getIdVenta() + " - Motivo: " + nota.getMotivo());
-                asientoDTO.setNombreUsuario("UsuarioID: " + usuarioId); 
-            
-                CuentaAsientoDTO movimientoDebe = new CuentaAsientoDTO();
-                movimientoDebe.setCuentaCodigo(CUENTA_DEBE_DEBITO); // El Debe usa la cuenta de Deudores
-                movimientoDebe.setDebe(nota.getMonto());
-                movimientoDebe.setHaber(BigDecimal.valueOf(0.0));
-            
-                CuentaAsientoDTO movimientoHaber = new CuentaAsientoDTO();
-                movimientoHaber.setCuentaCodigo(CUENTA_HABER_DEBITO); // El Haber usa la cuenta de Ventas
-                movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
-                movimientoHaber.setHaber(nota.getMonto());
-            
-                asientoDTO.setMovimientos(List.of(movimientoDebe, movimientoHaber));
-            
-                logger.debug("Generando asiento contable por nota de débito con monto: {}", nota.getMonto());
-                asientoServicio.crearAsiento(asientoDTO, usuarioId);
-                logger.info("Asiento contable por nota de débito creado exitosamente.");
+            AsientoDTO asientoDTO = new AsientoDTO();
+            asientoDTO.setFecha(nota.getFecha());
+            asientoDTO.setDescripcion("Asiento por nota de Débito para venta ID: " + nota.getIdVenta() + " - Motivo: " + nota.getMotivo());
+            asientoDTO.setNombreUsuario("UsuarioID: " + usuarioId); 
+        
+            CuentaAsientoDTO movimientoDebe = new CuentaAsientoDTO();
+            Long cuentaDebe = switch (nota.getTipoDePago()) {
+                case "EFECTIVO" -> CUENTA_DEBE_EFECTIVO;
+                case "DEBITO", "TRANSFERENCIA" -> CUENTA_DEBE_TRANSFERENCIA;
+                default -> CUENTA_DEBE_DEBITO;
+            };
+            movimientoDebe.setCuentaCodigo(cuentaDebe);
+            movimientoDebe.setDebe(nota.getMonto());
+            movimientoDebe.setHaber(BigDecimal.valueOf(0.0));
+        
+            CuentaAsientoDTO movimientoHaber = new CuentaAsientoDTO();
+            movimientoHaber.setCuentaCodigo(CUENTA_HABER_DEBITO); // El Haber usa la cuenta de Ventas
+            movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
+            movimientoHaber.setHaber(nota.getMonto());
+        
+            asientoDTO.setMovimientos(List.of(movimientoDebe, movimientoHaber));
+        
+            logger.debug("Generando asiento contable por nota de débito con monto: {}", nota.getMonto());
+            asientoServicio.crearAsiento(asientoDTO, usuarioId);
+            logger.info("Asiento contable por nota de débito creado exitosamente.");
         }
     
-        Nota notaGuardada = notaRepositorio.save(nota);
-        logger.info("Transacción completada: Nota de crédito guardada exitosamente con ID: {}", notaGuardada.getIdNota());
+        // Hacemos un saveAndFlush para actualizar el registro con el numeroComprobante correcto y las otras validaciones
+        Nota notaGuardada = notaRepositorio.saveAndFlush(nota);
+        logger.info("Transacción completada: Nota guardada exitosamente con Comprobante: {} e ID: {}", notaGuardada.getNumeroComprobante(), notaGuardada.getIdNota());
     
         return notaGuardada;
     }

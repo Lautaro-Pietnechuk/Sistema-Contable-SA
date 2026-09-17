@@ -40,6 +40,9 @@ public class Venta {
     @Column(nullable = false)
     private Double total;
 
+    @Column(nullable = false)
+    private Double totalDeudaCorriente = 0.0; // Nuevo campo para almacenar el total de la deuda en cuenta corriente
+
     @Column(length = 255)
     private String observaciones;
     @Column(nullable = false, length = 20)
@@ -146,8 +149,8 @@ public class Venta {
         }
 
         String limpio = tipoDePago.trim().toUpperCase();
-        if (!limpio.matches("EFECTIVO|DEBITO|CUENTA_CORRIENTE")) {
-            throw new IllegalArgumentException("Tipo de pago inválido. Debe ser 'EFECTIVO', 'DEBITO' o 'CUENTA_CORRIENTE'.");
+        if (!limpio.matches("EFECTIVO|DEBITO|TRANSFERENCIA|CUENTA_CORRIENTE")) {
+            throw new IllegalArgumentException("Tipo de pago inválido. Debe ser 'EFECTIVO', 'DEBITO', 'TRANSFERENCIA' o 'CUENTA_CORRIENTE'.");
         }
         this.tipoDePago = limpio;
     }
@@ -177,5 +180,17 @@ public class Venta {
         } else {
             this.estado = "PENDIENTE"; // Si hay saldo pendiente, la venta sigue siendo pendiente
         }
+    }
+
+
+    public Double getTotalDeudaCorriente() {
+        return totalDeudaCorriente;
+    }
+
+    public void setTotalDeudaCorriente(Double totalDeudaCorriente) {
+        if (totalDeudaCorriente < 0) {
+            throw new IllegalArgumentException("El total de deuda corriente no puede ser negativo.");
+        }
+        this.totalDeudaCorriente = totalDeudaCorriente;
     }
 }

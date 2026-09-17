@@ -3,6 +3,8 @@ package com.sa.contable.controladores;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,8 +49,15 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
-        clienteService.eliminar(id);
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+        try {
+            clienteService.eliminar(id);
+            // Si todo sale bien, devuelve un 200 OK
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            // Si atrapa tu excepción, devuelve un 400 Bad Request con tu mensaje
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}/deudas")

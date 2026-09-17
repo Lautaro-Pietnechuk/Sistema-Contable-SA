@@ -3,6 +3,7 @@ package com.sa.contable.servicios;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -142,6 +143,18 @@ public class AsientoServicio {
     // Método con Paginación para Listar Asientos
     public Page<Asiento> listarAsientos(LocalDate inicio, LocalDate fin, Pageable pageable) {
         return asientoRepositorio.findAllBetweenDates(inicio, fin, pageable);
+    }
+
+    public List<Asiento> listarTodosAsientosOrdenados(LocalDate inicio, LocalDate fin, boolean ascendente) {
+        Comparator<Asiento> comparador = Comparator.comparing(Asiento::getId);
+        if (!ascendente) {
+            comparador = comparador.reversed();
+        }
+
+        return asientoRepositorio.findAllBetweenDates(inicio, fin)
+                .stream()
+                .sorted(comparador)
+                .toList();
     }
 
     public Asiento buscarPorId(Long id) {

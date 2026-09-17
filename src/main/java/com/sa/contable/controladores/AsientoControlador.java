@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -165,6 +164,7 @@ public class AsientoControlador {
     public ResponseEntity<Map<String, Object>> listarAsientos(
             @RequestParam(required = false) String fechaInicio,
             @RequestParam(required = false) String fechaFin,
+            @RequestParam(defaultValue = "DESC") String orden,
             Pageable pageable) {
 
         LocalDate fin = (fechaFin == null || fechaFin.isBlank())
@@ -175,14 +175,18 @@ public class AsientoControlador {
                 ? fin.minusDays(30)
                 : LocalDate.parse(fechaInicio.trim(), FORMATTER);
 
-        Page<Asiento> pageAsientos = asientoServicio.listarAsientos(inicio, fin, pageable);
-        List<AsientoDTO> asientosDTO = pageAsientos.getContent().stream()
+        List<Asiento> todosLosAsientos = asientoServicio.listarTodosAsientosOrdenados(
+                inicio, fin, "ASC".equalsIgnoreCase(orden));
+        int inicioPagina = Math.min(pageable.getPageNumber() * pageable.getPageSize(), todosLosAsientos.size());
+        int finPagina = Math.min(inicioPagina + pageable.getPageSize(), todosLosAsientos.size());
+
+        List<AsientoDTO> asientosDTO = todosLosAsientos.subList(inicioPagina, finPagina).stream()
                 .map(this::convertirAsientoADTO)
                 .collect(Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
         response.put("asientos", asientosDTO);
-        response.put("totalElementos", pageAsientos.getTotalElements());
+        response.put("totalElementos", todosLosAsientos.size());
 
         return ResponseEntity.ok(response);
     }

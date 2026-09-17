@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from '../../axiosConfig';
 
 const campo = {
   margin: '10px 0',
@@ -9,6 +10,44 @@ const campo = {
 };
 
 function DetallesProducto({ show, handleClose, producto }) {
+  const [ventas, setVentas] = useState([]);
+  const [cargandoVentas, setCargandoVentas] = useState(false);
+  const [errorVentas, setErrorVentas] = useState('');
+
+  useEffect(() => {
+    const cargarVentas = async () => {
+      if (!show || !producto?.id) {
+        return;
+      }
+
+      setCargandoVentas(true);
+      setErrorVentas('');
+
+      try {
+        const response = await axios.get('http://localhost:8080/api/ventas');
+        const ventasData = Array.isArray(response.data) ? response.data : [];
+        const ventasActivas = ventasData.filter((venta) => {
+          const estado = String(venta.estado || '').trim().toUpperCase();
+          const contieneProducto = (venta.detalles || []).some(
+            (detalle) => Number(detalle.productoId) === Number(producto.id)
+          );
+
+          return estado !== 'ANULADA' && contieneProducto;
+        });
+
+        setVentas(ventasActivas);
+      } catch (error) {
+        console.error('Error al cargar las ventas del producto:', error);
+        setErrorVentas('No se pudieron cargar las ventas del producto.');
+        setVentas([]);
+      } finally {
+        setCargandoVentas(false);
+      }
+    };
+
+    cargarVentas();
+  }, [show, producto]);
+
   if (!show || !producto) {
     return null;
   }
@@ -16,6 +55,12 @@ function DetallesProducto({ show, handleClose, producto }) {
   const formatMoneda = (valor) => {
     const numero = Number(valor || 0);
     return numero.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+  };
+
+  const formatFecha = (fechaIso) => {
+    if (!fechaIso) return '-';
+    const fecha = new Date(fechaIso);
+    return Number.isNaN(fecha.getTime()) ? '-' : fecha.toLocaleDateString('es-AR');
   };
 
   return (
@@ -53,6 +98,49 @@ function DetallesProducto({ show, handleClose, producto }) {
         <div style={campo}><strong>Precio:</strong> {formatMoneda(producto.precio)}</div>
         <div style={campo}><strong>Stock:</strong> {producto.stock ?? 0}</div>
         <div style={campo}><strong>Estado:</strong> {producto.activo ? 'Activo' : 'Inactivo'}</div>
+
+        <h3 style={{ marginTop: '22px' }}>Ventas activas</h3>
+        {cargandoVentas && <p>Cargando ventas...</p>}
+        {errorVentas && <p style={{ color: '#842029' }}>{errorVentas}</p>}
+        {!cargandoVentas && !errorVentas && ventas.length === 0 && (
+          <p>No hay ventas activas con este producto.</p>
+        )}
+        {!cargandoVentas && ventas.length > 0 && (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '650px' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#4a90e2', color: '#fff' }}>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Comprobante</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Fecha</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Cliente</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Cantidad</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Precio unitario</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Subtotal</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ventas.map((venta) => {
+                  const detallesProducto = (venta.detalles || []).filter(
+                    (detalle) => Number(detalle.productoId) === Number(producto.id)
+                  );
+
+                  return detallesProducto.map((detalle) => (
+                    <tr key={`${venta.id}-${detalle.id || producto.id}`}>
+                      <td style={{ border: '1px solid #ddd', padding: '8px' }}>{venta.numeroComprobante || '-'}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px' }}>{formatFecha(venta.fecha)}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px' }}>{venta.clienteNombre || '-'}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>{detalle.cantidad ?? 0}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'right' }}>{formatMoneda(detalle.precioUnitario)}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'right' }}>{formatMoneda(detalle.subtotal)}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px' }}>{venta.estado || '-'}</td>
+                    </tr>
+                  ));
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
           <button type="button" onClick={handleClose}>Cerrar</button>

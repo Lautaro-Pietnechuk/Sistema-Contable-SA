@@ -19,6 +19,9 @@ public class Nota {
     @Column(name = "id_nota", nullable = false)
     private Long idNota; // bigint NN 
 
+    @Column(name = "numero_comprobante", nullable = false, length = 50)
+    private String numeroComprobante;
+
     @Column(name = "tipo", nullable = false, length = 1)
     private char tipo; // char(1) NN (C para Crédito, D para Débito)
 
@@ -33,6 +36,9 @@ public class Nota {
 
     @Column(name = "motivo", nullable = false, columnDefinition = "TEXT")
     private String motivo; // text NN 
+
+    @Column(name = "tipo_de_pago", length = 20)
+    private String tipoDePago = "CUENTA_CORRIENTE";
 
     // Getters y Setters
 
@@ -56,7 +62,6 @@ public class Nota {
         }   
         
     }
-
     public Long getIdVenta() {
         return idVenta;
     }
@@ -89,5 +94,30 @@ public class Nota {
         this.motivo = motivo;
     }
 
+    public String getTipoDePago() {
+        return tipoDePago;
+    }
+
+    public void setTipoDePago(String tipoDePago) {
+        if (tipoDePago == null || tipoDePago.trim().isEmpty()) {
+            throw new IllegalArgumentException("El tipo de pago no puede ser nulo o vacío");
+        }
+
+        String limpio = tipoDePago.trim().toUpperCase();
+        if (!limpio.matches("EFECTIVO|DEBITO|TRANSFERENCIA|CUENTA_CORRIENTE")) {
+            throw new IllegalArgumentException("Tipo de pago inválido.");
+        }
+        this.tipoDePago = limpio;
+    }
+
+    public String getNumeroComprobante() {
+        return numeroComprobante;
+    }
+
+    public void setNumeroComprobante(String numeroComprobante) {
+        this.numeroComprobante = numeroComprobante;
+    }
+
+    
 
 }

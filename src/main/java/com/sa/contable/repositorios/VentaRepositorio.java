@@ -28,12 +28,13 @@ public interface VentaRepositorio extends JpaRepository<Venta, Long> {
     @Query("SELECT new com.sa.contable.DTO.DeudaClienteDTO(v.cliente.id, v.cliente.nombre, SUM(v.total)) "
             + "FROM Venta v "
             + "WHERE v.estado = 'PENDIENTE' "
+            + "AND v.tipoDePago = 'CUENTA_CORRIENTE' "
             + "GROUP BY v.cliente.id, v.cliente.nombre")
     List<DeudaClienteDTO> findSaldosDeudores();
 
     // 2. QUERY ESPECÍFICA: Corregida para filtrar solo por el String de estado
 // Cambiamos el tipo de retorno a List<MovimientoCuentaDTO>
-    @Query("SELECT new com.sa.contable.DTO.MovimientoCuentaDTO(v.id, v.fecha, v.numeroComprobante, v.total) "
+        @Query("SELECT new com.sa.contable.DTO.MovimientoCuentaDTO(v.id, v.fecha, v.numeroComprobante, v.total, v.totalDeudaCorriente) "
             + "FROM Venta v "
             + "WHERE v.cliente.id = :clienteId "
             + "AND v.tipoDePago = 'CUENTA_CORRIENTE' "
