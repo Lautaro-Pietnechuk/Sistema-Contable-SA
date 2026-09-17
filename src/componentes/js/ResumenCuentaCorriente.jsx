@@ -7,6 +7,7 @@ const ResumenCuentaCorriente = () => {
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [cuenta, setCuenta] = useState(null);
+  const [saldoAFavor, setSaldoAFavor] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showAnularConfirm, setShowAnularConfirm] = useState(false);
   const [cobroToAnular, setCobroToAnular] = useState(null);
@@ -37,56 +38,64 @@ const ResumenCuentaCorriente = () => {
     setLoading(true);
     setErrorMessage("");
     try {
-      const [respuestaDeudas, respuestaCobros] = await Promise.all([
+      const [
+        respuestaDeudas,
+        respuestaCobros,
+        respuestaSaldoAFavor
+      ] = await Promise.all([
         axios.get(
           `http://localhost:8080/api/clientes/${clienteSeleccionado}/deudas`,
           {
             params: { desde: fechaInicio, hasta: fechaFin },
           }
         ),
-        // CORREGIDO: Ahora los params están DENTRO de los argumentos del axios.get
         axios.get(`http://localhost:8080/api/cobros/${clienteSeleccionado}`, {
-            params: { desde: fechaInicio, hasta: fechaFin },
-        })
+          params: { desde: fechaInicio, hasta: fechaFin },
+        }),
+        axios.get(`http://localhost:8080/api/clientes/${clienteSeleccionado}/saldoFavor`),
       ]);
 
+      // Unificamos absolutamente todos los movimientos válidos en la misma tabla
       const movimientos = [
-        ...respuestaDeudas.data.filter(
-          mov => mov.estado !== "ANULADA" && mov.tipo !== "NOTA_DEBITO"
-        ),
+        ...respuestaDeudas.data.filter(mov => mov.estado !== "ANULADA"),
         ...respuestaCobros.data
           .filter(cobro => !cobro.anulado)
-          .map(cobro => ({
-            ...cobro,
-            tipo: "COBRO"
-          }))
+          .map(cobro => ({ ...cobro, tipo: "COBRO" }))
       ].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 
       setCuenta(movimientos);
+      setSaldoAFavor(Number(respuestaSaldoAFavor.data ?? 0));
     } catch (error) {
       console.error("Error al traer la cuenta corriente:", error);
       setErrorMessage("Error al cargar la cuenta corriente");
       setCuenta(null);
+      setSaldoAFavor(0);
     } finally {
       setLoading(false);
     }
   };
 
   const nombreCliente =
-    clientes.find((c) => String(c.id) === String(clienteSeleccionado))
-      ?.nombre || "";
+    clientes.find((c) => String(c.id) === String(clienteSeleccionado))?.nombre || "";
 
-  const obtenerMontoDeuda = (movimiento) => (
-    movimiento.tipo === "VENTA"
+  // LÓGICA FINANCIERA UNIFICADA
+  const obtenerMontoDeuda = (movimiento) => {
+    if (movimiento.tipo === "NOTA_CREDITO") return 0; 
+    return movimiento.tipo === "VENTA"
       ? Number(movimiento.totalDeudaCorriente ?? movimiento.monto ?? 0)
-      : Number(movimiento.monto ?? 0)
-  );
+      : Number(movimiento.monto ?? 0);
+  };
 
-  // Cálculo de deudas, cobros y saldo neto
   const deudas = cuenta
     ? cuenta
-        .filter((mov) => mov.tipo !== "COBRO")
+        .filter((mov) => mov.tipo !== "COBRO" && mov.tipo !== "NOTA_CREDITO")
         .reduce((total, mov) => total + obtenerMontoDeuda(mov), 0)
+    : 0;
+
+  const notasCreditoTotal = cuenta
+    ? cuenta
+        .filter((mov) => mov.tipo === "NOTA_CREDITO")
+        .reduce((total, mov) => total + Number(mov.monto ?? 0), 0)
     : 0;
 
   const cobrosPagados = cuenta
@@ -95,7 +104,9 @@ const ResumenCuentaCorriente = () => {
         .reduce((total, mov) => total + mov.monto, 0)
     : 0;
 
-  const saldoNeto = deudas - cobrosPagados;
+  // Calculamos la deuda viva. Si el cliente tiene un saldo a favor real en BD superior, priorizamos el de la BD.
+  const saldoMatematico = deudas - cobrosPagados - notasCreditoTotal;
+  const saldoNetoFinal = saldoMatematico > 0 ? saldoMatematico : -saldoAFavor;
 
   const confirmAnularCobro = (cobro) => {
     setCobroToAnular(cobro);
@@ -112,7 +123,6 @@ const ResumenCuentaCorriente = () => {
 
   const handleAnularCobro = async () => {
     if (!cobroToAnular?.id) return;
-
     const motivo = motivoAnulacion.trim();
     if (!motivo) {
       setErrorMessage("El motivo de anulación es obligatorio.");
@@ -127,10 +137,7 @@ const ResumenCuentaCorriente = () => {
       setSuccessMessage("Cobro anulado con éxito.");
       setErrorMessage("");
       obtenerResumen();
-      
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 3000);
+      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (error) {
       console.error("Error al anular cobro:", error);
       let mensajeError = "Error al anular el cobro.";
@@ -145,93 +152,33 @@ const ResumenCuentaCorriente = () => {
     <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>
       {/* ENCABEZADO */}
       <div style={{ textAlign: "center", marginBottom: "30px" }}>
-        <h1
-          style={{ color: "#4a90e2", fontSize: "32px", marginBottom: "20px" }}
-        >
+        <h1 style={{ color: "#4a90e2", fontSize: "32px", marginBottom: "20px" }}>
           Cuenta Corriente de Clientes
         </h1>
 
-        <div
-          style={{
-            display: "inline-block",
-            textAlign: "right",
-            backgroundColor: "#f8f9fa",
-            padding: "30px",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-          }}
-        >
+        <div style={{ display: "inline-block", textAlign: "right", backgroundColor: "#f8f9fa", padding: "30px", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.05)" }}>
           <div style={{ marginBottom: "15px" }}>
-            <label style={{ marginRight: "10px", fontWeight: "bold" }}>
-              Seleccionar Cliente:
-            </label>
-            <select
-              value={clienteSeleccionado}
-              onChange={(e) => setClienteSeleccionado(e.target.value)}
-              style={{
-                padding: "8px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                width: "250px",
-              }}
-            >
+            <label style={{ marginRight: "10px", fontWeight: "bold" }}>Seleccionar Cliente:</label>
+            <select value={clienteSeleccionado} onChange={(e) => setClienteSeleccionado(e.target.value)} style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc", width: "250px" }}>
               <option value="">Seleccione un cliente</option>
               {clientes.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
+                <option key={c.id} value={c.id}>{c.nombre}</option>
               ))}
             </select>
           </div>
 
           <div style={{ marginBottom: "15px" }}>
-            <label style={{ marginRight: "10px", fontWeight: "bold" }}>
-              Fecha Inicio:
-            </label>
-            <input
-              type="date"
-              value={fechaInicio}
-              onChange={(e) => setFechaInicio(e.target.value)}
-              style={{
-                padding: "8px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                width: "250px",
-              }}
-            />
+            <label style={{ marginRight: "10px", fontWeight: "bold" }}>Fecha Inicio:</label>
+            <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc", width: "250px" }} />
           </div>
 
           <div style={{ marginBottom: "25px" }}>
-            <label style={{ marginRight: "10px", fontWeight: "bold" }}>
-              Fecha Fin:
-            </label>
-            <input
-              type="date"
-              value={fechaFin}
-              onChange={(e) => setFechaFin(e.target.value)}
-              style={{
-                padding: "8px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                width: "250px",
-              }}
-            />
+            <label style={{ marginRight: "10px", fontWeight: "bold" }}>Fecha Fin:</label>
+            <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc", width: "250px" }} />
           </div>
 
           <div style={{ textAlign: "right" }}>
-            <button
-              onClick={obtenerResumen}
-              style={{
-                backgroundColor: "#007bff",
-                color: "white",
-                border: "none",
-                padding: "12px 25px",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "bold",
-              }}
-            >
+            <button onClick={obtenerResumen} style={{ backgroundColor: "#007bff", color: "white", border: "none", padding: "12px 25px", borderRadius: "4px", cursor: "pointer", fontSize: "16px", fontWeight: "bold" }}>
               Obtener Estado de Cuenta
             </button>
           </div>
@@ -239,74 +186,34 @@ const ResumenCuentaCorriente = () => {
       </div>
 
       {/* TABLA DE RESULTADOS */}
-      {loading && (
-        <p style={{ textAlign: "center" }}>Cargando movimientos...</p>
-      )}
+      {loading && <p style={{ textAlign: "center" }}>Cargando movimientos...</p>}
 
       {!loading && cuenta && (
         <div style={{ maxWidth: "950px", margin: "0 auto", marginTop: "40px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              borderBottom: "2px solid #4a90e2",
-              paddingBottom: "15px",
-              marginBottom: "20px",
-            }}
-          >
-            <h2 style={{ margin: 0, color: "#333" }}>
-              Movimientos - {nombreCliente}
-            </h2>
+          <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "2px solid #4a90e2", paddingBottom: "15px", marginBottom: "20px" }}>
+            <h2 style={{ margin: 0, color: "#333" }}>Movimientos - {nombreCliente}</h2>
+            
+            {/* RESUMEN LIMPIO SIN REDUNDANCIAS */}
             <div style={{ textAlign: "right" }}>
               <div style={{ marginBottom: "8px" }}>
                 <strong style={{ color: "#d9534f" }}>Deudas: </strong>
-                <span
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    color: "#d9534f",
-                  }}
-                >
-                  $
-                  {deudas.toLocaleString("es-AR", {
-                    minimumFractionDigits: 2,
-                  })}
+                <span style={{ fontSize: "16px", fontWeight: "bold", color: "#d9534f" }}>
+                  ${deudas.toLocaleString("es-AR", { minimumFractionDigits: 2 })}
                 </span>
               </div>
               <div style={{ marginBottom: "10px" }}>
-                <strong style={{ color: "#28a745" }}>Cobros Pagados: </strong>
-                <span
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    color: "#28a745",
-                  }}
-                >
-                  $
-                  {cobrosPagados.toLocaleString("es-AR", {
-                    minimumFractionDigits: 2,
-                  })}
+                <strong style={{ color: "#28a745" }}>Cobros / Créditos: </strong>
+                <span style={{ fontSize: "16px", fontWeight: "bold", color: "#28a745" }}>
+                  ${(cobrosPagados + notasCreditoTotal).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
                 </span>
               </div>
+              
               <div style={{ paddingTop: "8px", borderTop: "1px solid #ddd" }}>
-                <strong
-                  style={{
-                    color: saldoNeto > 0 ? "#d9534f" : "#28a745",
-                  }}
-                >
-                  {saldoNeto > 0 ? "Saldo Adeudado: " : "Saldo a Favor: "}
+                <strong style={{ color: saldoNetoFinal > 0 ? "#d9534f" : "#28a745" }}>
+                  {saldoNetoFinal > 0 ? "Saldo Adeudado: " : "Saldo a Favor: "}
                 </strong>
-                <span
-                  style={{
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    color: saldoNeto > 0 ? "#d9534f" : "#28a745",
-                  }}
-                >
-                  $
-                  {Math.abs(saldoNeto).toLocaleString("es-AR", {
-                    minimumFractionDigits: 2,
-                  })}
+                <span style={{ fontSize: "18px", fontWeight: "bold", color: saldoNetoFinal > 0 ? "#d9534f" : "#28a745" }}>
+                  ${Math.abs(saldoNetoFinal).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </div>
@@ -316,180 +223,69 @@ const ResumenCuentaCorriente = () => {
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ backgroundColor: "#4a90e2" }}>
-                  <th
-                    style={{
-                      padding: "12px",
-                      border: "1px solid #ddd",
-                      color: "white",
-                      textAlign: "left",
-                      width: "120px",
-                    }}
-                  >
-                    Fecha
-                  </th>
-                  <th
-                    style={{
-                      padding: "12px",
-                      border: "1px solid #ddd",
-                      color: "white",
-                      textAlign: "left",
-                    }}
-                  >
-                    Detalle / Comprobante
-                  </th>
-                  <th
-                    style={{
-                      padding: "12px",
-                      border: "1px solid #ddd",
-                      color: "white",
-                      textAlign: "right",
-                      width: "140px",
-                    }}
-                  >
-                    Debe (+)
-                  </th>
-                  <th
-                    style={{
-                      padding: "12px",
-                      border: "1px solid #ddd",
-                      color: "white",
-                      textAlign: "right",
-                      width: "140px",
-                    }}
-                  >
-                    Haber (-)
-                   </th>
-                   <th
-                     style={{
-                       padding: "12px",
-                       border: "1px solid #ddd",
-                       color: "white",
-                       textAlign: "center",
-                       width: "80px",
-                     }}
-                   >
-                     Acciones
-                   </th>
-                 </tr>
+                  <th style={{ padding: "12px", border: "1px solid #ddd", color: "white", textAlign: "left", width: "120px" }}>Fecha</th>
+                  <th style={{ padding: "12px", border: "1px solid #ddd", color: "white", textAlign: "left" }}>Detalle / Comprobante</th>
+                  <th style={{ padding: "12px", border: "1px solid #ddd", color: "white", textAlign: "right", width: "140px" }}>Debe (+)</th>
+                  <th style={{ padding: "12px", border: "1px solid #ddd", color: "white", textAlign: "right", width: "140px" }}>Haber (-)</th>
+                  <th style={{ padding: "12px", border: "1px solid #ddd", color: "white", textAlign: "center", width: "80px" }}>Acciones</th>
+                </tr>
               </thead>
               <tbody>
+                {/* DIBUJAMOS LOS MOVIMIENTOS NATURALES */}
                 {cuenta.map((mov, index) => {
                   const esCobro = mov.tipo === "COBRO";
+                  const esNotaCredito = mov.tipo === "NOTA_CREDITO";
+                  
                   return (
-                    <tr
-                      key={index}
-                      style={{
-                        borderBottom: "1px solid #ddd",
-                        backgroundColor: index % 2 === 0 ? "#fff" : "#f9f9f9",
-                      }}
-                    >
+                    <tr key={index} style={{ borderBottom: "1px solid #ddd", backgroundColor: esNotaCredito ? "#f0fff4" : (index % 2 === 0 ? "#fff" : "#f9f9f9") }}>
                       <td style={{ padding: "10px", border: "1px solid #ddd" }}>
                         {new Date(mov.fecha).toLocaleDateString("es-AR")}
                       </td>
                       <td style={{ padding: "10px", border: "1px solid #ddd" }}>
                         {esCobro
                           ? `Recibo de Cobro Nro ${mov.id} (${mov.metodoPago || "EFECTIVO"})`
-                          : mov.tipo === "NOTA_DEBITO"
-                            ? mov.numeroComprobante
-                            : mov.tipo === "NOTA_CREDITO"
+                          : esNotaCredito
+                            ? `Nota de Crédito Nro ${mov.numeroComprobante || mov.id}`
+                            : mov.tipo === "NOTA_DEBITO"
                               ? mov.numeroComprobante
                               : `Factura de Venta Nro ${mov.numeroComprobante || mov.id}`}
-                        {mov.observaciones && (
-                          <span
-                            style={{
-                              display: "block",
-                              fontSize: "12px",
-                              color: "#777",
-                              fontStyle: "italic",
-                            }}
-                          >
-                            Obs: {mov.observaciones}
+                        
+                        {(mov.observaciones || mov.motivo) && (
+                          <span style={{ display: "block", fontSize: "12px", color: "#777", fontStyle: "italic" }}>
+                            {mov.motivo ? `Motivo: ${mov.motivo}` : `Obs: ${mov.observaciones}`}
                           </span>
                         )}
                       </td>
-                      <td
-                        style={{
-                          padding: "10px",
-                          border: "1px solid #ddd",
-                          textAlign: "right",
-                          color: "#d9534f",
-                          fontWeight: !esCobro ? "bold" : "normal",
-                        }}
-                      >
-                        {!esCobro ? `$${obtenerMontoDeuda(mov).toFixed(2)}` : "-"}
+                      <td style={{ padding: "10px", border: "1px solid #ddd", textAlign: "right", color: "#d9534f" }}>
+                        {!esCobro && !esNotaCredito ? `$${obtenerMontoDeuda(mov).toFixed(2)}` : "-"}
                       </td>
-                      <td
-                        style={{
-                          padding: "10px",
-                          border: "1px solid #ddd",
-                          textAlign: "right",
-                          color: "#28a745",
-                          fontWeight: esCobro ? "bold" : "normal",
-                        }}
-                      >
-                        {esCobro ? `$${mov.monto.toFixed(2)}` : "-"}
+                      <td style={{ padding: "10px", border: "1px solid #ddd", textAlign: "right", color: "#28a745", fontWeight: esCobro || esNotaCredito ? "bold" : "normal" }}>
+                        {esCobro || esNotaCredito ? `$${Number(mov.monto || 0).toFixed(2)}` : "-"}
                       </td>
-                       <td
-                         style={{
-                           padding: "10px",
-                           border: "1px solid #ddd",
-                           textAlign: "center",
-                         }}
-                       >
-                         {esCobro && (
-                           <button
-                              onClick={() => confirmAnularCobro(mov)}
-                             style={{
-                               backgroundColor: "#dc3545",
-                               color: "white",
-                               border: "none",
-                               padding: "6px 12px",
-                               borderRadius: "4px",
-                               cursor: "pointer",
-                               fontSize: "12px",
-                               fontWeight: "bold",
-                               opacity: 1,
-                             }}
-                           >
-                              Anular
-                            </button>
-                          )}
-                       </td>
-                       </tr>
+                      <td style={{ padding: "10px", border: "1px solid #ddd", textAlign: "center" }}>
+                        {esCobro && (
+                          <button onClick={() => confirmAnularCobro(mov)} style={{ backgroundColor: "#dc3545", color: "white", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "bold" }}>
+                            Anular
+                          </button>
+                        )}
+                      </td>
+                    </tr>
                   );
                 })}
               </tbody>
             </table>
           ) : (
-            <p
-              style={{
-                color: "#777",
-                textAlign: "center",
-                marginTop: "20px",
-                fontStyle: "italic",
-              }}
-            >
-              Este cliente no registra movimientos en el rango de fechas
-              seleccionado.
+            <p style={{ color: "#777", textAlign: "center", marginTop: "20px", fontStyle: "italic" }}>
+              Este cliente no registra movimientos en el rango de fechas seleccionado.
             </p>
           )}
         </div>
       )}
 
-      {/* Alertas Flotantes */}
-      {successMessage && (
-        <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1300, backgroundColor: '#d1e7dd', color: '#0f5132', padding: '10px 14px', borderRadius: '6px', border: '1px solid #badbcc' }}>
-          {successMessage}
-        </div>
-      )}
-
-      {errorMessage && (
-        <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1300, backgroundColor: '#f8d7da', color: '#842029', padding: '10px 14px', borderRadius: '6px', border: '1px solid #f5c2c7', boxShadow: '0px 4px 6px rgba(0,0,0,0.1)' }}>
-          <strong>Error: </strong> {errorMessage}
-        </div>
-      )}
-
-      {/* Modal de confirmación para anulación */}
+      {/* Alertas Flotantes y Modales */}
+      {successMessage && <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1300, backgroundColor: '#d1e7dd', color: '#0f5132', padding: '10px 14px', borderRadius: '6px', border: '1px solid #badbcc' }}>{successMessage}</div>}
+      {errorMessage && <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1300, backgroundColor: '#f8d7da', color: '#842029', padding: '10px 14px', borderRadius: '6px', border: '1px solid #f5c2c7', boxShadow: '0px 4px 6px rgba(0,0,0,0.1)' }}><strong>Error: </strong> {errorMessage}</div>}
+      
       {showAnularConfirm && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <div style={{ backgroundColor: '#fff', padding: '18px', borderRadius: '8px', width: '90%', maxWidth: '480px' }}>
@@ -497,14 +293,7 @@ const ResumenCuentaCorriente = () => {
             <p>¿Estás seguro de que deseas anular el cobro Nro {cobroToAnular?.id}?</p>
             <div style={{ marginBottom: '12px' }}>
               <label htmlFor="motivo-anulacion"><strong>Motivo de la anulación</strong></label>
-              <textarea
-                id="motivo-anulacion"
-                value={motivoAnulacion}
-                onChange={(event) => setMotivoAnulacion(event.target.value)}
-                rows={4}
-                placeholder="Explicá por qué se anula el cobro"
-                style={{ width: '100%', marginTop: '8px', padding: '10px', resize: 'vertical' }}
-              />
+              <textarea id="motivo-anulacion" value={motivoAnulacion} onChange={(e) => setMotivoAnulacion(e.target.value)} rows={4} placeholder="Explicá por qué se anula el cobro" style={{ width: '100%', marginTop: '8px', padding: '10px', resize: 'vertical' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
               <button type="button" onClick={cerrarAnulacion}>No</button>
