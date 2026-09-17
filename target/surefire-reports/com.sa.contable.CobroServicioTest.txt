@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.sa.contable.CobroServicioTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 1.404 s <<< FAILURE! -- in com.sa.contable.CobroServicioTest
-com.sa.contable.CobroServicioTest.registrarCobroDebeCrearUnCobroPorVentaYOtroPorSaldoAFavor -- Time elapsed: 1.309 s <<< ERROR!
+Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 1.336 s <<< FAILURE! -- in com.sa.contable.CobroServicioTest
+com.sa.contable.CobroServicioTest.registrarCobroDebeCrearUnCobroPorVentaYOtroPorSaldoAFavor -- Time elapsed: 1.251 s <<< ERROR!
 org.mockito.exceptions.base.MockitoException: 
 
 Mockito cannot mock this class: class com.sa.contable.servicios.AsientoServicio.
@@ -23,14 +23,14 @@ OS version         : 10.0
 You are seeing this disclaimer because Mockito is configured to create inlined mocks.
 You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
 
-Underlying exception : org.mockito.exceptions.base.MockitoException: Could not modify all classes [class java.lang.Object, class com.sa.contable.servicios.AsientoServicio]
+Underlying exception : org.mockito.exceptions.base.MockitoException: Could not modify all classes [class com.sa.contable.servicios.AsientoServicio, class java.lang.Object]
 	at org.mockito.junit.jupiter.MockitoExtension.beforeEach(MockitoExtension.java:160)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
 	Suppressed: java.lang.NullPointerException: Cannot invoke "java.util.Set.forEach(java.util.function.Consumer)" because the return value of "org.junit.jupiter.api.extension.ExtensionContext$Store.remove(Object, java.lang.Class)" is null
 		at org.mockito.junit.jupiter.MockitoExtension.afterEach(MockitoExtension.java:194)
 		... 2 more
-Caused by: org.mockito.exceptions.base.MockitoException: Could not modify all classes [class java.lang.Object, class com.sa.contable.servicios.AsientoServicio]
+Caused by: org.mockito.exceptions.base.MockitoException: Could not modify all classes [class com.sa.contable.servicios.AsientoServicio, class java.lang.Object]
 	at net.bytebuddy.TypeCache.findOrInsert(TypeCache.java:168)
 	at net.bytebuddy.TypeCache$WithInlineExpunction.findOrInsert(TypeCache.java:399)
 	at net.bytebuddy.TypeCache.findOrInsert(TypeCache.java:190)
@@ -83,7 +83,7 @@ Caused by: java.lang.IllegalArgumentException: Java 25 (69) is not supported by 
 	at org.mockito.internal.creation.bytebuddy.InlineBytecodeGenerator.triggerRetransformation(InlineBytecodeGenerator.java:281)
 	... 27 more
 
-com.sa.contable.CobroServicioTest.anularCobroDebeRestaurarSaldoAFavorYSaldoPendienteDelCliente -- Time elapsed: 0.034 s <<< ERROR!
+com.sa.contable.CobroServicioTest.anularCobroDebeRestaurarSaldoAFavorYSaldoPendienteDelCliente -- Time elapsed: 0.035 s <<< ERROR!
 org.mockito.exceptions.base.MockitoException: 
 
 Mockito cannot mock this class: class com.sa.contable.servicios.AsientoServicio.
@@ -104,14 +104,14 @@ OS version         : 10.0
 You are seeing this disclaimer because Mockito is configured to create inlined mocks.
 You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
 
-Underlying exception : org.mockito.exceptions.base.MockitoException: Could not modify all classes [class java.lang.Object, class com.sa.contable.servicios.AsientoServicio]
+Underlying exception : org.mockito.exceptions.base.MockitoException: Could not modify all classes [class com.sa.contable.servicios.AsientoServicio, class java.lang.Object]
 	at org.mockito.junit.jupiter.MockitoExtension.beforeEach(MockitoExtension.java:160)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
 	Suppressed: java.lang.NullPointerException: Cannot invoke "java.util.Set.forEach(java.util.function.Consumer)" because the return value of "org.junit.jupiter.api.extension.ExtensionContext$Store.remove(Object, java.lang.Class)" is null
 		at org.mockito.junit.jupiter.MockitoExtension.afterEach(MockitoExtension.java:194)
 		... 2 more
-Caused by: org.mockito.exceptions.base.MockitoException: Could not modify all classes [class java.lang.Object, class com.sa.contable.servicios.AsientoServicio]
+Caused by: org.mockito.exceptions.base.MockitoException: Could not modify all classes [class com.sa.contable.servicios.AsientoServicio, class java.lang.Object]
 	at net.bytebuddy.TypeCache.findOrInsert(TypeCache.java:168)
 	at net.bytebuddy.TypeCache$WithInlineExpunction.findOrInsert(TypeCache.java:399)
 	at net.bytebuddy.TypeCache.findOrInsert(TypeCache.java:190)

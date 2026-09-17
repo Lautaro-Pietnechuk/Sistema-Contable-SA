@@ -24,20 +24,19 @@ public interface VentaRepositorio extends JpaRepository<Venta, Long> {
 
     boolean existsByNumeroComprobante(String numeroComprobante);
 
-    // 1. QUERY GENERAL: Limpiada sin el atributo 'anulada'
-    @Query("SELECT new com.sa.contable.DTO.DeudaClienteDTO(v.cliente.id, v.cliente.nombre, SUM(v.total)) "
+    // 1. QUERY GENERAL: Suma el saldo real pendiente y acepta cualquier venta con deuda viva
+    @Query("SELECT new com.sa.contable.DTO.DeudaClienteDTO(v.cliente.id, v.cliente.nombre, SUM(v.saldoPendiente)) "
             + "FROM Venta v "
             + "WHERE v.estado = 'PENDIENTE' "
-            + "AND v.tipoDePago = 'CUENTA_CORRIENTE' "
+            + "AND (v.tipoDePago = 'CUENTA_CORRIENTE' OR v.saldoPendiente > 0) "
             + "GROUP BY v.cliente.id, v.cliente.nombre")
     List<DeudaClienteDTO> findSaldosDeudores();
 
-    // 2. QUERY ESPECÍFICA: Corregida para filtrar solo por el String de estado
-// Cambiamos el tipo de retorno a List<MovimientoCuentaDTO>
-        @Query("SELECT new com.sa.contable.DTO.MovimientoCuentaDTO(v.id, v.fecha, v.numeroComprobante, v.total, v.totalDeudaCorriente) "
+    // 2. QUERY ESPECÍFICA: Trae los movimientos de cuenta corriente incluyendo ventas en efectivo con saldo pendiente
+    @Query("SELECT new com.sa.contable.DTO.MovimientoCuentaDTO(v.id, v.fecha, v.numeroComprobante, v.total, v.totalDeudaCorriente) "
             + "FROM Venta v "
             + "WHERE v.cliente.id = :clienteId "
-            + "AND v.tipoDePago = 'CUENTA_CORRIENTE' "
+            + "AND (v.tipoDePago = 'CUENTA_CORRIENTE' OR v.saldoPendiente > 0) "
             + "AND v.estado <> 'ANULADA' "
             + "AND v.fecha BETWEEN :desde AND :hasta")
     List<MovimientoCuentaDTO> findVentasCuentaCorrienteByClienteId(

@@ -66,27 +66,27 @@ public class CobroServicio {
         // saldo a favor.
         List<Venta> deudas;
         if (ventaId == null) {
-            logger.debug("Buscando cuentas corrientes con saldo pendiente para el cliente: {}", cliente.getNombre());
-                    deudas = ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(clienteId, "PENDIENTE")
-                        .stream()
-                        .filter(venta -> "CUENTA_CORRIENTE".equals(venta.getTipoDePago()))
-                        .collect(Collectors.toList());
+            logger.debug("Buscando deudas pendientes (incluyendo notas de débito) para el cliente: {}", cliente.getNombre());
+            deudas = ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(clienteId, "PENDIENTE")
+                    .stream()
+                    .filter(venta -> venta.getSaldoPendiente() != null && venta.getSaldoPendiente() > 0)
+                    .collect(Collectors.toList());
         } else {
             Venta ventaSeleccionada = ventaRepositorio.findById(ventaId)
                     .orElseThrow(() -> new RuntimeException("Venta no encontrada con ID: " + ventaId));
             if (!ventaSeleccionada.getCliente().getId().equals(clienteId)) {
                 throw new RuntimeException("La venta seleccionada no pertenece al cliente indicado.");
             }
-                if (!"PENDIENTE".equals(ventaSeleccionada.getEstado())
-                    || !"CUENTA_CORRIENTE".equals(ventaSeleccionada.getTipoDePago())
+            if (!"PENDIENTE".equals(ventaSeleccionada.getEstado())
+                    || ventaSeleccionada.getSaldoPendiente() == null
                     || ventaSeleccionada.getSaldoPendiente() <= 0) {
                 throw new RuntimeException("La venta seleccionada no tiene saldo pendiente.");
             }
-                deudas = new ArrayList<>();
-                deudas.add(ventaSeleccionada);
-                ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(clienteId, "PENDIENTE")
+            deudas = new ArrayList<>();
+            deudas.add(ventaSeleccionada);
+            ventaRepositorio.findByClienteIdAndEstadoOrderByFechaAsc(clienteId, "PENDIENTE")
                     .stream()
-                    .filter(venta -> "CUENTA_CORRIENTE".equals(venta.getTipoDePago()))
+                    .filter(venta -> venta.getSaldoPendiente() != null && venta.getSaldoPendiente() > 0)
                     .filter(venta -> !venta.getId().equals(ventaId))
                     .forEach(deudas::add);
             logger.info("Se seleccionó manualmente la Venta ID: {}", ventaId);

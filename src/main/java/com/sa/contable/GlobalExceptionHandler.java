@@ -18,9 +18,14 @@ public class GlobalExceptionHandler {
                 .body(Map.of("mensaje", e.getMessage()));
     }
 
-    // 2. Atrapa cualquier otro error inesperado (ej. se cayó la base de datos)
+    // 2. Atrapa cualquier otro error inesperado (ej. se cayó la base de datos o un NullPointer)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleException(Exception e) {
+        
+        // 🔥 AGREGAMOS ESTO: Imprime el error real en tu consola de backend para que puedas debuggear
+        System.err.println("=== ERROR INTERNO ATRAPADO POR EL MANEJADOR GLOBAL ===");
+        e.printStackTrace();
+        
         // Devuelve 500 (Internal Server Error) y no expone detalles técnicos sensibles al frontend
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("mensaje", "Ocurrió un error interno en el servidor."));

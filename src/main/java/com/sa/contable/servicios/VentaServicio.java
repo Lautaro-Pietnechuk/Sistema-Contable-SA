@@ -239,11 +239,16 @@ public class VentaServicio {
         dto.setObservaciones(venta.getObservaciones());
         dto.setTipoDePago(venta.getTipoDePago());
 
-        // Solo las ventas en cuenta corriente pueden conservar deuda pendiente.
-        boolean ventaEnCuentaCorriente = "CUENTA_CORRIENTE".equals(venta.getTipoDePago());
-        dto.setEstado(ventaEnCuentaCorriente ? venta.getEstado() : "PAGADA");
-        dto.setSaldoPendiente(ventaEnCuentaCorriente ? venta.getSaldoPendiente() : 0.0);
 
+        if ("ANULADA".equals(venta.getEstado())) {
+            dto.setEstado("ANULADA");
+            dto.setSaldoPendiente(0.0);
+        } else {
+            // Con la incorporación de las Notas de Débito, CUALQUIER venta (incluso en Efectivo) 
+            // puede adquirir saldo pendiente a posteriori. Confiamos 100% en la base de datos.
+            dto.setEstado(venta.getEstado());
+            dto.setSaldoPendiente(venta.getSaldoPendiente() != null ? venta.getSaldoPendiente() : 0.0);
+        }
         if (venta.getDetalles() != null) {
             List<DetalleVentaDTO> detallesDTO = venta.getDetalles()
                     .stream()

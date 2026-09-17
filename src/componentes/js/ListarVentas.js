@@ -14,6 +14,7 @@ function ListarVentas({ show, handleClose }) {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [ventaToCancel, setVentaToCancel] = useState(null);
   const [motivoCancelacion, setMotivoCancelacion] = useState('');
+  const [tipoDevolucion, setTipoDevolucion] = useState('EFECTIVO');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [mensajeExito, setMensajeExito] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
@@ -110,6 +111,7 @@ function ListarVentas({ show, handleClose }) {
   const confirmCancelVenta = (venta) => {
     setVentaToCancel(venta);
     setMotivoCancelacion('');
+    setTipoDevolucion('EFECTIVO');
     setShowCancelConfirm(true);
   };
 
@@ -117,6 +119,7 @@ function ListarVentas({ show, handleClose }) {
     setShowCancelConfirm(false);
     setVentaToCancel(null);
     setMotivoCancelacion('');
+    setTipoDevolucion('EFECTIVO');
   };
 
   const handleCancelVenta = async () => {
@@ -133,11 +136,15 @@ function ListarVentas({ show, handleClose }) {
       return;
     }
 
+    const totalVenta = Number(ventaToCancel.total || 0);
+    const saldoPendiente = Math.max(0, Number(ventaToCancel.saldoPendiente || 0));
+    const importePagado = Math.max(0, totalVenta - saldoPendiente);
     const payload = {
       tipo: 'C',
       idVenta: ventaToCancel.id,
-      monto: Number(ventaToCancel.total || 0),
-      motivo
+      monto: totalVenta,
+      motivo,
+      tipoDePago: importePagado > 0 ? tipoDevolucion : 'CUENTA_CORRIENTE'
     };
 
     try {
@@ -701,6 +708,20 @@ function ListarVentas({ show, handleClose }) {
                 style={{ width: '100%', marginTop: '8px', padding: '10px', resize: 'vertical' }}
               />
             </div>
+            {Math.max(0, Number(ventaToCancel?.total || 0) - Number(ventaToCancel?.saldoPendiente || 0)) > 0 && (
+              <div style={{ marginBottom: '12px' }}>
+                <label htmlFor="tipo-devolucion"><strong>Devolución del importe pagado</strong></label>
+                <select
+                  id="tipo-devolucion"
+                  value={tipoDevolucion}
+                  onChange={(event) => setTipoDevolucion(event.target.value)}
+                  style={{ width: '100%', marginTop: '8px', padding: '9px' }}
+                >
+                  <option value="EFECTIVO">Entregar en efectivo</option>
+                  <option value="CUENTA_CORRIENTE">Sumar a cuenta corriente</option>
+                </select>
+              </div>
+            )}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
               <button type="button" onClick={cerrarCancelacion}>No</button>
               <button type="button" onClick={handleCancelVenta} disabled={!motivoCancelacion.trim()}>Sí, cancelar</button>

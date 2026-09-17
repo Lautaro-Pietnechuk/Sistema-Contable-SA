@@ -2,6 +2,7 @@ package com.sa.contable.servicios;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import com.sa.contable.repositorios.NotaRepositorio;
 import com.sa.contable.repositorios.ClienteRepository;
 import com.sa.contable.repositorios.ProductoRepositorio;
 import com.sa.contable.repositorios.VentaRepositorio;
+import com.sa.contable.repositorios.CuentaRepositorio;
 
 @Service
 public class NotaServicio {
@@ -44,14 +46,16 @@ public class NotaServicio {
     @Autowired
     private AsientoServicio asientoServicio;
 
+    @Autowired
+    private CuentaRepositorio cuentaRepositorio;
+
     private static final Logger logger = LoggerFactory.getLogger(NotaServicio.class);
 
-    private static final Long CUENTA_HABER_CREDITO = 121L;
-    private static final Long CUENTA_DEBE_CREDITO = 411L;
-    private static final Long CUENTA_HABER_DEBITO = 411L;
-    private static final Long CUENTA_DEBE_DEBITO = 121L;
-    private static final Long CUENTA_DEBE_EFECTIVO = 111L;
-    private static final Long CUENTA_DEBE_TRANSFERENCIA = 113L;
+    // Constantes de cuentas contables renombradas para mayor claridad
+    private static final Long CUENTA_DEUDORES_VENTAS = 121L;
+    private static final Long CUENTA_VENTAS = 411L;
+    private static final Long CUENTA_CAJA = 111L;
+    private static final Long CUENTA_BANCO = 113L;
 
     public List<Nota> obtenerTodas() {
         return notaRepositorio.findAll();
@@ -107,7 +111,20 @@ public class NotaServicio {
             double saldoPendiente = venta.getSaldoPendiente();
             double montoNota = nota.getMonto().doubleValue();
             double montoAplicado = Math.min(montoNota, saldoPendiente);
-            double saldoAFavorGenerado = montoNota - montoAplicado;
+            double importePagado = Math.max(0.0, venta.getTotal() - saldoPendiente);
+            double saldoAFavorGenerado = "CUENTA_CORRIENTE".equals(nota.getTipoDePago())
+                    ? Math.min(importePagado, montoNota - montoAplicado)
+                    : 0.0;
+
+            if (importePagado > 0 && "EFECTIVO".equals(nota.getTipoDePago())) {
+                BigDecimal saldoCaja = cuentaRepositorio.findById(CUENTA_CAJA)
+                        .orElseThrow(() -> new IllegalStateException("No existe la cuenta Caja (111)."))
+                        .getSaldoActual();
+                if (saldoCaja == null || saldoCaja.compareTo(BigDecimal.valueOf(importePagado)) < 0) {
+                    throw new IllegalStateException("La cuenta Caja (111) no tiene saldo suficiente para devolver $"
+                            + importePagado + ".");
+                }
+            }
 
             if (saldoAFavorGenerado > 0) {
                 cliente.setSaldoAFavor(cliente.getSaldoAFavor() + saldoAFavorGenerado);
@@ -131,9 +148,8 @@ public class NotaServicio {
                 }
             }
             if (montoCobrosARevertir > 0) {
-                cliente.setSaldoAFavor(cliente.getSaldoAFavor() + montoCobrosARevertir);
-                logger.info("Saldo a favor restaurado por venta anulada: clienteId={}, monto={}, saldoAFavor={}",
-                        cliente.getId(), montoCobrosARevertir, cliente.getSaldoAFavor());
+                logger.info("Cobros revertidos por venta anulada: clienteId={}, monto={}",
+                    cliente.getId(), montoCobrosARevertir);
             }
 
             venta.setSaldoPendiente(saldoPendiente - montoAplicado);
@@ -142,20 +158,35 @@ public class NotaServicio {
 
             AsientoDTO asientoDTO = new AsientoDTO();
             asientoDTO.setFecha(nota.getFecha());
-            asientoDTO.setDescripcion("Contra asiento por nota de Credito para venta ID: " + nota.getIdVenta() + " - Motivo: " + nota.getMotivo());
+            asientoDTO.setDescripcion("Nota de Credito para venta ID: " + nota.getIdVenta() + " - Motivo: " + nota.getMotivo());
             asientoDTO.setNombreUsuario("UsuarioID: " + usuarioId); 
         
             CuentaAsientoDTO movimientoDebe = new CuentaAsientoDTO();
-            movimientoDebe.setCuentaCodigo(CUENTA_DEBE_CREDITO); // El Debe usa la cuenta de Ventas
+            movimientoDebe.setCuentaCodigo(CUENTA_VENTAS); // El Debe usa la cuenta de Ventas
             movimientoDebe.setDebe(nota.getMonto());
             movimientoDebe.setHaber(BigDecimal.valueOf(0.0));
         
-            CuentaAsientoDTO movimientoHaber = new CuentaAsientoDTO();
-            movimientoHaber.setCuentaCodigo(CUENTA_HABER_CREDITO); // El Haber usa la cuenta de Deudores
-            movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
-            movimientoHaber.setHaber(nota.getMonto());
-        
-            asientoDTO.setMovimientos(List.of(movimientoDebe, movimientoHaber));
+            List<CuentaAsientoDTO> movimientos = new ArrayList<>();
+            movimientos.add(movimientoDebe);
+
+            double importeNoPagado = Math.max(0.0, montoNota - importePagado);
+            if (importeNoPagado > 0) {
+                CuentaAsientoDTO movimientoHaberDeudores = new CuentaAsientoDTO();
+                movimientoHaberDeudores.setCuentaCodigo(CUENTA_DEUDORES_VENTAS);
+                movimientoHaberDeudores.setDebe(BigDecimal.ZERO);
+                movimientoHaberDeudores.setHaber(BigDecimal.valueOf(importeNoPagado));
+                movimientos.add(movimientoHaberDeudores);
+            }
+            if (importePagado > 0) {
+                CuentaAsientoDTO movimientoHaberDevolucion = new CuentaAsientoDTO();
+                movimientoHaberDevolucion.setCuentaCodigo("EFECTIVO".equals(nota.getTipoDePago())
+                        ? CUENTA_CAJA : CUENTA_DEUDORES_VENTAS);
+                movimientoHaberDevolucion.setDebe(BigDecimal.ZERO);
+                movimientoHaberDevolucion.setHaber(BigDecimal.valueOf(importePagado));
+                movimientos.add(movimientoHaberDevolucion);
+            }
+
+            asientoDTO.setMovimientos(movimientos);
         
             logger.debug("Generando contrasiento contable por monto: {}", nota.getMonto());
             asientoServicio.crearAsiento(asientoDTO, usuarioId);
@@ -213,16 +244,16 @@ public class NotaServicio {
         
             CuentaAsientoDTO movimientoDebe = new CuentaAsientoDTO();
             Long cuentaDebe = switch (nota.getTipoDePago()) {
-                case "EFECTIVO" -> CUENTA_DEBE_EFECTIVO;
-                case "DEBITO", "TRANSFERENCIA" -> CUENTA_DEBE_TRANSFERENCIA;
-                default -> CUENTA_DEBE_DEBITO;
+                case "EFECTIVO" -> CUENTA_CAJA;
+                case "DEBITO", "TRANSFERENCIA" -> CUENTA_BANCO;
+                default -> CUENTA_DEUDORES_VENTAS;
             };
             movimientoDebe.setCuentaCodigo(cuentaDebe);
             movimientoDebe.setDebe(nota.getMonto());
             movimientoDebe.setHaber(BigDecimal.valueOf(0.0));
         
             CuentaAsientoDTO movimientoHaber = new CuentaAsientoDTO();
-            movimientoHaber.setCuentaCodigo(CUENTA_HABER_DEBITO); // El Haber usa la cuenta de Ventas
+            movimientoHaber.setCuentaCodigo(CUENTA_VENTAS); // El Haber usa la cuenta de Ventas
             movimientoHaber.setDebe(BigDecimal.valueOf(0.0));
             movimientoHaber.setHaber(nota.getMonto());
         
